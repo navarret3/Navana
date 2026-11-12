@@ -9,23 +9,17 @@ import { Chip, Text, spacing } from '@/ui';
 
 import { useTaskActions } from './useTaskActions';
 
-type QuickLogProps = {
-  /** En "Hoy" solo se enseñan las pastillas; en Tareas, también la explicación y cómo añadir. */
-  compact?: boolean;
-};
-
 /**
  * Apuntar algo hecho que no estaba planeado (barrer, tender, fregar los platos…).
  * Un toque en la pastilla lo registra a nombre de quien lo toca, con opción de deshacer.
+ * Solo está en la pestaña Tareas: en "Hoy" no se enseña, para que allí quede solo lo que toca.
  */
-export function QuickLog({ compact }: QuickLogProps) {
+export function QuickLog() {
   const { t } = useTranslation();
   const router = useRouter();
   const allTasks = useTasks((state) => state.tasks);
   const tasks = onDemandTasks(allTasks);
   const { complete } = useTaskActions();
-
-  if (compact && tasks.length === 0) return null;
 
   // "Añadir cosas típicas" se ofrece mientras quede algo de la plantilla que no esté en casa.
   const existing = new Set(activeTasks(allTasks).map((task) => task.title.toLowerCase()));
@@ -36,14 +30,10 @@ export function QuickLog({ compact }: QuickLogProps) {
 
   return (
     <View style={styles.root}>
-      <Text variant={compact ? 'label' : 'heading'} color={compact ? 'inkSoft' : 'ink'}>
-        {compact ? t('tasks.quickLog.titleShort') : `✍️ ${t('tasks.quickLog.title')}`}
+      <Text variant="heading">✍️ {t('tasks.quickLog.title')}</Text>
+      <Text variant="caption" color="inkSoft">
+        {tasks.length > 0 ? t('tasks.quickLog.hint') : t('tasks.quickLog.empty')}
       </Text>
-      {compact ? null : (
-        <Text variant="caption" color="inkSoft">
-          {tasks.length > 0 ? t('tasks.quickLog.hint') : t('tasks.quickLog.empty')}
-        </Text>
-      )}
       <View style={styles.chips}>
         {tasks.map((task) => (
           <Chip
@@ -55,26 +45,22 @@ export function QuickLog({ compact }: QuickLogProps) {
             onLongPress={() => router.push({ pathname: '/task/[id]', params: { id: task.id } })}
           />
         ))}
-        {compact ? null : (
-          <>
-            <Chip
-              role="button"
-              icon="＋"
-              label={t('tasks.quickLog.add')}
-              onPress={() => router.push({ pathname: '/task/new', params: { onDemand: '1' } })}
-            />
-            {templateLeft ? (
-              <Chip
-                role="button"
-                icon="🧺"
-                label={t('tasks.quickLog.addTypical')}
-                onPress={() => router.push('/task/template')}
-              />
-            ) : null}
-          </>
-        )}
+        <Chip
+          role="button"
+          icon="＋"
+          label={t('tasks.quickLog.add')}
+          onPress={() => router.push({ pathname: '/task/new', params: { onDemand: '1' } })}
+        />
+        {templateLeft ? (
+          <Chip
+            role="button"
+            icon="🧺"
+            label={t('tasks.quickLog.addTypical')}
+            onPress={() => router.push('/task/template')}
+          />
+        ) : null}
       </View>
-      {compact || tasks.length === 0 ? null : (
+      {tasks.length === 0 ? null : (
         <Text variant="caption" color="inkMuted">
           {t('tasks.quickLog.editHint')}
         </Text>

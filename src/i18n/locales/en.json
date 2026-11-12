@@ -233,7 +233,6 @@
     },
     "quickLog": {
       "title": "Log something done",
-      "titleShort": "Log something done",
       "hint": "Things that come up unplanned. Tap what you've just done and it's logged under your name.",
       "empty": "For things you do as they come up, with no date: sweeping, hanging the laundry, washing up… Add them here and then one tap will log them.",
       "add": "Add",

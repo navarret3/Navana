@@ -11,7 +11,6 @@ import { useSession } from '@/state/session';
 import { useTasks } from '@/state/tasks';
 import { Text, minTouchSize } from '@/ui';
 
-import { QuickLog } from './QuickLog';
 import { TaskRow } from './TaskRow';
 import { useTaskActions } from './useTaskActions';
 
@@ -77,8 +76,6 @@ export function TasksTodayCard() {
           {showOthers ? rows(groups.others) : null}
         </>
       ) : null}
-
-      <QuickLog compact />
     </TodaySummaryCard>
   );
 }

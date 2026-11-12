@@ -233,7 +233,6 @@
     },
     "quickLog": {
       "title": "Apuntar algo hecho",
-      "titleShort": "Apuntar algo hecho",
       "hint": "Lo que surge sin planear. Toca lo que acabas de hacer y queda apuntado a tu nombre.",
       "empty": "Para lo que hacéis cuando surge, sin fecha: barrer, tender, fregar los platos… Añádelo aquí y luego bastará un toque para apuntarlo.",
       "add": "Añadir",
