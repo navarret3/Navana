@@ -5,7 +5,13 @@ import {
   upcomingOccurrences,
 } from '@/domain/agenda/occurrences';
 import { planEventReminders } from '@/domain/agenda/reminders';
-import { involves, isValidTime, type AgendaEvent } from '@/domain/agenda/types';
+import {
+  EVENT_TYPES,
+  eventTypeOf,
+  involves,
+  isValidTime,
+  type AgendaEvent,
+} from '@/domain/agenda/types';
 import { addMonths, monthMatrix, yearMonthOf } from '@/domain/dates';
 
 const ANA = 'ana';
@@ -18,7 +24,7 @@ function event(overrides: Partial<AgendaEvent> = {}): AgendaEvent {
   return {
     id: 'e1',
     title: 'Cena',
-    type: 'plan',
+    type: 'event',
     date: '2026-11-14',
     endDate: null,
     time: '21:00',
@@ -32,7 +38,20 @@ function event(overrides: Partial<AgendaEvent> = {}): AgendaEvent {
 }
 
 const birthday = (date: string, overrides: Partial<AgendaEvent> = {}) =>
-  event({ id: 'b', title: 'Cumple', type: 'birthday', date, time: null, yearly: true, ...overrides });
+  event({ id: 'b', title: 'Cumple', date, time: null, yearly: true, ...overrides });
+
+describe('tipos de evento', () => {
+  it('reconoce los tipos actuales', () => {
+    expect(EVENT_TYPES).toEqual(['trip', 'concert', 'appointment', 'event']);
+    for (const type of EVENT_TYPES) expect(eventTypeOf(type)).toBe(type);
+  });
+
+  it('lo guardado con los tipos antiguos o con un valor raro se muestra como evento', () => {
+    expect(eventTypeOf('plan')).toBe('event');
+    expect(eventTypeOf('birthday')).toBe('event');
+    expect(eventTypeOf(undefined)).toBe('event');
+  });
+});
 
 describe('calendario de mes', () => {
   it('saca el año y el mes de una fecha y avanza o retrocede meses', () => {

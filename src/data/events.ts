@@ -8,7 +8,7 @@ import {
   setDoc,
   updateDoc,
 } from '@/data/fb';
-import { EVENT_TYPES, type AgendaEvent, type EventDraft, type EventType } from '@/domain/agenda/types';
+import { eventTypeOf, type AgendaEvent, type EventDraft } from '@/domain/agenda/types';
 
 const eventsCol = (hid: string) => collection(db, 'households', hid, 'events');
 const eventRef = (hid: string, id: string) => doc(db, 'households', hid, 'events', id);
@@ -17,14 +17,12 @@ type Raw = Record<string, unknown>;
 
 const text = (value: unknown) => (typeof value === 'string' ? value : '');
 const textOrNull = (value: unknown) => (typeof value === 'string' && value ? value : null);
-const typeOf = (value: unknown): EventType =>
-  EVENT_TYPES.find((type) => type === value) ?? 'plan';
 
 function toEvent(id: string, data: Raw): AgendaEvent {
   return {
     id,
     title: text(data.title),
-    type: typeOf(data.type),
+    type: eventTypeOf(data.type),
     date: text(data.date),
     endDate: textOrNull(data.endDate),
     time: textOrNull(data.time),

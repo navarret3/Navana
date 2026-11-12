@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
 import { colors, maxContentWidth, spacing } from './theme';
@@ -17,17 +17,25 @@ type ScreenProps = {
 export function Screen({ children, scroll = true, edges = ['top'], floating }: ScreenProps) {
   return (
     <SafeAreaView style={styles.root} edges={edges}>
-      {scroll ? (
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
-          <View style={styles.content}>{children}</View>
-        </ScrollView>
-      ) : (
-        <View style={[styles.content, styles.fill]}>{children}</View>
-      )}
-      {floating}
+      {/*
+        En Android la app va de borde a borde y la ventana no se encoge al salir el teclado:
+        sin esto, el teclado tapa los últimos campos de un formulario y no se puede llegar a
+        ellos. Con `padding` la pantalla termina donde empieza el teclado y el scroll alcanza
+        hasta el final.
+      */}
+      <KeyboardAvoidingView style={styles.fill} behavior="padding">
+        {scroll ? (
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
+            <View style={styles.content}>{children}</View>
+          </ScrollView>
+        ) : (
+          <View style={[styles.content, styles.fill]}>{children}</View>
+        )}
+        {floating}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

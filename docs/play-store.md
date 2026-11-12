@@ -52,7 +52,7 @@ sesión con Google falla en la versión descargada de la tienda.
 > • Autocompletar, categorías automáticas y vuestros productos frecuentes.
 >
 > AGENDA
-> • Planes, citas y cumpleaños, de uno, del otro o de los dos.
+> • Viajes, conciertos, citas y eventos, de uno, del otro o de los dos.
 > • Recordatorios y cuenta atrás para el próximo plan.
 >
 > Y si queréis: menú semanal que pasa sus ingredientes a la compra y notas compartidas.

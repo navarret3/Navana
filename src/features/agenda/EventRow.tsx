@@ -8,9 +8,10 @@ import { useEventText } from './eventText';
 
 /** Color con el que se distingue cada tipo de evento en el calendario y en las listas. */
 export const EVENT_COLORS: Record<EventType, string> = {
-  plan: colors.peach,
+  trip: colors.sky,
+  concert: colors.honey,
   appointment: colors.sageDeep,
-  birthday: '#E0A93B',
+  event: colors.peach,
 };
 
 type EventRowProps = {

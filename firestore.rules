@@ -234,7 +234,9 @@ service cloud.firestore {
                    'title', 'type', 'date', 'endDate', 'time', 'location', 'notes', 'participants',
                    'reminders', 'yearly', 'createdBy', 'createdAt'])
             && validText(data.title, 80)
-            && data.type in ['plan', 'appointment', 'birthday']
+            // 'plan' y 'birthday' son los tipos antiguos: los siguen escribiendo las versiones
+            // de la app anteriores al cambio y están en los eventos ya guardados.
+            && data.type in ['trip', 'concert', 'appointment', 'event', 'plan', 'birthday']
             && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
             && (data.endDate == null || data.endDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'))
             && (data.time == null || data.time.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$'))

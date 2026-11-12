@@ -30,6 +30,10 @@ const lightColors = {
 
   danger: '#C8553D',
 
+  // Acentos para distinguir tipos de evento en la agenda
+  sky: '#6FA3C7',
+  honey: '#E0A93B',
+
   // Texto sobre colores que no cambian con el tema
   /** Sobre melocotón (botones, día elegido) y sobre los colores de los miembros. */
   onPeach: '#43342B',
@@ -65,6 +69,9 @@ const darkColors: Palette = {
   inkMuted: '#928273',
 
   danger: '#E5735B',
+
+  sky: '#7FB2D6',
+  honey: '#E6B655',
 
   onPeach: '#43342B',
   onDanger: '#FFFFFF',

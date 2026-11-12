@@ -53,9 +53,10 @@ export function EventForm({ initial, members, submitLabel, onSubmit }: EventForm
   const [reminders, setReminders] = useState<readonly number[]>(initial.reminders);
   const [errors, setErrors] = useState<{ title?: string; time?: string; endDate?: string }>({});
 
-  // Un cumpleaños es siempre de un día entero y se repite cada año.
-  const isBirthday = type === 'birthday';
-  const wholeDay = allDay || isBirthday;
+  // Ya no se crean eventos anuales, pero los cumpleaños guardados antes se siguen repitiendo
+  // cada año. Son siempre de un día entero.
+  const yearly = initial.yearly;
+  const wholeDay = allDay || yearly;
   const reminderOptions = wholeDay ? ALL_DAY_REMINDERS : TIMED_REMINDERS;
 
   const toggle = <T,>(list: readonly T[], value: T): T[] =>
@@ -63,7 +64,7 @@ export function EventForm({ initial, members, submitLabel, onSubmit }: EventForm
 
   const submit = () => {
     const cleanTitle = title.replace(/\s+/g, ' ').trim().slice(0, TITLE_MAX);
-    const multiDay = severalDays && !isBirthday;
+    const multiDay = severalDays && !yearly;
     const found = {
       title: cleanTitle ? undefined : t('agenda.form.titleRequired'),
       time: wholeDay || isValidTime(time) ? undefined : t('agenda.form.timeInvalid'),
@@ -85,7 +86,7 @@ export function EventForm({ initial, members, submitLabel, onSubmit }: EventForm
         owner !== EVERYONE && members.some((member) => member.uid === owner) ? [owner] : [],
       // Solo se guardan los avisos que tienen sentido para este tipo de evento.
       reminders: reminders.filter((minutes) => (reminderOptions as readonly number[]).includes(minutes)),
-      yearly: isBirthday,
+      yearly,
     });
   };
 
@@ -123,7 +124,11 @@ export function EventForm({ initial, members, submitLabel, onSubmit }: EventForm
       />
       <DateField label={t('agenda.form.dateLabel')} value={date} onChange={setDate} />
 
-      {isBirthday ? null : (
+      {yearly ? (
+        <Text variant="caption" color="inkSoft">
+          {t('agenda.form.yearlyNote')}
+        </Text>
+      ) : (
         <>
           <ListRow
             title={t('agenda.form.allDay')}

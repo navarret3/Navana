@@ -272,10 +272,10 @@
   },
   "agenda": {
     "title": "Agenda",
-    "description": "Planes, citas y cumpleaños",
+    "description": "Viajes, conciertos, citas y eventos",
     "empty": {
       "title": "Sin planes todavía",
-      "description": "Vuestros planes, citas y cumpleaños vivirán aquí."
+      "description": "Vuestros viajes, conciertos, citas y eventos vivirán aquí."
     },
     "todayCard": {
       "title": "Próximo plan",
@@ -296,14 +296,16 @@
       "days_other": "Faltan {{count}} días"
     },
     "types": {
-      "plan": "Plan",
-      "appointment": "Cita o gestión",
-      "birthday": "Cumpleaños"
+      "trip": "Viaje",
+      "concert": "Concierto",
+      "appointment": "Cita",
+      "event": "Evento"
     },
     "typeHints": {
-      "plan": "Algo que hacéis juntos: una cena, una escapada, un concierto.",
-      "appointment": "Veterinario, médico, una factura, un trámite.",
-      "birthday": "Se repite cada año, todo el día."
+      "trip": "Un viaje o una escapada. Si dura más de un día, activa «Dura varios días».",
+      "concert": "Un concierto, un festival, una obra de teatro.",
+      "appointment": "Veterinario, médico, un trámite.",
+      "event": "Cualquier otra cosa: una cena, una fiesta, una visita."
     },
     "form": {
       "newTitle": "Nuevo evento",
@@ -311,15 +313,17 @@
       "typeLabel": "Qué es",
       "titleLabel": "Título",
       "titlePlaceholder": {
-        "plan": "Cena con amigos",
+        "trip": "Fin de semana en Lisboa",
+        "concert": "Concierto de…",
         "appointment": "Veterinario",
-        "birthday": "Cumple de…"
+        "event": "Cena con amigos"
       },
       "dateLabel": "Día",
       "allDay": "Todo el día",
       "timeLabel": "Hora",
       "severalDays": "Dura varios días",
       "endDateLabel": "Hasta",
+      "yearlyNote": "Se repite cada año, todo el día.",
       "participantsLabel": "De quién es",
       "remindersLabel": "Recordármelo",
       "locationLabel": "Lugar",

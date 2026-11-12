@@ -24,7 +24,7 @@ export default function NewEventScreen() {
 
   const initial: EventDraft = {
     title: '',
-    type: 'plan',
+    type: 'event',
     date: date && DATE_PATTERN.test(date) ? date : toDateKey(new Date()),
     endDate: null,
     time: null,

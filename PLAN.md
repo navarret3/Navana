@@ -95,7 +95,7 @@ households/{hid}                 nombre, icono, memberIds[], enabledModules{}
                                  estado previo de la tarea (para deshacer)
   shoppingItems/{id}             nombre, categoryId, checked, addedBy, checkedBy, fechas
   catalog/{nombreNormalizado}    nombre, categoryId, timesBought, lastBoughtAt
-  events/{id}                    título, tipo(plan|cita|cumpleaños), inicio/fin, allDay, lugar, notas,
+  events/{id}                    título, tipo(viaje|concierto|cita|evento), inicio/fin, allDay, lugar, notas,
                                  participantes[], recordatorios[min], repetición anual
 ```
 
@@ -123,7 +123,7 @@ Reglas de seguridad: solo los miembros (`memberIds`) leen y escriben su hogar; u
 ### Agenda
 
 - Vista de mes y lista de próximos.
-- Tipos: plan juntos, cita o gestión (individual o del hogar: veterinario, médico, facturas) y cumpleaños (anual).
+- Tipos: viaje, concierto, cita (veterinario, médico, un trámite) y evento (lo demás). Cada uno puede ser de uno, del otro o de los dos. Los cumpleaños anuales se quitaron como tipo; los que ya estaban guardados se siguen repitiendo cada año.
 - Recordatorios configurables (1 día, 1 hora) como notificaciones locales en el móvil de cada participante.
 - Cuenta atrás en "Hoy".
 

@@ -272,10 +272,10 @@
   },
   "agenda": {
     "title": "Calendar",
-    "description": "Plans, appointments and birthdays",
+    "description": "Trips, concerts, appointments and events",
     "empty": {
       "title": "No plans yet",
-      "description": "Your plans, appointments and birthdays will live here."
+      "description": "Your trips, concerts, appointments and events will live here."
     },
     "todayCard": {
       "title": "Next plan",
@@ -296,14 +296,16 @@
       "days_other": "{{count}} days to go"
     },
     "types": {
-      "plan": "Plan",
-      "appointment": "Appointment or errand",
-      "birthday": "Birthday"
+      "trip": "Trip",
+      "concert": "Concert",
+      "appointment": "Appointment",
+      "event": "Event"
     },
     "typeHints": {
-      "plan": "Something you do together: a dinner, a getaway, a concert.",
-      "appointment": "Vet, doctor, a bill, some paperwork.",
-      "birthday": "Repeats every year, all day."
+      "trip": "A trip or a getaway. If it lasts more than a day, turn on “Lasts several days”.",
+      "concert": "A concert, a festival, a play.",
+      "appointment": "Vet, doctor, some paperwork.",
+      "event": "Anything else: a dinner, a party, a visit."
     },
     "form": {
       "newTitle": "New event",
@@ -311,15 +313,17 @@
       "typeLabel": "What it is",
       "titleLabel": "Title",
       "titlePlaceholder": {
-        "plan": "Dinner with friends",
+        "trip": "Weekend in Lisbon",
+        "concert": "… concert",
         "appointment": "Vet",
-        "birthday": "…'s birthday"
+        "event": "Dinner with friends"
       },
       "dateLabel": "Day",
       "allDay": "All day",
       "timeLabel": "Time",
       "severalDays": "Lasts several days",
       "endDateLabel": "Until",
+      "yearlyNote": "Repeats every year, all day.",
       "participantsLabel": "Whose it is",
       "remindersLabel": "Remind me",
       "locationLabel": "Place",

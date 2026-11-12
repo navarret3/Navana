@@ -585,7 +585,7 @@ describe('lista de la compra y catálogo', () => {
 describe('agenda', () => {
   const event = (extra: Record<string, unknown> = {}) => ({
     title: 'Cena',
-    type: 'plan',
+    type: 'event',
     date: '2026-11-14',
     endDate: null,
     time: '21:00',
@@ -614,9 +614,17 @@ describe('agenda', () => {
     await assertSucceeds(
       setDoc(
         doc(db, 'households', HOME, 'events', 'e3'),
-        event({ title: 'Viaje', endDate: '2026-11-18', time: null, participants: [ANA] }),
+        event({ title: 'Viaje', type: 'trip', endDate: '2026-11-18', time: null, participants: [ANA] }),
       ),
     );
+    await assertSucceeds(
+      setDoc(doc(db, 'households', HOME, 'events', 'e4'), event({ type: 'concert' })),
+    );
+    await assertSucceeds(
+      setDoc(doc(db, 'households', HOME, 'events', 'e5'), event({ type: 'appointment' })),
+    );
+    // Los tipos antiguos siguen valiendo: los escriben las versiones anteriores de la app.
+    await assertSucceeds(setDoc(doc(db, 'households', HOME, 'events', 'e6'), event({ type: 'plan' })));
     const ref = doc(db, 'households', HOME, 'events', 'e1');
     await assertSucceeds(updateDoc(ref, { time: '20:30', location: 'Casa' }));
     await assertSucceeds(deleteDoc(ref));

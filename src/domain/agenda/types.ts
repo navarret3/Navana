@@ -1,19 +1,29 @@
 import type { DateKey } from '@/domain/dates';
 
 /**
- * - `plan`: algo que hacéis juntos (una cena, un viaje).
- * - `appointment`: cita o gestión (veterinario, médico, una factura).
- * - `birthday`: cumpleaños; se repite cada año.
+ * - `trip`: viaje o escapada; suele durar varios días.
+ * - `concert`: concierto, festival u otro espectáculo.
+ * - `appointment`: cita (veterinario, médico, un trámite).
+ * - `event`: cualquier otra cosa (una cena, una fiesta).
  */
-export const EVENT_TYPES = ['plan', 'appointment', 'birthday'] as const;
+export const EVENT_TYPES = ['trip', 'concert', 'appointment', 'event'] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number];
 
 export const EVENT_ICONS: Record<EventType, string> = {
-  plan: '🎉',
+  trip: '✈️',
+  concert: '🎵',
   appointment: '📌',
-  birthday: '🎂',
+  event: '🎉',
 };
+
+/**
+ * Tipo con el que se muestra lo guardado. Los eventos anteriores a estos tipos (`plan`,
+ * `birthday`) y cualquier valor desconocido pasan a ser `event`.
+ */
+export function eventTypeOf(value: unknown): EventType {
+  return EVENT_TYPES.find((type) => type === value) ?? 'event';
+}
 
 export type AgendaEvent = {
   id: string;
