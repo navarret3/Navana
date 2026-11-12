@@ -4,6 +4,7 @@ import {
   startOfMonth,
   startOfWeek,
   toDateKey,
+  upcomingWeekend,
 } from '@/domain/dates';
 
 describe('fechas de calendario', () => {
@@ -34,6 +35,13 @@ describe('fechas de calendario', () => {
     expect(startOfWeek('2026-11-12')).toBe('2026-11-09'); // jueves
     expect(startOfWeek('2026-11-09')).toBe('2026-11-09'); // lunes
     expect(startOfWeek('2026-11-15')).toBe('2026-11-09'); // domingo
+  });
+
+  it('el próximo fin de semana es el sábado, o el mismo día si ya es fin de semana', () => {
+    expect(upcomingWeekend('2026-11-12')).toBe('2026-11-14'); // jueves → sábado
+    expect(upcomingWeekend('2026-11-09')).toBe('2026-11-14'); // lunes → sábado
+    expect(upcomingWeekend('2026-11-14')).toBe('2026-11-14'); // sábado
+    expect(upcomingWeekend('2026-11-15')).toBe('2026-11-15'); // domingo
   });
 
   it('da el primer día del mes', () => {

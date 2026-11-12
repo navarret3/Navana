@@ -47,6 +47,7 @@ export default function NewEventScreen() {
         initial={initial}
         members={members}
         submitLabel={t('agenda.form.create')}
+        isNew
         onSubmit={create}
       />
     </Screen>

@@ -39,6 +39,12 @@ export function startOfWeek(key: DateKey): DateKey {
   return addDays(key, -((weekday + 6) % 7));
 }
 
+/** El sábado de esta semana o, si hoy ya es domingo, hoy: el próximo día de fin de semana. */
+export function upcomingWeekend(today: DateKey): DateKey {
+  const saturday = addDays(startOfWeek(today), 5);
+  return today > saturday ? today : saturday;
+}
+
 export function startOfMonth(key: DateKey): DateKey {
   return `${key.slice(0, 7)}-01`;
 }

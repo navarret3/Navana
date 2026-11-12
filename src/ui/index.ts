@@ -8,6 +8,7 @@ export { DateField } from './DateField';
 export { EmptyState } from './EmptyState';
 export { ListRow } from './ListRow';
 export { MonthGrid } from './MonthGrid';
+export { MoreRow } from './MoreRow';
 export { OptionPicker } from './OptionPicker';
 export { Screen } from './Screen';
 export { ScreenHeader, useGoBack } from './ScreenHeader';

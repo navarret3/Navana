@@ -6,10 +6,14 @@ import {
 } from '@/domain/agenda/occurrences';
 import { planEventReminders } from '@/domain/agenda/reminders';
 import {
+  ALL_OWNERS,
   EVENT_TYPES,
+  EVERYONE,
   eventTypeOf,
+  filterByOwner,
   involves,
   isValidTime,
+  ownerOf,
   type AgendaEvent,
 } from '@/domain/agenda/types';
 import { addMonths, monthMatrix, yearMonthOf } from '@/domain/dates';
@@ -39,6 +43,32 @@ function event(overrides: Partial<AgendaEvent> = {}): AgendaEvent {
 
 const birthday = (date: string, overrides: Partial<AgendaEvent> = {}) =>
   event({ id: 'b', title: 'Cumple', date, time: null, yearly: true, ...overrides });
+
+describe('de quién es un evento', () => {
+  const HOME = [ANA, BRUNO];
+  const shared = event({ id: 'shared', participants: [] });
+  const hers = event({ id: 'hers', participants: [ANA] });
+  const his = event({ id: 'his', participants: [BRUNO] });
+  const listed = event({ id: 'listed', participants: [ANA, BRUNO] });
+  const gone = event({ id: 'gone', participants: ['carla'] });
+  const all = [shared, hers, his, listed, gone];
+  const ids = (events: readonly AgendaEvent[]) => events.map((entry) => entry.id);
+
+  it('es de una persona solo si señala a una sola, y sigue en el hogar', () => {
+    expect(ownerOf(hers, HOME)).toBe(ANA);
+    expect(ownerOf(his, HOME)).toBe(BRUNO);
+    expect(ownerOf(shared, HOME)).toBe(EVERYONE);
+    expect(ownerOf(listed, HOME)).toBe(EVERYONE);
+    expect(ownerOf(gone, HOME)).toBe(EVERYONE);
+  });
+
+  it('el filtro enseña todo, solo lo compartido o solo lo de una persona', () => {
+    expect(ids(filterByOwner(all, ALL_OWNERS, HOME))).toEqual(ids(all));
+    expect(ids(filterByOwner(all, EVERYONE, HOME))).toEqual(['shared', 'listed', 'gone']);
+    expect(ids(filterByOwner(all, ANA, HOME))).toEqual(['hers']);
+    expect(ids(filterByOwner(all, BRUNO, HOME))).toEqual(['his']);
+  });
+});
 
 describe('tipos de evento', () => {
   it('reconoce los tipos actuales', () => {

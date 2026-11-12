@@ -19,29 +19,38 @@ export type TemplateTask = {
   zone: TemplateZoneKey;
   effort: Effort;
   intervalDays: number;
+  /** `weekend`: la primera vez toca el próximo fin de semana, no hoy. */
+  starts?: 'weekend';
 };
 
+/** Lo que se hace cada cierto tiempo, por turnos. */
 export const TEMPLATE_TASKS = [
-  { key: 'kitchen', icon: '🧽', zone: 'kitchen', effort: 2, intervalDays: 7 },
-  { key: 'bathroom', icon: '🚿', zone: 'bathroom', effort: 3, intervalDays: 7 },
-  { key: 'mop', icon: '🪣', zone: 'wholeHouse', effort: 2, intervalDays: 7 },
-  { key: 'vacuum', icon: '🧹', zone: 'wholeHouse', effort: 2, intervalDays: 4 },
   { key: 'litter', icon: '🐈', zone: 'cats', effort: 1, intervalDays: 1 },
-  { key: 'trash', icon: '🗑️', zone: 'kitchen', effort: 1, intervalDays: 2 },
-  { key: 'sheets', icon: '🛏️', zone: 'bedroom', effort: 2, intervalDays: 14 },
+  { key: 'waterBowl', icon: '💧', zone: 'cats', effort: 1, intervalDays: 7, starts: 'weekend' },
 ] as const satisfies readonly TemplateTask[];
 
 export type TemplateTaskKey = (typeof TEMPLATE_TASKS)[number]['key'];
 
 /** Lo que se hace "cuando surge": sin fecha, se apunta cada vez. */
 export const TEMPLATE_ON_DEMAND = [
-  { key: 'sweep', icon: '🧹', zone: 'wholeHouse', effort: 1 },
+  { key: 'sweepKitchen', icon: '🧹', zone: 'kitchen', effort: 1 },
+  { key: 'mopKitchen', icon: '🪣', zone: 'kitchen', effort: 1 },
   { key: 'dishes', icon: '🍽️', zone: 'kitchen', effort: 1 },
-  { key: 'dishwasher', icon: '🫧', zone: 'kitchen', effort: 1 },
-  { key: 'laundry', icon: '🧺', zone: 'wholeHouse', effort: 1 },
+  { key: 'cook', icon: '🍳', zone: 'kitchen', effort: 2 },
+  { key: 'sweepHouse', icon: '🧹', zone: 'wholeHouse', effort: 2 },
+  { key: 'mopHouse', icon: '🪣', zone: 'wholeHouse', effort: 2 },
+  { key: 'sheets', icon: '🛏️', zone: 'bedroom', effort: 2 },
   { key: 'hang', icon: '👕', zone: 'wholeHouse', effort: 1 },
   { key: 'unhang', icon: '🧦', zone: 'wholeHouse', effort: 1 },
-] as const satisfies readonly Omit<TemplateTask, 'intervalDays'>[];
+  { key: 'bathroomSink', icon: '🚿', zone: 'bathroom', effort: 1 },
+  { key: 'toilet', icon: '🚽', zone: 'bathroom', effort: 1 },
+  { key: 'livingRoom', icon: '🛋️', zone: 'livingRoom', effort: 2 },
+  { key: 'counter', icon: '🧽', zone: 'kitchen', effort: 1 },
+  { key: 'microwave', icon: '✨', zone: 'kitchen', effort: 1 },
+  { key: 'hood', icon: '💨', zone: 'kitchen', effort: 2 },
+  { key: 'oven', icon: '🔥', zone: 'kitchen', effort: 3 },
+  { key: 'fridge', icon: '🧊', zone: 'kitchen', effort: 2 },
+] as const satisfies readonly Omit<TemplateTask, 'intervalDays' | 'starts'>[];
 
 export type TemplateOnDemandKey = (typeof TEMPLATE_ON_DEMAND)[number]['key'];
 

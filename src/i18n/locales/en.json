@@ -120,7 +120,20 @@
       "frequencyLabel": "How often",
       "repeat": "Repeats",
       "once": "Just once",
-      "everyLabel": "Every how many days",
+      "everyLabel": "How often",
+      "customLabel": "Every how many days",
+      "presets": {
+        "1": "Daily",
+        "2": "Every 2 days",
+        "3": "Every 3 days",
+        "7": "Weekly",
+        "14": "Every 2 weeks",
+        "30": "Monthly",
+        "custom": "Other…"
+      },
+      "ideas": "Ideas: tap one and it fills itself in.",
+      "moreOptions": "More options",
+      "moreOptionsHint": "Icon, area, effort and when it's first due.",
       "everyHint": "Counted from the last time it was done.",
       "modeLabel": "Who does it",
       "assigneeLabel": "Responsible",
@@ -160,13 +173,8 @@
       "every_one": "Every day",
       "every_other": "Every {{count}} days",
       "tasks": {
-        "kitchen": "Clean the kitchen",
-        "bathroom": "Clean the bathroom",
-        "mop": "Mop the floor",
-        "vacuum": "Vacuum",
-        "litter": "Clean the litter box",
-        "trash": "Take out the trash",
-        "sheets": "Change the sheets"
+        "litter": "Clean the cats' litter box",
+        "waterBowl": "Clean the water bowl"
       },
       "zones": {
         "kitchen": "Kitchen",
@@ -176,16 +184,30 @@
         "cats": "Cats",
         "wholeHouse": "Whole house"
       },
+      "byTurns": "taking turns",
+      "startsWeekend": "starts at the weekend",
+      "nothingLeft": "You already have every chore on this list.",
       "scheduledGroup": "On a schedule",
       "onDemandGroup": "As they come up",
       "onDemandNote": "No date: logged each time someone does them.",
       "onDemand": {
-        "sweep": "Sweep",
+        "sweepKitchen": "Sweep the kitchen",
+        "mopKitchen": "Mop the kitchen",
         "dishes": "Wash the dishes",
-        "dishwasher": "Empty the dishwasher",
-        "laundry": "Do the laundry",
+        "cook": "Cook lunch or dinner",
+        "sweepHouse": "Sweep the house",
+        "mopHouse": "Mop the house",
+        "sheets": "Change the sheets",
         "hang": "Hang the laundry",
-        "unhang": "Take down the laundry"
+        "unhang": "Take down the laundry",
+        "bathroomSink": "Clean the bathroom sink",
+        "toilet": "Clean the toilet",
+        "livingRoom": "Clean the living room",
+        "counter": "Clean the kitchen counter",
+        "microwave": "Clean the microwave",
+        "hood": "Clean the extractor hood",
+        "oven": "Clean the oven",
+        "fridge": "Clean the fridge"
       }
     },
     "history": {
@@ -288,6 +310,11 @@
     "goToToday": "Go to today",
     "upcoming": "Upcoming",
     "nothingThisDay": "Nothing planned for this day.",
+    "filter": {
+      "label": "Show",
+      "all": "Everything",
+      "nothingThisDay": "Nothing from this selection on this day."
+    },
     "countdown": {
       "ongoing": "Ongoing",
       "today": "Today",
@@ -326,15 +353,15 @@
       "yearlyNote": "Repeats every year, all day.",
       "participantsLabel": "Whose it is",
       "remindersLabel": "Remind me",
-      "locationLabel": "Place",
-      "notesLabel": "Notes",
+      "moreOptions": "Time and reminders",
+      "moreOptionsHint": "By default: all day, with a reminder the day before.",
       "titleRequired": "Give it a title.",
       "timeInvalid": "Write the time like this: 18:30.",
       "endBeforeStart": "The last day can't be before the first.",
       "create": "Create event",
       "delete": "Delete event",
       "participantsHint": "Reminders only go off for whoever it concerns.",
-      "participantsAlone": "Once your partner joins the household, you'll be able to say here whether the event is yours, theirs or both."
+      "participantsAlone": "Once your partner joins the household, you'll be able to pick them here too."
     },
     "reminders": {
       "timed": {

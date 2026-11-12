@@ -222,6 +222,8 @@ export async function applyTemplate(
       /** `null` en las tareas "cuando surgen". */
       intervalDays: number | null;
       onDemand: boolean;
+      /** Cuándo toca la primera vez. Si falta, hoy. */
+      firstDueOn?: DateKey;
     }[];
     existingZones: readonly Zone[];
     firstAssigneeId: string;
@@ -259,7 +261,7 @@ export async function applyTemplate(
         assigneeId: task.onDemand ? null : params.firstAssigneeId,
         intervalDays: task.intervalDays,
         onDemand: task.onDemand,
-        nextDueOn: params.today,
+        nextDueOn: task.firstDueOn ?? params.today,
       }),
     );
   }

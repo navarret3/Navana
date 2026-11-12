@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import { SHOPPING_CATEGORIES } from '@/domain/shopping/categories';
+import { productIcon } from '@/domain/shopping/icons';
 import { ITEM_NAME_MAX } from '@/domain/shopping/normalize';
 import { suggest, type Suggestion } from '@/domain/shopping/suggest';
 import { useShopping } from '@/state/shopping';
@@ -11,9 +11,6 @@ import { Text, colors, minTouchSize, radii, shadows, spacing, typography } from 
 import { useShoppingActions, type AddResult } from './useShoppingActions';
 
 const MESSAGE_MS = 3000;
-
-const iconOf = (categoryId: string) =>
-  SHOPPING_CATEGORIES.find((category) => category.id === categoryId)?.icon ?? '🛒';
 
 /**
  * Barra para añadir a la lista, siempre a mano. Mientras se escribe propone productos
@@ -93,7 +90,7 @@ export function AddBar() {
               accessibilityLabel={suggestion.name}
               onPress={() => pick(suggestion)}
               style={({ pressed }) => [styles.suggestion, pressed && styles.pressed]}>
-              <Text style={styles.suggestionIcon}>{iconOf(suggestion.categoryId)}</Text>
+              <Text style={styles.suggestionIcon}>{productIcon(suggestion.name, suggestion.categoryId)}</Text>
               <Text>{suggestion.name}</Text>
             </Pressable>
           ))}

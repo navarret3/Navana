@@ -2,7 +2,8 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { onDemandTasks } from '@/domain/tasks/today';
+import { TEMPLATE_ON_DEMAND, TEMPLATE_TASKS } from '@/domain/tasks/template';
+import { activeTasks, onDemandTasks } from '@/domain/tasks/today';
 import { useTasks } from '@/state/tasks';
 import { Chip, Text, spacing } from '@/ui';
 
@@ -20,10 +21,18 @@ type QuickLogProps = {
 export function QuickLog({ compact }: QuickLogProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const tasks = onDemandTasks(useTasks((state) => state.tasks));
+  const allTasks = useTasks((state) => state.tasks);
+  const tasks = onDemandTasks(allTasks);
   const { complete } = useTaskActions();
 
   if (compact && tasks.length === 0) return null;
+
+  // "Añadir cosas típicas" se ofrece mientras quede algo de la plantilla que no esté en casa.
+  const existing = new Set(activeTasks(allTasks).map((task) => task.title.toLowerCase()));
+  const templateLeft = [
+    ...TEMPLATE_TASKS.map((task) => t(`tasks.template.tasks.${task.key}`)),
+    ...TEMPLATE_ON_DEMAND.map((task) => t(`tasks.template.onDemand.${task.key}`)),
+  ].some((title) => !existing.has(title.toLowerCase()));
 
   return (
     <View style={styles.root}>
@@ -54,7 +63,7 @@ export function QuickLog({ compact }: QuickLogProps) {
               label={t('tasks.quickLog.add')}
               onPress={() => router.push({ pathname: '/task/new', params: { onDemand: '1' } })}
             />
-            {tasks.length === 0 ? (
+            {templateLeft ? (
               <Chip
                 role="button"
                 icon="🧺"

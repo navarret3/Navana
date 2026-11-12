@@ -120,7 +120,20 @@
       "frequencyLabel": "Frecuencia",
       "repeat": "Se repite",
       "once": "Solo una vez",
-      "everyLabel": "Cada cuántos días",
+      "everyLabel": "Cada cuánto",
+      "customLabel": "Cada cuántos días",
+      "presets": {
+        "1": "A diario",
+        "2": "Cada 2 días",
+        "3": "Cada 3 días",
+        "7": "Cada semana",
+        "14": "Cada 2 semanas",
+        "30": "Cada mes",
+        "custom": "Otro…"
+      },
+      "ideas": "Ideas: toca una y se rellena sola.",
+      "moreOptions": "Más opciones",
+      "moreOptionsHint": "Icono, zona, esfuerzo y cuándo toca la primera vez.",
       "everyHint": "Se cuenta desde la última vez que se hizo.",
       "modeLabel": "Quién la hace",
       "assigneeLabel": "Responsable",
@@ -160,13 +173,8 @@
       "every_one": "Cada día",
       "every_other": "Cada {{count}} días",
       "tasks": {
-        "kitchen": "Limpiar la cocina",
-        "bathroom": "Limpiar el baño",
-        "mop": "Fregar el suelo",
-        "vacuum": "Aspirar",
-        "litter": "Limpiar el arenero",
-        "trash": "Sacar la basura",
-        "sheets": "Cambiar las sábanas"
+        "litter": "Limpiar arenero gatos",
+        "waterBowl": "Limpiar bebedero"
       },
       "zones": {
         "kitchen": "Cocina",
@@ -176,16 +184,30 @@
         "cats": "Gatos",
         "wholeHouse": "Toda la casa"
       },
+      "byTurns": "por turnos",
+      "startsWeekend": "empieza el fin de semana",
+      "nothingLeft": "Ya tenéis en casa todas las tareas de esta lista.",
       "scheduledGroup": "Con frecuencia fija",
       "onDemandGroup": "Cuando surgen",
       "onDemandNote": "Sin fecha: se apuntan cada vez que alguien las hace.",
       "onDemand": {
-        "sweep": "Barrer",
-        "dishes": "Fregar los platos",
-        "dishwasher": "Recoger el lavavajillas",
-        "laundry": "Poner la lavadora",
+        "sweepKitchen": "Barrer cocina",
+        "mopKitchen": "Fregar cocina",
+        "dishes": "Fregar platos",
+        "cook": "Hacer la comida/cena",
+        "sweepHouse": "Barrer la casa",
+        "mopHouse": "Fregar la casa",
+        "sheets": "Cambiar sábanas",
         "hang": "Tender",
-        "unhang": "Destender"
+        "unhang": "Destender",
+        "bathroomSink": "Limpiar fregadero baño",
+        "toilet": "Limpiar váter",
+        "livingRoom": "Limpiar salón",
+        "counter": "Limpiar encimera cocina",
+        "microwave": "Limpiar microondas",
+        "hood": "Limpiar campana",
+        "oven": "Limpiar horno",
+        "fridge": "Limpiar frigorífico"
       }
     },
     "history": {
@@ -288,6 +310,11 @@
     "goToToday": "Ir a hoy",
     "upcoming": "Próximos",
     "nothingThisDay": "Nada apuntado para este día.",
+    "filter": {
+      "label": "Ver",
+      "all": "Todo",
+      "nothingThisDay": "Nada de esta selección para este día."
+    },
     "countdown": {
       "ongoing": "En curso",
       "today": "Hoy",
@@ -326,15 +353,15 @@
       "yearlyNote": "Se repite cada año, todo el día.",
       "participantsLabel": "De quién es",
       "remindersLabel": "Recordármelo",
-      "locationLabel": "Lugar",
-      "notesLabel": "Notas",
+      "moreOptions": "Hora y recordatorios",
+      "moreOptionsHint": "Por defecto: todo el día, con aviso el día antes.",
       "titleRequired": "Ponle un título.",
       "timeInvalid": "Escribe la hora así: 18:30.",
       "endBeforeStart": "El último día no puede ser anterior al primero.",
       "create": "Crear evento",
       "delete": "Eliminar evento",
       "participantsHint": "Los recordatorios solo le saltan a quien le concierne.",
-      "participantsAlone": "Cuando tu pareja se una al hogar podrás indicar aquí si el evento es de uno, del otro o de los dos."
+      "participantsAlone": "Cuando tu pareja se una al hogar, también podrás elegirla aquí."
     },
     "reminders": {
       "timed": {

@@ -41,17 +41,12 @@ export function useEventText() {
       ? (members.find((member) => member.uid === event.participants[0]) ?? null)
       : null;
 
-  /**
-   * "Los dos" (o "Todos"), o el nombre de la persona a la que pertenece.
-   * `null` mientras solo hay una persona en el hogar: no hay nada que distinguir.
-   */
-  const whose = (event: Pick<AgendaEvent, 'participants'>): string | null => {
-    if (members.length < 2) return null;
-    return (
-      owner(event)?.name ??
-      (members.length === 2 ? t('agenda.whose.both') : t('agenda.whose.everyone'))
-    );
-  };
+  /** "Los dos" (o "Todos" si en el hogar hay más de dos personas). */
+  const sharedLabel = members.length > 2 ? t('agenda.whose.everyone') : t('agenda.whose.both');
 
-  return { day, when, countdown, owner, whose };
+  /** De quién es: el nombre de la persona, o "Los dos". */
+  const whose = (event: Pick<AgendaEvent, 'participants'>): string =>
+    owner(event)?.name ?? sharedLabel;
+
+  return { day, when, countdown, owner, whose, sharedLabel };
 }

@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { SHOPPING_CATEGORIES, type CategoryId } from '@/domain/shopping/categories';
+import { SHOPPING_CATEGORIES } from '@/domain/shopping/categories';
+import { categoryIcon, productIcon } from '@/domain/shopping/icons';
 import { frequentProducts, groupByCategory, recentProducts } from '@/domain/shopping/suggest';
 import type { ShoppingItem } from '@/domain/shopping/types';
 import { AddBar } from '@/features/shopping/AddBar';
@@ -21,9 +22,6 @@ import {
   maxContentWidth,
   spacing,
 } from '@/ui';
-
-const categoryIcon = (id: CategoryId) =>
-  SHOPPING_CATEGORIES.find((category) => category.id === id)?.icon ?? '🛒';
 
 export default function ShoppingScreen() {
   const { t } = useTranslation();
@@ -81,7 +79,7 @@ export default function ShoppingScreen() {
                     <Chip
                       key={entry.key}
                       role="button"
-                      icon={categoryIcon(entry.categoryId)}
+                      icon={productIcon(entry.name, entry.categoryId)}
                       label={entry.name}
                       onPress={() => add(entry.name, entry.categoryId)}
                     />

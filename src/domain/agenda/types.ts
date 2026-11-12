@@ -69,6 +69,39 @@ export function isValidTime(value: string): boolean {
   return TIME_PATTERN.test(value);
 }
 
+/** "De quién es" cuando el evento es de todo el hogar (de los dos). */
+export const EVERYONE = 'everyone';
+
+/** Valor del filtro de la agenda que no descarta nada. */
+export const ALL_OWNERS = 'all';
+
+/**
+ * De quién es el evento: el `uid` de una persona del hogar o `EVERYONE`. Lo que no señala a
+ * una sola persona, o señala a alguien que ya no está en el hogar, es de todos.
+ */
+export function ownerOf(
+  event: Pick<AgendaEvent, 'participants'>,
+  memberIds: readonly string[],
+): string {
+  const [only] = event.participants;
+  return event.participants.length === 1 && only !== undefined && memberIds.includes(only)
+    ? only
+    : EVERYONE;
+}
+
+/**
+ * Filtro de la agenda por persona. `owner` es `ALL_OWNERS`, `EVERYONE` (solo lo que es de
+ * los dos) o el `uid` de una persona (solo lo que es suyo).
+ */
+export function filterByOwner<T extends Pick<AgendaEvent, 'participants'>>(
+  events: readonly T[],
+  owner: string,
+  memberIds: readonly string[],
+): T[] {
+  if (owner === ALL_OWNERS) return [...events];
+  return events.filter((event) => ownerOf(event, memberIds) === owner);
+}
+
 /** ¿Le concierne el evento a esta persona? */
 export function involves(event: Pick<AgendaEvent, 'participants'>, uid: string): boolean {
   return event.participants.length === 0 || event.participants.includes(uid);

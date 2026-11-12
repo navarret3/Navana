@@ -41,11 +41,9 @@ export function EventRow({ occurrence, today, onPress }: EventRowProps) {
           {when(occurrence)}
           {event.location ? ` · ${event.location}` : ''}
         </Text>
-        {whoseLabel ? (
-          <Text variant="caption" color="inkMuted">
-            {whoseLabel}
-          </Text>
-        ) : null}
+        <Text variant="caption" color="inkMuted">
+          {whoseLabel}
+        </Text>
       </View>
       <View style={styles.side}>
         {person ? (

@@ -20,6 +20,7 @@ export default function NewTaskScreen() {
   const members = useSession((state) => state.members);
   const uid = useSession((state) => state.user?.uid);
   const zones = useTasks((state) => state.zones);
+  const tasks = useTasks((state) => state.tasks);
 
   if (!household || !uid) return null;
 
@@ -48,6 +49,8 @@ export default function NewTaskScreen() {
         zones={zones}
         members={members}
         submitLabel={t('tasks.form.create')}
+        isNew
+        existingTitles={tasks.filter((task) => !task.archived).map((task) => task.title)}
         onSubmit={create}
       />
     </Screen>

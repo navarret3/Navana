@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { daysOf, occurrencesBetween, upcomingOccurrences } from '@/domain/agenda/occurrences';
-import type { Occurrence } from '@/domain/agenda/types';
+import { ALL_OWNERS, EVERYONE, filterByOwner, type Occurrence } from '@/domain/agenda/types';
 import { addDays, monthMatrix, toDateKey, yearMonthOf, type DateKey } from '@/domain/dates';
 import { EVENT_COLORS, EventRow } from '@/features/agenda/EventRow';
 import { useEventText } from '@/features/agenda/eventText';
 import { useAgenda } from '@/state/agenda';
-import { Card, Chip, MonthGrid, Screen, Text, colors, shadows, spacing } from '@/ui';
+import { useSession } from '@/state/session';
+import { Card, Chip, ChipGroup, MonthGrid, Screen, Text, colors, shadows, spacing } from '@/ui';
 
 /** Cuántos eventos se enseñan en "Próximos". */
 const UPCOMING_LIMIT = 12;
@@ -17,12 +18,21 @@ const UPCOMING_LIMIT = 12;
 export default function AgendaScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const events = useAgenda((state) => state.events);
-  const { day } = useEventText();
+  const allEvents = useAgenda((state) => state.events);
+  const members = useSession((state) => state.members);
+  const { day, sharedLabel } = useEventText();
 
   const today = toDateKey(new Date());
   const [month, setMonth] = useState(() => yearMonthOf(today));
   const [selected, setSelected] = useState<DateKey>(today);
+  // De quién se ven los eventos: de todos, solo los compartidos o solo los de una persona.
+  const [owner, setOwner] = useState<string>(ALL_OWNERS);
+
+  const memberIds = members.map((member) => member.uid);
+  // Si la persona elegida deja el hogar, el filtro vuelve a enseñarlo todo.
+  const activeOwner =
+    owner === ALL_OWNERS || owner === EVERYONE || memberIds.includes(owner) ? owner : ALL_OWNERS;
+  const events = filterByOwner(allEvents, activeOwner, memberIds);
 
   // Lo que cae en las semanas que se ven, para pintar los puntos del calendario.
   const weeks = monthMatrix(month);
@@ -77,6 +87,21 @@ export default function AgendaScreen() {
         ) : null}
       </View>
 
+      <ChipGroup<string>
+        label={t('agenda.filter.label')}
+        options={[
+          { value: ALL_OWNERS, label: t('agenda.filter.all') },
+          { value: EVERYONE, label: sharedLabel, icon: '👥' },
+          ...members.map((member) => ({
+            value: member.uid,
+            label: member.name,
+            icon: member.avatar,
+          })),
+        ]}
+        value={activeOwner}
+        onChange={setOwner}
+      />
+
       <Card>
         <MonthGrid
           month={month}
@@ -91,7 +116,9 @@ export default function AgendaScreen() {
       <Card>
         <Text variant="heading">{selectedLabel}</Text>
         {onSelectedDay.length === 0 ? (
-          <Text color="inkSoft">{t('agenda.nothingThisDay')}</Text>
+          <Text color="inkSoft">
+            {t(activeOwner === ALL_OWNERS ? 'agenda.nothingThisDay' : 'agenda.filter.nothingThisDay')}
+          </Text>
         ) : (
           onSelectedDay.map((occurrence) => (
             <EventRow
@@ -105,7 +132,7 @@ export default function AgendaScreen() {
       </Card>
 
       {/* Con la agenda vacía se explica para qué sirve; si no queda nada más que enseñar, se omite. */}
-      {events.length === 0 || upcoming.length > 0 ? (
+      {allEvents.length === 0 || upcoming.length > 0 ? (
         <Card tone="sage">
           <Text variant="heading">{t('agenda.upcoming')}</Text>
           {upcoming.length === 0 ? (

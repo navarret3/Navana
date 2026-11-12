@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { applyTemplate } from '@/data/tasks';
-import { toDateKey } from '@/domain/dates';
+import { toDateKey, upcomingWeekend, type DateKey } from '@/domain/dates';
 import {
   TEMPLATE_ON_DEMAND,
   TEMPLATE_TASKS,
@@ -36,6 +36,7 @@ type Row = {
   effort: 1 | 2 | 3;
   intervalDays: number | null;
   onDemand: boolean;
+  firstDueOn?: DateKey;
 };
 
 export default function TaskTemplateScreen() {
@@ -48,16 +49,27 @@ export default function TaskTemplateScreen() {
     activeTasks(useTasks((state) => state.tasks)).map((task) => task.title.toLowerCase()),
   );
 
-  const scheduled: Row[] = TEMPLATE_TASKS.map((task) => ({
-    id: `scheduled:${task.key}`,
-    title: t(`tasks.template.tasks.${task.key}`),
-    detail: `${t('tasks.template.every', { count: task.intervalDays })} · ${t(`tasks.template.zones.${task.zone}`)}`,
-    icon: task.icon,
-    zone: task.zone,
-    effort: task.effort,
-    intervalDays: task.intervalDays,
-    onDemand: false,
-  }));
+  const today = toDateKey(new Date());
+  const scheduled: Row[] = TEMPLATE_TASKS.map((task) => {
+    const weekend = 'starts' in task && task.starts === 'weekend';
+    return {
+      id: `scheduled:${task.key}`,
+      title: t(`tasks.template.tasks.${task.key}`),
+      detail: [
+        t('tasks.template.every', { count: task.intervalDays }),
+        t('tasks.template.byTurns'),
+        weekend ? t('tasks.template.startsWeekend') : null,
+      ]
+        .filter(Boolean)
+        .join(' · '),
+      icon: task.icon,
+      zone: task.zone,
+      effort: task.effort,
+      intervalDays: task.intervalDays,
+      onDemand: false,
+      firstDueOn: weekend ? upcomingWeekend(today) : today,
+    };
+  });
   const onDemand: Row[] = TEMPLATE_ON_DEMAND.map((task) => ({
     id: `onDemand:${task.key}`,
     title: t(`tasks.template.onDemand.${task.key}`),
@@ -110,10 +122,11 @@ export default function TaskTemplateScreen() {
         effort: row.effort,
         intervalDays: row.intervalDays,
         onDemand: row.onDemand,
+        firstDueOn: row.firstDueOn,
       })),
       existingZones: zones,
       firstAssigneeId: uid,
-      today: toDateKey(new Date()),
+      today,
     }).catch(saveFailed('No se ha podido añadir la plantilla'));
     goBack();
   };
@@ -121,7 +134,9 @@ export default function TaskTemplateScreen() {
   return (
     <Screen edges={['top', 'bottom']}>
       <ScreenHeader title={t('tasks.template.title')} />
-      <Text color="inkSoft">{t('tasks.template.subtitle')}</Text>
+      <Text color="inkSoft">
+        {available.length > 0 ? t('tasks.template.subtitle') : t('tasks.template.nothingLeft')}
+      </Text>
 
       {groups.map((group) => (
         <Card key={group.title}>
@@ -162,7 +177,11 @@ export default function TaskTemplateScreen() {
         disabled={chosen.length === 0}
         onPress={add}
       />
-      <Button variant="ghost" label={t('tasks.template.skip')} onPress={goBack} />
+      <Button
+        variant="ghost"
+        label={available.length > 0 ? t('tasks.template.skip') : t('common.back')}
+        onPress={goBack}
+      />
     </Screen>
   );
 }
