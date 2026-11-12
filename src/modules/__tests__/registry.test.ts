@@ -7,6 +7,13 @@ describe('registro de módulos', () => {
 
   it('muestra los módulos por defecto cuando el hogar no ha guardado nada', () => {
     expect(getEnabledModules({}).map((module) => module.id)).toEqual(['tasks', 'shopping', 'agenda']);
+    expect(getEnabledModules({ notes: true, menu: true }).map((module) => module.id)).toEqual([
+      'tasks',
+      'shopping',
+      'agenda',
+      'menu',
+      'notes',
+    ]);
   });
 
   it('oculta los módulos desactivados y conserva el orden del registro', () => {

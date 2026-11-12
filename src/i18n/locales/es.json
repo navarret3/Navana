@@ -1,13 +1,54 @@
 {
   "common": {
     "appName": "Navana",
-    "back": "Volver"
+    "back": "Volver",
+    "save": "Guardar",
+    "genericError": "Algo ha fallado. Comprueba la conexión e inténtalo de nuevo.",
+    "cancel": "Cancelar",
+    "loadingSlow": "Está tardando más de lo normal. Comprueba la conexión; si sigue igual, cierra sesión y vuelve a entrar.",
+    "saveFailed": "No se ha podido guardar el último cambio y se ha deshecho. Inténtalo de nuevo.",
+    "formerMember": "Antiguo miembro"
   },
   "tabs": {
     "today": "Hoy",
     "tasks": "Tareas",
     "shopping": "Compra",
-    "agenda": "Agenda"
+    "agenda": "Agenda",
+    "notes": "Notas",
+    "menu": "Menú"
+  },
+  "auth": {
+    "tagline": "Vuestra casa, en orden y sin dramas.",
+    "google": "Continuar con Google",
+    "testUsersTitle": "Usuarios de prueba",
+    "testUsersHint": "Vista web de desarrollo: se entra contra los emuladores, sin cuentas reales.",
+    "signInAs": "Entrar como {{name}}",
+    "error": "No se ha podido iniciar sesión. Inténtalo de nuevo.",
+    "signOut": "Cerrar sesión"
+  },
+  "onboarding": {
+    "title": "¡Hola, {{name}}!",
+    "titleNoName": "¡Hola!",
+    "subtitle": "Para empezar, crea vuestro hogar o únete al de tu pareja.",
+    "defaultMemberName": "Compi",
+    "create": {
+      "tab": "Crear un hogar",
+      "nameLabel": "Nombre del hogar",
+      "namePlaceholder": "Nuestra casa",
+      "iconLabel": "Icono",
+      "submit": "Crear hogar",
+      "nameRequired": "Ponle un nombre al hogar."
+    },
+    "join": {
+      "tab": "Tengo un código",
+      "codeLabel": "Código de invitación",
+      "codePlaceholder": "K7M4QX",
+      "hint": "Te lo pasa quien ya está en el hogar. También vale pegar el enlace.",
+      "submit": "Unirme",
+      "invalid": "Ese código no tiene buena pinta: son 6 letras y números.",
+      "notFound": "No hay ninguna invitación con ese código.",
+      "expired": "Esa invitación ha caducado. Pide una nueva."
+    }
   },
   "today": {
     "greeting": {
@@ -26,11 +67,156 @@
     "description": "Tareas de casa y a quién le tocan",
     "empty": {
       "title": "Ni una tarea a la vista",
-      "description": "Cuando añadáis las tareas de casa aparecerán aquí, repartidas entre los dos."
+      "description": "Cuando añadáis las tareas de casa aparecerán aquí, repartidas entre los dos.",
+      "useTemplate": "Añadir tareas típicas",
+      "createOwn": "Crear una tarea"
     },
     "todayCard": {
       "title": "Tareas de hoy",
-      "empty": "Nada pendiente. Hasta los gatos aprueban esta calma."
+      "empty": "Nada pendiente. Hasta los gatos aprueban esta calma.",
+      "free": "Libres, de quien las coja",
+      "others_one": "{{count}} tarea de los demás",
+      "others_other": "{{count}} tareas de los demás",
+      "seeAll": "Ver todas las tareas"
+    },
+    "add": "Nueva tarea",
+    "noZone": "Sin zona",
+    "due": {
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "overdue_one": "Atrasada {{count}} día",
+      "overdue_other": "Atrasada {{count}} días",
+      "upcoming_one": "En {{count}} día",
+      "upcoming_other": "En {{count}} días"
+    },
+    "mode": {
+      "fixed": "Fija",
+      "rotation": "Por turnos",
+      "free": "Libre"
+    },
+    "modeHint": {
+      "fixed": "Siempre la hace la misma persona.",
+      "rotation": "Os la vais turnando: al hacerla, pasa al otro.",
+      "free": "No es de nadie: la hace quien la coja."
+    },
+    "effort": {
+      "label": "Esfuerzo",
+      "1": "Poco",
+      "2": "Normal",
+      "3": "Mucho"
+    },
+    "assignee": {
+      "free": "Libre",
+      "yours": "Te toca",
+      "turnOf": "Le toca a {{name}}"
+    },
+    "form": {
+      "newTitle": "Nueva tarea",
+      "editTitle": "Editar tarea",
+      "titleLabel": "Qué hay que hacer",
+      "titlePlaceholder": "Regar las plantas",
+      "iconLabel": "Icono",
+      "zoneLabel": "Zona",
+      "frequencyLabel": "Frecuencia",
+      "repeat": "Se repite",
+      "once": "Solo una vez",
+      "everyLabel": "Cada cuántos días",
+      "everyHint": "Se cuenta desde la última vez que se hizo.",
+      "modeLabel": "Quién la hace",
+      "assigneeLabel": "Responsable",
+      "firstTurnLabel": "Empieza",
+      "titleRequired": "Escribe qué hay que hacer.",
+      "intervalInvalid": "Pon un número de días entre 1 y 365.",
+      "create": "Crear tarea",
+      "onDemand": "Cuando surja",
+      "onDemandHint": "No tiene fecha ni turno: se apunta cada vez que alguien la hace.",
+      "dueLabel": "Cuándo toca"
+    },
+    "actions": {
+      "complete": "Marcar como hecha: {{title}}",
+      "iDidIt": "La hice yo",
+      "markDone": "Marcar como hecha",
+      "postpone": "Posponer",
+      "archive": "Eliminar tarea",
+      "undo": "Deshacer",
+      "done": "Hecho: {{title}}",
+      "history": "Historial",
+      "balance": "Balance",
+      "nudge": "Dar un toque",
+      "nudgeSent": "Toque enviado"
+    },
+    "postpone": {
+      "title": "Posponer hasta…",
+      "tomorrow": "Mañana",
+      "threeDays": "Dentro de 3 días",
+      "week": "Dentro de una semana"
+    },
+    "template": {
+      "title": "Tareas típicas",
+      "subtitle": "Marca lo que hacéis en casa. Podréis cambiarlo luego.",
+      "submit_one": "Añadir {{count}} tarea",
+      "submit_other": "Añadir {{count}} tareas",
+      "skip": "Ahora no",
+      "every_one": "Cada día",
+      "every_other": "Cada {{count}} días",
+      "tasks": {
+        "kitchen": "Limpiar la cocina",
+        "bathroom": "Limpiar el baño",
+        "mop": "Fregar el suelo",
+        "vacuum": "Aspirar",
+        "litter": "Limpiar el arenero",
+        "trash": "Sacar la basura",
+        "sheets": "Cambiar las sábanas"
+      },
+      "zones": {
+        "kitchen": "Cocina",
+        "bathroom": "Baño",
+        "livingRoom": "Salón",
+        "bedroom": "Dormitorio",
+        "cats": "Gatos",
+        "wholeHouse": "Toda la casa"
+      },
+      "scheduledGroup": "Con frecuencia fija",
+      "onDemandGroup": "Cuando surgen",
+      "onDemandNote": "Sin fecha: se apuntan cada vez que alguien las hace.",
+      "onDemand": {
+        "sweep": "Barrer",
+        "dishes": "Fregar los platos",
+        "dishwasher": "Recoger el lavavajillas",
+        "laundry": "Poner la lavadora",
+        "hang": "Tender",
+        "unhang": "Destender"
+      }
+    },
+    "history": {
+      "title": "Historial",
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "empty": {
+        "title": "Aún no hay nada hecho",
+        "description": "Lo que vayáis completando aparecerá aquí, con quién lo hizo."
+      }
+    },
+    "balance": {
+      "title": "Balance",
+      "week": "Esta semana",
+      "month": "Este mes",
+      "intro": "Cómo se ha repartido el esfuerzo de casa. No es una competición: es para veros.",
+      "empty": "Todavía no hay tareas hechas en este periodo.",
+      "count_one": "{{count}} tarea",
+      "count_other": "{{count}} tareas",
+      "byZone": "Por zonas",
+      "even": "Vais muy a la par.",
+      "uneven": "Esta vez {{name}} ha cargado con más."
+    },
+    "quickLog": {
+      "title": "Apuntar algo hecho",
+      "titleShort": "Apuntar algo hecho",
+      "hint": "Lo que surge sin planear. Toca lo que acabas de hacer y queda apuntado a tu nombre.",
+      "empty": "Para lo que hacéis cuando surge, sin fecha: barrer, tender, fregar los platos… Añádelo aquí y luego bastará un toque para apuntarlo.",
+      "add": "Añadir",
+      "addTypical": "Añadir cosas típicas",
+      "editHint": "Mantén pulsada una para editarla o eliminarla."
     }
   },
   "shopping": {
@@ -38,12 +224,51 @@
     "description": "Una lista compartida, también sin cobertura",
     "empty": {
       "title": "La lista está vacía",
-      "description": "Apuntad aquí lo que falte y lo veréis los dos al momento."
+      "description": "Apuntad arriba lo que falte y lo veréis los dos al momento."
     },
     "todayCard": {
       "title": "Lista de la compra",
-      "empty": "No hace falta nada por ahora."
-    }
+      "empty": "No hace falta nada por ahora.",
+      "count_one": "{{count}} cosa por comprar",
+      "count_other": "{{count}} cosas por comprar",
+      "more": "y {{count}} más",
+      "open": "Ver la lista"
+    },
+    "addPlaceholder": "Añadir a la lista…",
+    "addLabel": "Producto",
+    "add": "Añadir",
+    "added": "Añadido: {{name}}",
+    "restored": "De vuelta en la lista: {{name}}",
+    "alreadyThere": "{{name}} ya está en la lista.",
+    "frequent": "Frecuentes",
+    "pendingCount_one": "{{count}} pendiente",
+    "pendingCount_other": "{{count}} pendientes",
+    "checkedTitle_one": "En el carro ({{count}})",
+    "checkedTitle_other": "En el carro ({{count}})",
+    "finish": "Terminar compra",
+    "finishHint": "Quita de la lista lo que ya está en el carro.",
+    "allChecked": "¡Todo en el carro!",
+    "check": "Tachar {{name}}",
+    "uncheck": "Recuperar {{name}}",
+    "options": "Opciones de {{name}}",
+    "changeCategory": "Cambiar de categoría",
+    "chooseCategory": "¿En qué sección va?",
+    "remove": "Quitar de la lista",
+    "categories": {
+      "produce": "Fruta y verdura",
+      "bakery": "Panadería",
+      "meatFish": "Carne y pescado",
+      "dairy": "Lácteos y huevos",
+      "pantry": "Despensa",
+      "snacks": "Desayuno y dulces",
+      "drinks": "Bebidas",
+      "frozen": "Congelados",
+      "cleaning": "Limpieza",
+      "hygiene": "Higiene",
+      "pets": "Mascotas",
+      "other": "Otros"
+    },
+    "recent": "Comprado hace poco"
   },
   "agenda": {
     "title": "Agenda",
@@ -54,11 +279,107 @@
     },
     "todayCard": {
       "title": "Próximo plan",
-      "empty": "No hay planes a la vista. ¿Sofá y manta?"
+      "empty": "No hay planes a la vista. ¿Sofá y manta?",
+      "open": "Ver la agenda"
+    },
+    "add": "Nuevo evento",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "goToToday": "Ir a hoy",
+    "upcoming": "Próximos",
+    "nothingThisDay": "Nada apuntado para este día.",
+    "countdown": {
+      "ongoing": "En curso",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "days_one": "Falta {{count}} día",
+      "days_other": "Faltan {{count}} días"
+    },
+    "types": {
+      "plan": "Plan",
+      "appointment": "Cita o gestión",
+      "birthday": "Cumpleaños"
+    },
+    "typeHints": {
+      "plan": "Algo que hacéis juntos: una cena, una escapada, un concierto.",
+      "appointment": "Veterinario, médico, una factura, un trámite.",
+      "birthday": "Se repite cada año, todo el día."
+    },
+    "form": {
+      "newTitle": "Nuevo evento",
+      "editTitle": "Editar evento",
+      "typeLabel": "Qué es",
+      "titleLabel": "Título",
+      "titlePlaceholder": {
+        "plan": "Cena con amigos",
+        "appointment": "Veterinario",
+        "birthday": "Cumple de…"
+      },
+      "dateLabel": "Día",
+      "allDay": "Todo el día",
+      "timeLabel": "Hora",
+      "severalDays": "Dura varios días",
+      "endDateLabel": "Hasta",
+      "participantsLabel": "De quién es",
+      "remindersLabel": "Recordármelo",
+      "locationLabel": "Lugar",
+      "notesLabel": "Notas",
+      "titleRequired": "Ponle un título.",
+      "timeInvalid": "Escribe la hora así: 18:30.",
+      "endBeforeStart": "El último día no puede ser anterior al primero.",
+      "create": "Crear evento",
+      "delete": "Eliminar evento",
+      "participantsHint": "Los recordatorios solo le saltan a quien le concierne.",
+      "participantsAlone": "Cuando tu pareja se una al hogar podrás indicar aquí si el evento es de uno, del otro o de los dos."
+    },
+    "reminders": {
+      "timed": {
+        "0": "A la hora",
+        "60": "1 hora antes",
+        "1440": "1 día antes"
+      },
+      "allDay": {
+        "0": "Ese día a las 9:00",
+        "1440": "El día antes",
+        "10080": "Una semana antes"
+      }
+    },
+    "whose": {
+      "both": "Los dos",
+      "everyone": "Todos"
     }
   },
   "settings": {
     "title": "Ajustes",
+    "profile": {
+      "title": "Mi perfil",
+      "edit": "Editar perfil",
+      "nameLabel": "Nombre",
+      "avatarLabel": "Avatar",
+      "colorLabel": "Color",
+      "nameRequired": "Escribe tu nombre."
+    },
+    "household": {
+      "title": "Hogar",
+      "edit": "Editar hogar",
+      "nameLabel": "Nombre del hogar",
+      "iconLabel": "Icono",
+      "nameRequired": "Ponle un nombre al hogar.",
+      "members": "Miembros",
+      "you": "Tú",
+      "invite": "Invitar a alguien"
+    },
+    "invite": {
+      "title": "Invitar al hogar",
+      "explain": "Pásale este código a tu pareja. Lo escribe al abrir Navana por primera vez.",
+      "creating": "Preparando la invitación…",
+      "expires": "Caduca el {{date}}",
+      "share": "Compartir",
+      "copy": "Copiar código",
+      "copied": "Código copiado",
+      "newCode": "Generar otro código",
+      "shareMessage": "Únete a «{{household}}» en Navana con el código {{code}}.\nSi ya tienes la app instalada: {{link}}"
+    },
     "modules": {
       "title": "Módulos",
       "description": "Elegid qué partes de Navana usáis en casa."
@@ -76,6 +397,156 @@
         "unreachable": "Sin conexión"
       },
       "check": "Comprobar conexión"
+    },
+    "zones": {
+      "title": "Zonas",
+      "edit": "Organizar las zonas de la casa",
+      "new": "Nueva zona",
+      "editing": "Editar zona",
+      "nameLabel": "Nombre de la zona",
+      "iconLabel": "Icono",
+      "add": "Añadir zona",
+      "delete": "Eliminar zona",
+      "inUse": "Hay tareas en esta zona. Cámbialas de zona antes de eliminarla.",
+      "nameRequired": "Ponle un nombre a la zona.",
+      "empty": "Aún no hay zonas.",
+      "move": {
+        "up": "Subir {{name}}",
+        "down": "Bajar {{name}}"
+      },
+      "editZone": "Editar {{name}}"
+    },
+    "notifications": {
+      "title": "Avisos",
+      "edit": "Qué avisos recibes y a qué hora",
+      "dailySummary": "Resumen diario",
+      "dailySummaryHint": "Por la mañana, lo que te toca ese día.",
+      "summaryHour": "Hora del resumen",
+      "overdue": "Tareas atrasadas",
+      "overdueHint": "A las 19:00, si se te ha quedado algo.",
+      "partnerCompleted": "Cuando el otro completa",
+      "partnerCompletedHint": "Un aviso cuando tu pareja hace una tarea.",
+      "nudges": "Toques",
+      "nudgesHint": "Que te puedan dar un toque por una tarea.",
+      "denied": "Android tiene bloqueados los avisos de Navana. Hay que activarlos en los ajustes del sistema.",
+      "unsupported": "Los avisos solo funcionan en el móvil.",
+      "enable": "Activar avisos",
+      "granted": "Avisos activados en este móvil.",
+      "askable": "Navana todavía no tiene permiso para mostrarte avisos en este móvil.",
+      "openSettings": "Abrir ajustes de Android",
+      "pushReady": "Push entre móviles: listo.",
+      "pushMissing": "Push entre móviles: este móvil aún no tiene token.",
+      "error": "No se han podido activar los avisos."
+    },
+    "account": {
+      "title": "Cuenta",
+      "leave": "Salir del hogar",
+      "leaveConfirm": "¿Salir de «{{name}}»? Dejarás de ver sus tareas, su compra y su agenda.",
+      "delete": "Eliminar mi cuenta",
+      "deleteConfirm": "¿Eliminar tu cuenta? Se borran tu perfil y tu acceso, y sales del hogar. No se puede deshacer.",
+      "error": "No se ha podido completar. Comprueba la conexión e inténtalo de nuevo."
+    }
+  },
+  "notifications": {
+    "summary": {
+      "title": "Hoy en casa",
+      "body_one": "Te toca {{count}} tarea: {{first}}.",
+      "body_other": "Te tocan {{count}} tareas. La primera: {{first}}."
+    },
+    "overdue": {
+      "title": "Se ha quedado algo pendiente",
+      "body_one": "Sigue esperando: {{first}}.",
+      "body_other": "Tienes {{count}} tareas atrasadas, como {{first}}."
+    },
+    "completed": {
+      "title": "{{name}} ha hecho una tarea",
+      "body": "{{icon}} {{title}}"
+    },
+    "nudge": {
+      "title": "{{name}} te da un toque 🐾",
+      "body": "{{icon}} {{title}}"
+    },
+    "event": {
+      "timed": {
+        "0": "Empieza ahora",
+        "60": "Dentro de 1 hora",
+        "1440": "Mañana"
+      },
+      "allDay": {
+        "0": "Es hoy",
+        "1440": "Es mañana",
+        "10080": "Dentro de una semana"
+      },
+      "fallback": "Recordatorio"
+    }
+  },
+  "calendar": {
+    "previousMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente"
+  },
+  "notes": {
+    "title": "Notas",
+    "description": "Lo que conviene tener apuntado entre los dos",
+    "add": "Nueva nota",
+    "empty": {
+      "title": "Ninguna nota todavía",
+      "description": "La clave del wifi, el teléfono del veterinario, lo que no queréis olvidar."
+    },
+    "todayCard": {
+      "title": "Notas fijadas",
+      "empty": "Fija una nota para tenerla aquí a la vista.",
+      "open": "Ver las notas"
+    },
+    "form": {
+      "newTitle": "Nueva nota",
+      "editTitle": "Editar nota",
+      "titleLabel": "Título",
+      "bodyLabel": "Nota",
+      "pinned": "Fijar",
+      "pinnedHint": "Va arriba del todo y sale en Hoy.",
+      "empty": "Escribe algo antes de guardar.",
+      "delete": "Eliminar nota"
+    }
+  },
+  "menu": {
+    "title": "Menú",
+    "description": "Qué se come cada día, con sus ingredientes a la compra",
+    "empty": {
+      "title": "Sin menú esta semana",
+      "description": "Apunta qué vais a comer y cenar."
+    },
+    "todayCard": {
+      "title": "Menú de hoy",
+      "empty": "No hay nada planeado para hoy.",
+      "open": "Ver el menú de la semana"
+    },
+    "today": "hoy",
+    "thisWeek": "Esta semana",
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Semana siguiente",
+    "weekOf": "Semana del {{date}}",
+    "emptySlot": "Sin planear",
+    "slots": {
+      "lunch": "Comida",
+      "dinner": "Cena"
+    },
+    "addedToShopping_one": "Añadido {{count}} producto a la lista de la compra.",
+    "addedToShopping_other": "Añadidos {{count}} productos a la lista de la compra.",
+    "shopping": {
+      "title": "Ingredientes",
+      "pending_one": "Falta {{count}} ingrediente por apuntar en la compra:",
+      "pending_other": "Faltan {{count}} ingredientes por apuntar en la compra:",
+      "nothing": "Todo lo que hace falta ya está en la lista de la compra, o no hay ingredientes apuntados.",
+      "send": "Pasar a la compra"
+    },
+    "form": {
+      "titleLabel": "Qué vais a comer",
+      "titlePlaceholder": "Lentejas con chorizo",
+      "ingredientsLabel": "Ingredientes",
+      "ingredientsPlaceholder": "lentejas, zanahorias, chorizo",
+      "ingredientsHint": "Separados por comas o uno por línea. Luego se pueden pasar a la compra.",
+      "empty": "Escribe el plato o algún ingrediente.",
+      "clear": "Vaciar"
     }
   }
 }

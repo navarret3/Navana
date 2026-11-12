@@ -1,18 +1,165 @@
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { EmptyState, Screen, Text } from '@/ui';
+import { daysOf, occurrencesBetween, upcomingOccurrences } from '@/domain/agenda/occurrences';
+import type { Occurrence } from '@/domain/agenda/types';
+import { addDays, monthMatrix, toDateKey, yearMonthOf, type DateKey } from '@/domain/dates';
+import { EVENT_COLORS, EventRow } from '@/features/agenda/EventRow';
+import { useEventText } from '@/features/agenda/eventText';
+import { useAgenda } from '@/state/agenda';
+import { Card, Chip, MonthGrid, Screen, Text, colors, shadows, spacing } from '@/ui';
 
-// Fase 4: vista de mes, próximos, recordatorios y cuenta atrás.
+/** Cuántos eventos se enseñan en "Próximos". */
+const UPCOMING_LIMIT = 12;
+
 export default function AgendaScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const events = useAgenda((state) => state.events);
+  const { day } = useEventText();
+
+  const today = toDateKey(new Date());
+  const [month, setMonth] = useState(() => yearMonthOf(today));
+  const [selected, setSelected] = useState<DateKey>(today);
+
+  // Lo que cae en las semanas que se ven, para pintar los puntos del calendario.
+  const weeks = monthMatrix(month);
+  const firstVisible = weeks[0]?.[0] ?? today;
+  const lastVisible = weeks.at(-1)?.[6] ?? today;
+  const marks: Record<DateKey, string[]> = {};
+  for (const occurrence of occurrencesBetween(events, firstVisible, lastVisible)) {
+    for (const date of daysOf(occurrence)) {
+      (marks[date] ??= []).push(EVENT_COLORS[occurrence.event.type]);
+    }
+  }
+
+  const onSelectedDay = occurrencesBetween(events, selected, selected);
+  // Lo que ya se ve en la tarjeta del día elegido no se repite debajo en "Próximos".
+  const shownAbove = new Set(onSelectedDay.map((occurrence) => occurrence.event.id));
+  const upcoming = upcomingOccurrences(events, today)
+    .filter((occurrence) => !shownAbove.has(occurrence.event.id))
+    .slice(0, UPCOMING_LIMIT);
+
+  const open = ({ event }: Occurrence) =>
+    router.push({ pathname: '/event/[id]', params: { id: event.id } });
+
+  const goToToday = () => {
+    setMonth(yearMonthOf(today));
+    setSelected(today);
+  };
+
+  const selectedLabel =
+    selected === today
+      ? t('agenda.today')
+      : selected === addDays(today, 1)
+        ? t('agenda.tomorrow')
+        : day(selected);
+
   return (
-    <Screen scroll={false}>
-      <Text variant="title">{t('agenda.title')}</Text>
-      <EmptyState
-        icon="📅"
-        title={t('agenda.empty.title')}
-        description={t('agenda.empty.description')}
-      />
+    <Screen
+      floating={
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('agenda.add')}
+          onPress={() => router.push({ pathname: '/event/new', params: { date: selected } })}
+          style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}>
+          <Text style={styles.fabIcon}>＋</Text>
+        </Pressable>
+      }>
+      <View style={styles.header}>
+        <Text variant="title" accessibilityRole="header" style={styles.title}>
+          {t('agenda.title')}
+        </Text>
+        {selected !== today || yearMonthOf(today).month !== month.month ? (
+          <Chip role="button" label={t('agenda.goToToday')} onPress={goToToday} />
+        ) : null}
+      </View>
+
+      <Card>
+        <MonthGrid
+          month={month}
+          onChangeMonth={setMonth}
+          today={today}
+          selected={selected}
+          onSelect={setSelected}
+          marks={marks}
+        />
+      </Card>
+
+      <Card>
+        <Text variant="heading">{selectedLabel}</Text>
+        {onSelectedDay.length === 0 ? (
+          <Text color="inkSoft">{t('agenda.nothingThisDay')}</Text>
+        ) : (
+          onSelectedDay.map((occurrence) => (
+            <EventRow
+              key={occurrence.event.id}
+              occurrence={occurrence}
+              today={today}
+              onPress={open}
+            />
+          ))
+        )}
+      </Card>
+
+      {/* Con la agenda vacía se explica para qué sirve; si no queda nada más que enseñar, se omite. */}
+      {events.length === 0 || upcoming.length > 0 ? (
+        <Card tone="sage">
+          <Text variant="heading">{t('agenda.upcoming')}</Text>
+          {upcoming.length === 0 ? (
+            <Text color="inkSoft">{t('agenda.empty.description')}</Text>
+          ) : (
+            upcoming.map((occurrence) => (
+              <EventRow
+                key={occurrence.event.id}
+                occurrence={occurrence}
+                today={today}
+                onPress={open}
+              />
+            ))
+          )}
+        </Card>
+      ) : null}
+      <View style={styles.fabSpace} />
     </Screen>
   );
 }
+
+const FAB_SIZE = 60;
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  title: {
+    flex: 1,
+  },
+  fab: {
+    position: 'absolute',
+    right: spacing.lg,
+    bottom: spacing.lg,
+    width: FAB_SIZE,
+    height: FAB_SIZE,
+    borderRadius: FAB_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.peach,
+    ...shadows.raised,
+  },
+  fabPressed: {
+    transform: [{ scale: 0.95 }],
+  },
+  fabIcon: {
+    fontSize: 30,
+    lineHeight: 36,
+    color: colors.onPeach,
+  },
+  // Para que el botón flotante no tape el último evento.
+  fabSpace: {
+    height: FAB_SIZE,
+  },
+});

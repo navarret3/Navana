@@ -1,13 +1,36 @@
 import type { ExpoConfig } from 'expo/config';
+import { readFileSync } from 'node:fs';
+
+/** Proyecto @0nly/navana en EAS (creado con `eas init`). */
+const EAS_OWNER = '0nly';
+const EAS_PROJECT_ID = '16ae9b40-ad95-45f5-9c2c-51445070fdfe';
+
+// En EAS llega como variable de entorno de tipo fichero; en local, el fichero de la raíz.
+const GOOGLE_SERVICES_FILE = process.env.GOOGLE_SERVICES_JSON ?? './google-services.json';
+
+type GoogleServices = {
+  client?: { oauth_client?: { client_id?: string; client_type?: number }[] }[];
+};
 
 /**
- * ID del proyecto en EAS. Se obtiene con `npx eas-cli@latest init` y se pega aquí.
- * Mientras esté vacío no se configuran las actualizaciones OTA (EAS Update).
+ * ID del cliente OAuth de tipo web (client_type 3). Google Sign-In lo necesita para
+ * devolver el token con el que se entra en Firebase Auth. No es un secreto.
  */
-const EAS_PROJECT_ID: string | undefined = undefined;
+function readGoogleWebClientId(): string | undefined {
+  try {
+    const services = JSON.parse(readFileSync(GOOGLE_SERVICES_FILE, 'utf8')) as GoogleServices;
+    return services.client
+      ?.flatMap((client) => client.oauth_client ?? [])
+      .find((oauth) => oauth.client_type === 3)?.client_id;
+  } catch {
+    // Sin el fichero (por ejemplo, en la vista web con emuladores) no hace falta.
+    return undefined;
+  }
+}
 
 const colors = {
   cream: '#FBF3E4',
+  darkBackground: '#1F1A17',
   peach: '#F6A77C',
 };
 
@@ -18,13 +41,12 @@ const config: ExpoConfig = {
   orientation: 'portrait',
   scheme: 'navana',
   icon: './assets/images/icon.png',
-  // El tema oscuro llega en la Fase 6.
-  userInterfaceStyle: 'light',
+  // Claro u oscuro, según el sistema.
+  userInterfaceStyle: 'automatic',
   backgroundColor: colors.cream,
   android: {
     package: 'com.navana.app',
-    // En EAS se puede subir como variable de entorno de tipo fichero (GOOGLE_SERVICES_JSON).
-    googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
+    googleServicesFile: GOOGLE_SERVICES_FILE,
     adaptiveIcon: {
       backgroundColor: colors.peach,
       foregroundImage: './assets/images/android-icon-foreground.png',
@@ -45,6 +67,7 @@ const config: ExpoConfig = {
         backgroundColor: colors.cream,
         image: './assets/images/splash-icon.png',
         imageWidth: 160,
+        dark: { backgroundColor: colors.darkBackground },
       },
     ],
     'expo-localization',
@@ -64,12 +87,12 @@ const config: ExpoConfig = {
     reactCompiler: true,
   },
   runtimeVersion: { policy: 'appVersion' },
-  ...(EAS_PROJECT_ID
-    ? {
-        updates: { url: `https://u.expo.dev/${EAS_PROJECT_ID}` },
-        extra: { eas: { projectId: EAS_PROJECT_ID } },
-      }
-    : {}),
+  owner: EAS_OWNER,
+  updates: { url: `https://u.expo.dev/${EAS_PROJECT_ID}` },
+  extra: {
+    eas: { projectId: EAS_PROJECT_ID },
+    googleWebClientId: readGoogleWebClientId(),
+  },
 };
 
 export default config;

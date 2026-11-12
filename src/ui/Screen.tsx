@@ -10,9 +10,11 @@ type ScreenProps = {
   scroll?: boolean;
   /** Bordes con área segura. Las pestañas no necesitan el inferior: lo cubre la barra. */
   edges?: readonly Edge[];
+  /** Contenido fijo sobre la pantalla, que no se desplaza con el resto (un botón flotante). */
+  floating?: ReactNode;
 };
 
-export function Screen({ children, scroll = true, edges = ['top'] }: ScreenProps) {
+export function Screen({ children, scroll = true, edges = ['top'], floating }: ScreenProps) {
   return (
     <SafeAreaView style={styles.root} edges={edges}>
       {scroll ? (
@@ -25,6 +27,7 @@ export function Screen({ children, scroll = true, edges = ['top'] }: ScreenProps
       ) : (
         <View style={[styles.content, styles.fill]}>{children}</View>
       )}
+      {floating}
     </SafeAreaView>
   );
 }

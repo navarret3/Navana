@@ -5,7 +5,10 @@ import { Text } from './Text';
 import { colors, minTouchSize, spacing } from './theme';
 
 type ListRowProps = {
+  /** Emoji a la izquierda. */
   icon?: string;
+  /** Contenido a la izquierda en lugar del emoji, por ejemplo un avatar. */
+  leading?: ReactNode;
   title: string;
   subtitle?: string;
   /** Contenido a la derecha: un interruptor, un valor, una flecha… */
@@ -13,10 +16,10 @@ type ListRowProps = {
   onPress?: () => void;
 };
 
-export function ListRow({ icon, title, subtitle, trailing, onPress }: ListRowProps) {
+export function ListRow({ icon, leading, title, subtitle, trailing, onPress }: ListRowProps) {
   const content = (
     <>
-      {icon ? <Text style={styles.icon}>{icon}</Text> : null}
+      {leading ?? (icon ? <Text style={styles.icon}>{icon}</Text> : null)}
       <View style={styles.texts}>
         <Text variant="bodyStrong">{title}</Text>
         {subtitle ? (

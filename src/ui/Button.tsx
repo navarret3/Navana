@@ -27,9 +27,9 @@ export function Button({ label, variant = 'primary', loading, disabled, ...rest 
         inactive && styles.inactive,
       ]}>
       {loading ? (
-        <ActivityIndicator color={colors.ink} />
+        <ActivityIndicator color={variant === 'primary' ? colors.onPeach : colors.ink} />
       ) : (
-        <Text variant="bodyStrong" color={variant === 'ghost' ? 'peachDeep' : 'ink'}>
+        <Text variant="bodyStrong" color={variant === 'ghost' ? 'peachDeep' : variant === 'primary' ? 'onPeach' : 'ink'}>
           {label}
         </Text>
       )}

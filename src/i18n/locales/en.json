@@ -1,0 +1,552 @@
+{
+  "common": {
+    "appName": "Navana",
+    "back": "Back",
+    "save": "Save",
+    "genericError": "Something went wrong. Check your connection and try again.",
+    "cancel": "Cancel",
+    "loadingSlow": "This is taking longer than usual. Check your connection; if nothing changes, sign out and sign in again.",
+    "saveFailed": "Your last change couldn't be saved and has been undone. Please try again.",
+    "formerMember": "Former member"
+  },
+  "tabs": {
+    "today": "Today",
+    "tasks": "Chores",
+    "shopping": "Shopping",
+    "agenda": "Calendar",
+    "notes": "Notes",
+    "menu": "Meals"
+  },
+  "auth": {
+    "tagline": "Your home, in order and drama-free.",
+    "google": "Continue with Google",
+    "testUsersTitle": "Test users",
+    "testUsersHint": "Development web view: you sign in against the emulators, with no real accounts.",
+    "signInAs": "Sign in as {{name}}",
+    "error": "Couldn't sign in. Please try again.",
+    "signOut": "Sign out"
+  },
+  "onboarding": {
+    "title": "Hi, {{name}}!",
+    "titleNoName": "Hi!",
+    "subtitle": "To get started, create your household or join your partner's.",
+    "defaultMemberName": "Housemate",
+    "create": {
+      "tab": "Create a household",
+      "nameLabel": "Household name",
+      "namePlaceholder": "Our place",
+      "iconLabel": "Icon",
+      "submit": "Create household",
+      "nameRequired": "Give the household a name."
+    },
+    "join": {
+      "tab": "I have a code",
+      "codeLabel": "Invite code",
+      "codePlaceholder": "K7M4QX",
+      "hint": "Whoever is already in the household can give it to you. Pasting the link works too.",
+      "submit": "Join",
+      "invalid": "That code doesn't look right: it's 6 letters and numbers.",
+      "notFound": "There's no invite with that code.",
+      "expired": "That invite has expired. Ask for a new one."
+    }
+  },
+  "today": {
+    "greeting": {
+      "morning": "Good morning!",
+      "afternoon": "Good afternoon!",
+      "evening": "Good evening!"
+    },
+    "openSettings": "Open settings",
+    "noModules": {
+      "title": "Everything is off",
+      "description": "Turn on a module in settings to see your day here."
+    }
+  },
+  "tasks": {
+    "title": "Chores",
+    "description": "Household chores and whose turn it is",
+    "empty": {
+      "title": "Not a chore in sight",
+      "description": "Once you add your household chores they'll show up here, shared between the two of you.",
+      "useTemplate": "Add typical chores",
+      "createOwn": "Create a chore"
+    },
+    "todayCard": {
+      "title": "Today's chores",
+      "empty": "Nothing to do. Even the cats approve of this calm.",
+      "free": "Up for grabs",
+      "others_one": "{{count}} chore for the others",
+      "others_other": "{{count}} chores for the others",
+      "seeAll": "See all chores"
+    },
+    "add": "New chore",
+    "noZone": "No area",
+    "due": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "overdue_one": "{{count}} day overdue",
+      "overdue_other": "{{count}} days overdue",
+      "upcoming_one": "In {{count}} day",
+      "upcoming_other": "In {{count}} days"
+    },
+    "mode": {
+      "fixed": "Fixed",
+      "rotation": "Take turns",
+      "free": "Anyone"
+    },
+    "modeHint": {
+      "fixed": "The same person always does it.",
+      "rotation": "You take turns: once it's done, it moves to the other.",
+      "free": "It's nobody's: whoever gets to it does it."
+    },
+    "effort": {
+      "label": "Effort",
+      "1": "Light",
+      "2": "Normal",
+      "3": "Heavy"
+    },
+    "assignee": {
+      "free": "Anyone",
+      "yours": "Your turn",
+      "turnOf": "{{name}}'s turn"
+    },
+    "form": {
+      "newTitle": "New chore",
+      "editTitle": "Edit chore",
+      "titleLabel": "What needs doing",
+      "titlePlaceholder": "Water the plants",
+      "iconLabel": "Icon",
+      "zoneLabel": "Area",
+      "frequencyLabel": "How often",
+      "repeat": "Repeats",
+      "once": "Just once",
+      "everyLabel": "Every how many days",
+      "everyHint": "Counted from the last time it was done.",
+      "modeLabel": "Who does it",
+      "assigneeLabel": "Responsible",
+      "firstTurnLabel": "Starts with",
+      "titleRequired": "Write what needs doing.",
+      "intervalInvalid": "Enter a number of days between 1 and 365.",
+      "create": "Create chore",
+      "onDemand": "As it comes up",
+      "onDemandHint": "No date and no turns: it's logged each time someone does it.",
+      "dueLabel": "Due on"
+    },
+    "actions": {
+      "complete": "Mark as done: {{title}}",
+      "iDidIt": "I did it",
+      "markDone": "Mark as done",
+      "postpone": "Postpone",
+      "archive": "Delete chore",
+      "undo": "Undo",
+      "done": "Done: {{title}}",
+      "history": "History",
+      "balance": "Balance",
+      "nudge": "Send a nudge",
+      "nudgeSent": "Nudge sent"
+    },
+    "postpone": {
+      "title": "Postpone until…",
+      "tomorrow": "Tomorrow",
+      "threeDays": "In 3 days",
+      "week": "In a week"
+    },
+    "template": {
+      "title": "Typical chores",
+      "subtitle": "Tick what you do at home. You can change it later.",
+      "submit_one": "Add {{count}} chore",
+      "submit_other": "Add {{count}} chores",
+      "skip": "Not now",
+      "every_one": "Every day",
+      "every_other": "Every {{count}} days",
+      "tasks": {
+        "kitchen": "Clean the kitchen",
+        "bathroom": "Clean the bathroom",
+        "mop": "Mop the floor",
+        "vacuum": "Vacuum",
+        "litter": "Clean the litter box",
+        "trash": "Take out the trash",
+        "sheets": "Change the sheets"
+      },
+      "zones": {
+        "kitchen": "Kitchen",
+        "bathroom": "Bathroom",
+        "livingRoom": "Living room",
+        "bedroom": "Bedroom",
+        "cats": "Cats",
+        "wholeHouse": "Whole house"
+      },
+      "scheduledGroup": "On a schedule",
+      "onDemandGroup": "As they come up",
+      "onDemandNote": "No date: logged each time someone does them.",
+      "onDemand": {
+        "sweep": "Sweep",
+        "dishes": "Wash the dishes",
+        "dishwasher": "Empty the dishwasher",
+        "laundry": "Do the laundry",
+        "hang": "Hang the laundry",
+        "unhang": "Take down the laundry"
+      }
+    },
+    "history": {
+      "title": "History",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "empty": {
+        "title": "Nothing done yet",
+        "description": "Whatever you complete will show up here, with who did it."
+      }
+    },
+    "balance": {
+      "title": "Balance",
+      "week": "This week",
+      "month": "This month",
+      "intro": "How the household effort has been shared. It's not a competition: it's so you can see each other.",
+      "empty": "No chores done in this period yet.",
+      "count_one": "{{count}} chore",
+      "count_other": "{{count}} chores",
+      "byZone": "By area",
+      "even": "You're sharing it very evenly.",
+      "uneven": "This time {{name}} has carried more."
+    },
+    "quickLog": {
+      "title": "Log something done",
+      "titleShort": "Log something done",
+      "hint": "Things that come up unplanned. Tap what you've just done and it's logged under your name.",
+      "empty": "For things you do as they come up, with no date: sweeping, hanging the laundry, washing up… Add them here and then one tap will log them.",
+      "add": "Add",
+      "addTypical": "Add typical ones",
+      "editHint": "Press and hold one to edit or delete it."
+    }
+  },
+  "shopping": {
+    "title": "Shopping",
+    "description": "One shared list that also works offline",
+    "empty": {
+      "title": "The list is empty",
+      "description": "Add what's missing above and you'll both see it right away."
+    },
+    "todayCard": {
+      "title": "Shopping list",
+      "empty": "Nothing needed for now.",
+      "count_one": "{{count}} thing to buy",
+      "count_other": "{{count}} things to buy",
+      "more": "and {{count}} more",
+      "open": "See the list"
+    },
+    "addPlaceholder": "Add to the list…",
+    "addLabel": "Item",
+    "add": "Add",
+    "added": "Added: {{name}}",
+    "restored": "Back on the list: {{name}}",
+    "alreadyThere": "{{name}} is already on the list.",
+    "frequent": "Frequent",
+    "pendingCount_one": "{{count}} left",
+    "pendingCount_other": "{{count}} left",
+    "checkedTitle_one": "In the cart ({{count}})",
+    "checkedTitle_other": "In the cart ({{count}})",
+    "finish": "Finish shopping",
+    "finishHint": "Removes what's already in the cart from the list.",
+    "allChecked": "Everything's in the cart!",
+    "check": "Check off {{name}}",
+    "uncheck": "Put back {{name}}",
+    "options": "Options for {{name}}",
+    "changeCategory": "Change section",
+    "chooseCategory": "Which section does it go in?",
+    "remove": "Remove from the list",
+    "categories": {
+      "produce": "Fruit and vegetables",
+      "bakery": "Bakery",
+      "meatFish": "Meat and fish",
+      "dairy": "Dairy and eggs",
+      "pantry": "Pantry",
+      "snacks": "Breakfast and sweets",
+      "drinks": "Drinks",
+      "frozen": "Frozen",
+      "cleaning": "Cleaning",
+      "hygiene": "Personal care",
+      "pets": "Pets",
+      "other": "Other"
+    },
+    "recent": "Bought recently"
+  },
+  "agenda": {
+    "title": "Calendar",
+    "description": "Plans, appointments and birthdays",
+    "empty": {
+      "title": "No plans yet",
+      "description": "Your plans, appointments and birthdays will live here."
+    },
+    "todayCard": {
+      "title": "Next plan",
+      "empty": "No plans in sight. Sofa and a blanket?",
+      "open": "See the calendar"
+    },
+    "add": "New event",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "goToToday": "Go to today",
+    "upcoming": "Upcoming",
+    "nothingThisDay": "Nothing planned for this day.",
+    "countdown": {
+      "ongoing": "Ongoing",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "days_one": "{{count}} day to go",
+      "days_other": "{{count}} days to go"
+    },
+    "types": {
+      "plan": "Plan",
+      "appointment": "Appointment or errand",
+      "birthday": "Birthday"
+    },
+    "typeHints": {
+      "plan": "Something you do together: a dinner, a getaway, a concert.",
+      "appointment": "Vet, doctor, a bill, some paperwork.",
+      "birthday": "Repeats every year, all day."
+    },
+    "form": {
+      "newTitle": "New event",
+      "editTitle": "Edit event",
+      "typeLabel": "What it is",
+      "titleLabel": "Title",
+      "titlePlaceholder": {
+        "plan": "Dinner with friends",
+        "appointment": "Vet",
+        "birthday": "…'s birthday"
+      },
+      "dateLabel": "Day",
+      "allDay": "All day",
+      "timeLabel": "Time",
+      "severalDays": "Lasts several days",
+      "endDateLabel": "Until",
+      "participantsLabel": "Whose it is",
+      "remindersLabel": "Remind me",
+      "locationLabel": "Place",
+      "notesLabel": "Notes",
+      "titleRequired": "Give it a title.",
+      "timeInvalid": "Write the time like this: 18:30.",
+      "endBeforeStart": "The last day can't be before the first.",
+      "create": "Create event",
+      "delete": "Delete event",
+      "participantsHint": "Reminders only go off for whoever it concerns.",
+      "participantsAlone": "Once your partner joins the household, you'll be able to say here whether the event is yours, theirs or both."
+    },
+    "reminders": {
+      "timed": {
+        "0": "At the time",
+        "60": "1 hour before",
+        "1440": "1 day before"
+      },
+      "allDay": {
+        "0": "That day at 9:00",
+        "1440": "The day before",
+        "10080": "A week before"
+      }
+    },
+    "whose": {
+      "both": "Both",
+      "everyone": "Everyone"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": {
+      "title": "My profile",
+      "edit": "Edit profile",
+      "nameLabel": "Name",
+      "avatarLabel": "Avatar",
+      "colorLabel": "Colour",
+      "nameRequired": "Write your name."
+    },
+    "household": {
+      "title": "Household",
+      "edit": "Edit household",
+      "nameLabel": "Household name",
+      "iconLabel": "Icon",
+      "nameRequired": "Give the household a name.",
+      "members": "Members",
+      "you": "You",
+      "invite": "Invite someone"
+    },
+    "invite": {
+      "title": "Invite to the household",
+      "explain": "Give this code to your partner. They type it in the first time they open Navana.",
+      "creating": "Preparing the invite…",
+      "expires": "Expires on {{date}}",
+      "share": "Share",
+      "copy": "Copy code",
+      "copied": "Code copied",
+      "newCode": "Generate another code",
+      "shareMessage": "Join “{{household}}” on Navana with the code {{code}}.\nIf you already have the app installed: {{link}}"
+    },
+    "modules": {
+      "title": "Modules",
+      "description": "Choose which parts of Navana you use at home."
+    },
+    "environment": {
+      "title": "Development environment",
+      "backend": {
+        "emulator": "Local Firebase emulators",
+        "firebase": "Firebase project"
+      },
+      "status": {
+        "idle": "Not checked",
+        "checking": "Checking…",
+        "ok": "Connected",
+        "unreachable": "No connection"
+      },
+      "check": "Check connection"
+    },
+    "zones": {
+      "title": "Areas",
+      "edit": "Organise the areas of the house",
+      "new": "New area",
+      "editing": "Edit area",
+      "nameLabel": "Area name",
+      "iconLabel": "Icon",
+      "add": "Add area",
+      "delete": "Delete area",
+      "inUse": "There are chores in this area. Move them to another area before deleting it.",
+      "nameRequired": "Give the area a name.",
+      "empty": "No areas yet.",
+      "move": {
+        "up": "Move {{name}} up",
+        "down": "Move {{name}} down"
+      },
+      "editZone": "Edit {{name}}"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "edit": "Which notifications you get and when",
+      "dailySummary": "Daily summary",
+      "dailySummaryHint": "In the morning, what's yours to do that day.",
+      "summaryHour": "Summary time",
+      "overdue": "Overdue chores",
+      "overdueHint": "At 19:00, if something has been left undone.",
+      "partnerCompleted": "When the other completes",
+      "partnerCompletedHint": "A notification when your partner does a chore.",
+      "nudges": "Nudges",
+      "nudgesHint": "Let the others nudge you about a chore.",
+      "denied": "Android is blocking Navana's notifications. They have to be turned on in the system settings.",
+      "unsupported": "Notifications only work on the phone.",
+      "enable": "Turn on notifications",
+      "granted": "Notifications are on for this phone.",
+      "askable": "Navana doesn't have permission to show you notifications on this phone yet.",
+      "openSettings": "Open Android settings",
+      "pushReady": "Push between phones: ready.",
+      "pushMissing": "Push between phones: this phone has no token yet.",
+      "error": "Couldn't turn on notifications."
+    },
+    "account": {
+      "title": "Account",
+      "leave": "Leave the household",
+      "leaveConfirm": "Leave “{{name}}”? You'll no longer see its chores, shopping or calendar.",
+      "delete": "Delete my account",
+      "deleteConfirm": "Delete your account? Your profile and your access are removed, and you leave the household. This can't be undone.",
+      "error": "Couldn't complete it. Check your connection and try again."
+    }
+  },
+  "notifications": {
+    "summary": {
+      "title": "Today at home",
+      "body_one": "You have {{count}} chore: {{first}}.",
+      "body_other": "You have {{count}} chores. First up: {{first}}."
+    },
+    "overdue": {
+      "title": "Something has been left undone",
+      "body_one": "Still waiting: {{first}}.",
+      "body_other": "You have {{count}} overdue chores, like {{first}}."
+    },
+    "completed": {
+      "title": "{{name}} has done a chore",
+      "body": "{{icon}} {{title}}"
+    },
+    "nudge": {
+      "title": "{{name}} is giving you a nudge 🐾",
+      "body": "{{icon}} {{title}}"
+    },
+    "event": {
+      "timed": {
+        "0": "Starting now",
+        "60": "In 1 hour",
+        "1440": "Tomorrow"
+      },
+      "allDay": {
+        "0": "It's today",
+        "1440": "It's tomorrow",
+        "10080": "In a week"
+      },
+      "fallback": "Reminder"
+    }
+  },
+  "calendar": {
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
+  "notes": {
+    "title": "Notes",
+    "description": "What's worth keeping written down between you",
+    "add": "New note",
+    "empty": {
+      "title": "No notes yet",
+      "description": "The wifi password, the vet's number, whatever you don't want to forget."
+    },
+    "todayCard": {
+      "title": "Pinned notes",
+      "empty": "Pin a note to keep it in view here.",
+      "open": "See the notes"
+    },
+    "form": {
+      "newTitle": "New note",
+      "editTitle": "Edit note",
+      "titleLabel": "Title",
+      "bodyLabel": "Note",
+      "pinned": "Pin",
+      "pinnedHint": "Goes to the top and shows up in Today.",
+      "empty": "Write something before saving.",
+      "delete": "Delete note"
+    }
+  },
+  "menu": {
+    "title": "Meals",
+    "description": "What you eat each day, with its ingredients sent to the shopping list",
+    "empty": {
+      "title": "No meals planned this week",
+      "description": "Write down what you'll have for lunch and dinner."
+    },
+    "todayCard": {
+      "title": "Today's meals",
+      "empty": "Nothing planned for today.",
+      "open": "See the week's meals"
+    },
+    "today": "today",
+    "thisWeek": "This week",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
+    "weekOf": "Week of {{date}}",
+    "emptySlot": "Not planned",
+    "slots": {
+      "lunch": "Lunch",
+      "dinner": "Dinner"
+    },
+    "addedToShopping_one": "Added {{count}} item to the shopping list.",
+    "addedToShopping_other": "Added {{count}} items to the shopping list.",
+    "shopping": {
+      "title": "Ingredients",
+      "pending_one": "{{count}} ingredient isn't on the shopping list yet:",
+      "pending_other": "{{count}} ingredients aren't on the shopping list yet:",
+      "nothing": "Everything you need is already on the shopping list, or there are no ingredients written down.",
+      "send": "Send to shopping"
+    },
+    "form": {
+      "titleLabel": "What you'll eat",
+      "titlePlaceholder": "Lentil stew",
+      "ingredientsLabel": "Ingredients",
+      "ingredientsPlaceholder": "lentils, carrots, chorizo",
+      "ingredientsHint": "Separated by commas or one per line. You can send them to the shopping list afterwards.",
+      "empty": "Write the dish or some ingredient.",
+      "clear": "Clear"
+    }
+  }
+}

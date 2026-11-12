@@ -44,6 +44,17 @@ Docs: https://docs.expo.dev/eas/index.md
 
 - `PLAN.md` is the source of truth for scope, architecture, data model and phases. Read it before starting work.
 - User-facing text is Spanish and lives in `src/i18n/locales/es.json` — never hard-code copy in components.
-- Domain logic goes in `src/domain/` with no React or Firebase imports, and is covered by Jest tests.
-- Import Firebase only through `@/data/fb` (native SDK on device, JS SDK against local emulators on web).
-- Every phase ends with `npm run check` (tsc, lint, tests) green.
+- Domain logic goes in `src/domain/` with no React or Firebase imports, and is covered by Jest tests. Anything a Jest test imports must stay free of `@/data/*` and `@/state/*` (they load native Firebase and fail under Jest); that is why `src/modules/registry.ts` holds only data and the Today cards live in `src/modules/todayCards.ts`.
+- Task writes never `await` the server (see `src/features/tasks/useTaskActions.ts`): Firestore applies them locally and syncs later, so the app keeps working offline. Dates are calendar days as `YYYY-MM-DD` strings (`src/domain/dates.ts`).
+- Import Firebase only through `@/data/fb` (native SDK on device, JS SDK against local emulators on web). Sign-in follows the same pattern in `@/data/signIn` (real Google account on device, emulator test users on web). Each pair of `.native.ts` / `.web.ts` files must export the same names; the `.web.ts` file has a compile-time check for it.
+- The month view and the date picker are our own (`src/ui/MonthGrid.tsx`, `src/ui/DateField.tsx`) instead of `react-native-calendars` or a native date picker: no extra native module (so no new build) and nothing to break on a new React Native version.
+- The theme follows the system and is picked once at startup in `src/ui/theme.ts` (styles are created with those values, so a system theme change shows after reopening the app). Never hard-code colours: use the tokens, and `onPeach` / `onDanger` / `white` for text over colours that do not change with the theme.
+- Do not use Reanimated `entering` / `exiting` / `layout` animations on list rows: on web they left the rows with `visibility: hidden`, and it cannot be checked on a device from here. Press feedback and `useAnimatedStyle` (as in the tab bar) are fine.
+- Every user-facing string exists in `es.json` and `en.json`; a test fails if the keys or the `{{placeholders}}` differ. The product dictionary for the shopping list is Spanish only.
+- `menu` and `notes` are optional modules, off by default (Settings → Modules).
+- On Android, React Native Firebase sends `increment(n)` as a double, so a counter written with it is stored as `1.0`. In `firestore.rules` check such fields with `is number`, never `is int`. The web view and the emulator tests use the JS SDK and will not catch this: anything touching counters must be tried on a device.
+- `firestore.rules` changes need a matching test in `tests/rules/` (`npm run test:rules`) and are only live on devices after `npm run deploy:rules`.
+- Every phase ends with `npm run check` (tsc, lint, unit tests, rules tests) green. It needs ports 8080 free, so stop `npm run emulators` first.
+- `@react-native-firebase/*` is pinned to 26.4.2 on purpose: 27.x ships `firebase-auth` built with Kotlin 2.4, which the Kotlin 2.2 toolchain of Expo SDK 58 cannot read (the EAS build fails in `:react-native-firebase_auth:compileDebugKotlin`). Only bump it together with an Expo SDK whose Kotlin is 2.3 or newer.
+- On this Windows machine PowerShell blocks `npx.ps1`; in the terminal use `npx.cmd`.
+- After editing `app.config.ts`, restart `expo start` and reopen the app on the device: a running dev server keeps serving the old config (this is how Google Sign-In once ran without its web client ID).

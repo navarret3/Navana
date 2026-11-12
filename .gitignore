@@ -46,3 +46,9 @@ example
 .firebase/
 *-debug.log
 firebase-export-*/
+
+# Configuración de Firebase: se carga en EAS como variable GOOGLE_SERVICES_JSON
+google-services.json
+
+# Clave de la cuenta de servicio de Firebase (para el push): es un secreto, nunca a git
+*-firebase-adminsdk-*.json

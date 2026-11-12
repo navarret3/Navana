@@ -2,11 +2,13 @@ import { getLocales } from 'expo-localization';
 import { createInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+import en from './locales/en.json';
 import es from './locales/es.json';
 
 /** Para añadir un idioma: crear `locales/<código>.json` y registrarlo aquí. */
 export const resources = {
   es: { translation: es },
+  en: { translation: en },
 } as const;
 
 export type AppLanguage = keyof typeof resources;

@@ -1,41 +1,99 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Switch } from 'react-native';
 
 import { backend } from '@/data/fb';
 import { checkBackend, type BackendStatus } from '@/data/health';
+import { setHouseholdModuleEnabled } from '@/data/households';
+import { AccountActions } from '@/features/household/AccountActions';
 import { isModuleEnabled, modules } from '@/modules/registry';
-import { useSession } from '@/state/session';
-import { Button, Card, ListRow, Screen, Text, colors, minTouchSize, spacing } from '@/ui';
+import { saveFailed } from '@/state/notices';
+import { useCurrentMember, useSession } from '@/state/session';
+import { Avatar, Button, Card, ListRow, Screen, ScreenHeader, Text, colors } from '@/ui';
 
-// Fase 1: hogar, miembros, zonas y avisos se añaden como secciones de esta pantalla.
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const enabledModules = useSession((state) => state.enabledModules);
-  const setModuleEnabled = useSession((state) => state.setModuleEnabled);
+  const user = useSession((state) => state.user);
+  const household = useSession((state) => state.household);
+  const members = useSession((state) => state.members);
+  const me = useCurrentMember();
 
-  const goBack = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
-  };
+  if (!household) return null;
+
+  // Uno mismo primero y el resto por nombre.
+  const sortedMembers = [...members].sort((a, b) => {
+    if (a.uid === user?.uid) return -1;
+    if (b.uid === user?.uid) return 1;
+    return a.name.localeCompare(b.name);
+  });
 
   return (
     <Screen edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('common.back')}
-          onPress={goBack}
-          style={({ pressed }) => [styles.back, pressed && styles.backPressed]}>
-          <Text variant="title">‹</Text>
-        </Pressable>
-        <Text variant="title">{t('settings.title')}</Text>
-      </View>
+      <ScreenHeader title={t('settings.title')} />
+
+      <Card>
+        <Text variant="heading">{t('settings.profile.title')}</Text>
+        <ListRow
+          title={me?.name ?? ''}
+          subtitle={t('settings.profile.edit')}
+          leading={<Avatar emoji={me?.avatar} name={me?.name} color={me?.color} />}
+          trailing={<Text color="inkMuted">›</Text>}
+          onPress={() => router.push('/settings/profile')}
+        />
+      </Card>
+
+      <Card>
+        <Text variant="heading">{t('settings.household.title')}</Text>
+        <ListRow
+          icon={household.icon}
+          title={household.name}
+          subtitle={t('settings.household.edit')}
+          trailing={<Text color="inkMuted">›</Text>}
+          onPress={() => router.push('/settings/household')}
+        />
+        <Text variant="label" color="inkSoft">
+          {t('settings.household.members')}
+        </Text>
+        {sortedMembers.map((member) => (
+          <ListRow
+            key={member.uid}
+            title={member.name}
+            subtitle={member.uid === user?.uid ? t('settings.household.you') : undefined}
+            leading={
+              <Avatar emoji={member.avatar} name={member.name} color={member.color} size={36} />
+            }
+          />
+        ))}
+        <Button
+          variant="secondary"
+          label={t('settings.household.invite')}
+          onPress={() => router.push('/settings/invite')}
+        />
+      </Card>
+
+      <Card>
+        <Text variant="heading">{t('settings.zones.title')}</Text>
+        <ListRow
+          icon="🗂️"
+          title={t('settings.zones.title')}
+          subtitle={t('settings.zones.edit')}
+          trailing={<Text color="inkMuted">›</Text>}
+          onPress={() => router.push('/settings/zones')}
+        />
+      </Card>
+
+      <Card>
+        <Text variant="heading">{t('settings.notifications.title')}</Text>
+        <ListRow
+          icon="🔔"
+          title={t('settings.notifications.title')}
+          subtitle={t('settings.notifications.edit')}
+          trailing={<Text color="inkMuted">›</Text>}
+          onPress={() => router.push('/settings/notifications')}
+        />
+      </Card>
 
       <Card>
         <Text variant="heading">{t('settings.modules.title')}</Text>
@@ -51,10 +109,12 @@ export default function SettingsScreen() {
             trailing={
               <Switch
                 accessibilityLabel={t(`${module.id}.title`)}
-                value={isModuleEnabled(module, enabledModules)}
-                onValueChange={(value) => setModuleEnabled(module.id, value)}
+                value={isModuleEnabled(module, household.enabledModules)}
+                onValueChange={(value) => {
+                  setHouseholdModuleEnabled(household.id, module.id, value).catch(saveFailed('No se ha podido cambiar el módulo'));
+                }}
                 trackColor={{ false: colors.border, true: colors.sage }}
-                thumbColor={colors.surface}
+                thumbColor={colors.white}
               />
             }
           />
@@ -62,6 +122,8 @@ export default function SettingsScreen() {
       </Card>
 
       {__DEV__ ? <EnvironmentCard /> : null}
+
+      <AccountActions />
     </Screen>
   );
 }
@@ -93,22 +155,3 @@ function EnvironmentCard() {
     </Card>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  back: {
-    width: minTouchSize,
-    height: minTouchSize,
-    borderRadius: minTouchSize / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: -spacing.md,
-  },
-  backPressed: {
-    backgroundColor: colors.surfaceSunken,
-  },
-});

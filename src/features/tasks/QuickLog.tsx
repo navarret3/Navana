@@ -1,0 +1,86 @@
+import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+
+import { onDemandTasks } from '@/domain/tasks/today';
+import { useTasks } from '@/state/tasks';
+import { Chip, Text, spacing } from '@/ui';
+
+import { useTaskActions } from './useTaskActions';
+
+type QuickLogProps = {
+  /** En "Hoy" solo se enseñan las pastillas; en Tareas, también la explicación y cómo añadir. */
+  compact?: boolean;
+};
+
+/**
+ * Apuntar algo hecho que no estaba planeado (barrer, tender, fregar los platos…).
+ * Un toque en la pastilla lo registra a nombre de quien lo toca, con opción de deshacer.
+ */
+export function QuickLog({ compact }: QuickLogProps) {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const tasks = onDemandTasks(useTasks((state) => state.tasks));
+  const { complete } = useTaskActions();
+
+  if (compact && tasks.length === 0) return null;
+
+  return (
+    <View style={styles.root}>
+      <Text variant={compact ? 'label' : 'heading'} color={compact ? 'inkSoft' : 'ink'}>
+        {compact ? t('tasks.quickLog.titleShort') : `✍️ ${t('tasks.quickLog.title')}`}
+      </Text>
+      {compact ? null : (
+        <Text variant="caption" color="inkSoft">
+          {tasks.length > 0 ? t('tasks.quickLog.hint') : t('tasks.quickLog.empty')}
+        </Text>
+      )}
+      <View style={styles.chips}>
+        {tasks.map((task) => (
+          <Chip
+            key={task.id}
+            role="button"
+            icon={task.icon}
+            label={task.title}
+            onPress={() => complete(task)}
+            onLongPress={() => router.push({ pathname: '/task/[id]', params: { id: task.id } })}
+          />
+        ))}
+        {compact ? null : (
+          <>
+            <Chip
+              role="button"
+              icon="＋"
+              label={t('tasks.quickLog.add')}
+              onPress={() => router.push({ pathname: '/task/new', params: { onDemand: '1' } })}
+            />
+            {tasks.length === 0 ? (
+              <Chip
+                role="button"
+                icon="🧺"
+                label={t('tasks.quickLog.addTypical')}
+                onPress={() => router.push('/task/template')}
+              />
+            ) : null}
+          </>
+        )}
+      </View>
+      {compact || tasks.length === 0 ? null : (
+        <Text variant="caption" color="inkMuted">
+          {t('tasks.quickLog.editHint')}
+        </Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: {
+    gap: spacing.xs,
+  },
+  chips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+});

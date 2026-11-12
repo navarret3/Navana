@@ -12,18 +12,24 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { UndoBanner } from '@/features/tasks/UndoBanner';
 import { getEnabledModules } from '@/modules/registry';
+import { useNotificationSync } from '@/notifications/useNotificationSync';
 import { useSession } from '@/state/session';
 import { Text, colors, maxContentWidth, minTouchSize, radii, shadows, spacing } from '@/ui';
 
 export default function TabsLayout() {
   const { t } = useTranslation();
-  const enabledModules = useSession((state) => state.enabledModules);
-  const visibleModules = getEnabledModules(enabledModules);
+  const household = useSession((state) => state.household);
+  const visibleModules = getEnabledModules(household?.enabledModules ?? {});
+  useNotificationSync();
 
   return (
     <Tabs style={styles.root}>
-      <TabSlot style={styles.slot} />
+      <View style={styles.slot}>
+        <TabSlot style={styles.slot} />
+        <UndoBanner />
+      </View>
       <TabList asChild>
         <TabBar>
           <TabTrigger name="today" href="/" asChild>

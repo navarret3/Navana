@@ -1,11 +1,326 @@
 rules_version = '2';
 
-// Fase 0: todo cerrado. Las reglas de hogares, miembros e invitaciones
-// (con sus tests en tests/rules/) llegan en la Fase 1.
+// Reglas de Navana. Idea general:
+//  - Cada usuario solo toca su `users/{uid}`.
+//  - Un hogar solo lo leen y escriben sus miembros (`memberIds`).
+//  - Para entrar en un hogar hace falta una invitación válida y sin caducar.
+// Los tests están en tests/rules/ y se ejecutan con `npm run test:rules`.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function householdPath(hid) {
+      return /databases/$(database)/documents/households/$(hid);
+    }
+
+    // Miembro del hogar según lo que hay guardado ahora mismo.
+    function isMember(hid) {
+      return signedIn() && uid() in get(householdPath(hid)).data.memberIds;
+    }
+
+    // Miembro del hogar tal como quedará al terminar esta escritura (para lotes).
+    function willBeMember(hid) {
+      return signedIn() && uid() in getAfter(householdPath(hid)).data.memberIds;
+    }
+
+    function changedOnly(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    function validText(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    // ---------- Usuarios ----------
+    match /users/{userId} {
+      function validUser() {
+        let data = request.resource.data;
+        let householdId = data.get('householdId', null);
+        return data.keys().hasOnly(['name', 'photoURL', 'householdId', 'settings'])
+          && (householdId == null || (householdId is string && willBeMember(householdId)));
+      }
+
+      allow read: if signedIn() && uid() == userId;
+      allow create, update: if signedIn() && uid() == userId && validUser();
+      // Eliminar la cuenta borra también este documento.
+      allow delete: if signedIn() && uid() == userId;
+    }
+
+    // ---------- Invitaciones ----------
+    match /invites/{code} {
+      // Quien tiene el código puede leer esa invitación, pero nadie puede listarlas.
+      allow get: if signedIn();
+      allow list: if false;
+
+      allow create: if signedIn()
+        && code.matches('^[A-HJ-NP-Z2-9]{6}$')
+        && request.resource.data.keys().hasOnly(
+             ['householdId', 'householdName', 'createdBy', 'createdAt', 'expiresAt'])
+        && request.resource.data.householdId is string
+        && isMember(request.resource.data.householdId)
+        && request.resource.data.createdBy == uid()
+        && validText(request.resource.data.householdName, 40)
+        && request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt > request.time
+        && request.resource.data.expiresAt <= request.time + duration.value(8, 'd');
+
+      allow update: if false;
+      allow delete: if isMember(resource.data.householdId);
+    }
+
+    // ---------- Hogares ----------
+    match /households/{hid} {
+      function validHousehold() {
+        let data = request.resource.data;
+        return data.keys().hasOnly(
+                 ['name', 'icon', 'memberIds', 'enabledModules', 'createdBy', 'createdAt'])
+          && validText(data.name, 40)
+          && validText(data.icon, 16)
+          && data.memberIds is list
+          && data.enabledModules is map;
+      }
+
+      // Unirse: el usuario se añade solo a sí mismo, no toca nada más, y su ficha de
+      // miembro (creada en el mismo lote) lleva el código de una invitación válida.
+      function isJoining() {
+        let memberPath = /databases/$(database)/documents/households/$(hid)/members/$(uid());
+        return !(uid() in resource.data.memberIds)
+          && changedOnly(['memberIds'])
+          && request.resource.data.memberIds == resource.data.memberIds.concat([uid()])
+          && existsAfter(memberPath)
+          && validInvite(getAfter(memberPath).data.get('inviteCode', ''));
+      }
+
+      function validInvite(code) {
+        let invitePath = /databases/$(database)/documents/invites/$(code);
+        return code is string
+          && code.size() > 0
+          && exists(invitePath)
+          && get(invitePath).data.householdId == hid
+          && get(invitePath).data.expiresAt > request.time;
+      }
+
+      allow get: if signedIn() && uid() in resource.data.memberIds;
+      allow list: if false;
+
+      allow create: if signedIn()
+        && validHousehold()
+        && request.resource.data.memberIds == [uid()]
+        && request.resource.data.createdBy == uid();
+
+      // Salir: el usuario solo se quita a sí mismo y no toca nada más.
+      function isLeaving() {
+        return uid() in resource.data.memberIds
+          && changedOnly(['memberIds'])
+          && request.resource.data.memberIds == resource.data.memberIds.removeAll([uid()]);
+      }
+
+      allow update: if signedIn() && validHousehold() && (
+        (uid() in resource.data.memberIds && changedOnly(['name', 'icon', 'enabledModules']))
+        || isJoining()
+        || isLeaving()
+      );
+
+      allow delete: if false;
+
+      match /members/{memberId} {
+        function validMember() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(
+                   ['name', 'color', 'avatar', 'pushTokens', 'notify', 'inviteCode', 'joinedAt'])
+            && validText(data.name, 30)
+            && data.color.matches('^#[0-9A-Fa-f]{6}$')
+            && validText(data.avatar, 16)
+            && data.pushTokens is list
+            && data.pushTokens.size() <= 10
+            && data.get('notify', {}) is map;
+        }
+
+        allow read: if isMember(hid);
+
+        // Cada uno crea solo su propia ficha, al crear el hogar o al unirse.
+        allow create: if signedIn()
+          && uid() == memberId
+          && willBeMember(hid)
+          && validMember();
+
+        allow update: if signedIn()
+          && uid() == memberId
+          && isMember(hid)
+          && validMember()
+          && changedOnly(['name', 'color', 'avatar', 'pushTokens', 'notify']);
+
+        // Cada uno borra solo su ficha, al salir del hogar o eliminar su cuenta.
+        allow delete: if signedIn() && uid() == memberId;
+      }
+
+      // ---------- Zonas ----------
+      match /zones/{zoneId} {
+        function validZone() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(['name', 'icon', 'order'])
+            && validText(data.name, 30)
+            && validText(data.icon, 16)
+            && data.order is number;
+        }
+
+        allow read, delete: if isMember(hid);
+        allow create, update: if isMember(hid) && validZone();
+      }
+
+      // ---------- Tareas ----------
+      match /tasks/{taskId} {
+        function validTask() {
+          let data = request.resource.data;
+          return data.keys().hasOnly([
+                   'title', 'icon', 'zoneId', 'effort', 'mode', 'assigneeId', 'rotationOrder',
+                   'intervalDays', 'onDemand', 'nextDueOn', 'lastCompletedOn', 'lastCompletedBy',
+                   'lastCompletionId', 'archived', 'createdAt'])
+            && validText(data.title, 60)
+            && validText(data.icon, 16)
+            && data.effort in [1, 2, 3]
+            && data.mode in ['fixed', 'rotation', 'free']
+            && (data.zoneId == null || data.zoneId is string)
+            && (data.assigneeId == null || data.assigneeId is string)
+            && data.rotationOrder is list
+            && (data.intervalDays == null
+                || (data.intervalDays is int && data.intervalDays >= 1 && data.intervalDays <= 365))
+            && data.nextDueOn.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && data.archived is bool
+            && data.get('onDemand', false) is bool;
+        }
+
+        allow read: if isMember(hid);
+        allow create, update: if isMember(hid) && validTask();
+        // Las tareas no se borran: se archivan, para no dejar el historial huérfano.
+        allow delete: if false;
+      }
+
+      // ---------- Historial ----------
+      match /completions/{completionId} {
+        function validCompletion() {
+          let data = request.resource.data;
+          return data.keys().hasOnly([
+                   'taskId', 'title', 'icon', 'effort', 'zoneId', 'completedBy', 'completedOn',
+                   'completedAt', 'previous'])
+            && data.taskId is string
+            && validText(data.title, 60)
+            && data.effort in [1, 2, 3]
+            && data.completedOn.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && data.previous is map;
+        }
+
+        allow read: if isMember(hid);
+        // Cada uno apunta solo lo que ha hecho él.
+        allow create: if isMember(hid)
+          && request.resource.data.completedBy == uid()
+          && validCompletion();
+        allow update: if false;
+        // Borrar un registro es "deshacer".
+        allow delete: if isMember(hid);
+      }
+
+      // ---------- Agenda ----------
+      match /events/{eventId} {
+        function validEvent() {
+          let data = request.resource.data;
+          return data.keys().hasOnly([
+                   'title', 'type', 'date', 'endDate', 'time', 'location', 'notes', 'participants',
+                   'reminders', 'yearly', 'createdBy', 'createdAt'])
+            && validText(data.title, 80)
+            && data.type in ['plan', 'appointment', 'birthday']
+            && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && (data.endDate == null || data.endDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'))
+            && (data.time == null || data.time.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$'))
+            && data.location is string && data.location.size() <= 120
+            && data.notes is string && data.notes.size() <= 1000
+            && data.participants is list
+            && data.reminders is list && data.reminders.size() <= 5
+            && data.yearly is bool;
+        }
+
+        allow read, delete: if isMember(hid);
+        allow create, update: if isMember(hid) && validEvent();
+      }
+
+      // ---------- Notas compartidas ----------
+      match /notes/{noteId} {
+        function validNote() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(['title', 'body', 'pinned', 'updatedAt', 'updatedBy'])
+            && data.title is string && data.title.size() <= 80
+            && data.body is string && data.body.size() <= 5000
+            && (data.title.size() > 0 || data.body.size() > 0)
+            && data.pinned is bool
+            && data.updatedAt is number
+            && data.updatedBy == uid();
+        }
+
+        allow read, delete: if isMember(hid);
+        allow create, update: if isMember(hid) && validNote();
+      }
+
+      // ---------- Menú semanal: un documento por día ----------
+      match /menu/{date} {
+        function validMeal(meal) {
+          return meal == null || (
+            meal is map
+            && meal.keys().hasOnly(['title', 'ingredients'])
+            && meal.title is string && meal.title.size() <= 80
+            && meal.ingredients is list && meal.ingredients.size() <= 30
+          );
+        }
+
+        function validDay() {
+          let data = request.resource.data;
+          return date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && data.keys().hasOnly(['lunch', 'dinner'])
+            && validMeal(data.get('lunch', null))
+            && validMeal(data.get('dinner', null));
+        }
+
+        allow read, delete: if isMember(hid);
+        allow create, update: if isMember(hid) && validDay();
+      }
+
+      // ---------- Lista de la compra ----------
+      match /shoppingItems/{itemId} {
+        function validItem() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(
+                   ['name', 'key', 'categoryId', 'checked', 'addedBy', 'checkedBy', 'addedAt'])
+            && validText(data.name, 60)
+            && validText(data.key, 80)
+            && validText(data.categoryId, 20)
+            && data.checked is bool;
+        }
+
+        allow read, delete: if isMember(hid);
+        allow create, update: if isMember(hid) && validItem();
+      }
+
+      // ---------- Catálogo del hogar: qué se compra y en qué categoría va ----------
+      match /catalog/{productKey} {
+        function validEntry() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(['name', 'categoryId', 'timesBought', 'lastBoughtAt'])
+            && validText(data.name, 60)
+            && validText(data.categoryId, 20)
+            // `number` y no `int`: en Android, React Native Firebase manda `increment(1)`
+            // como decimal y el contador queda guardado como 1.0.
+            && data.get('timesBought', 0) is number
+            && data.get('timesBought', 0) >= 0;
+        }
+
+        allow read, delete: if isMember(hid);
+        allow create, update: if isMember(hid) && validEntry();
+      }
     }
   }
 }

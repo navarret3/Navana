@@ -18,6 +18,7 @@ export const auth = getAuth();
 export const db = getFirestore();
 
 export {
+  deleteUser,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithCredential,

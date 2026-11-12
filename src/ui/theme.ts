@@ -1,11 +1,12 @@
-import type { TextStyle, ViewStyle } from 'react-native';
+import { Appearance, type TextStyle, type ViewStyle } from 'react-native';
 
 /**
- * Tokens de diseño de Navana: paleta cálida (crema, melocotón y salvia)
- * y tipografía redondeada (Nunito). El resto del kit solo usa estos valores.
+ * Tokens de diseño de Navana: paleta cálida (crema, melocotón y salvia) en claro y en
+ * oscuro, y tipografía redondeada (Nunito). El resto del kit solo usa estos valores.
  */
 
-export const colors = {
+/** Paleta clara: crema, melocotón y salvia. */
+const lightColors = {
   // Fondos
   background: '#FBF3E4',
   surface: '#FFFDF8',
@@ -26,10 +27,61 @@ export const colors = {
   ink: '#43342B',
   inkSoft: '#7C6A5E',
   inkMuted: '#A89A8E',
-  onPeach: '#43342B',
 
   danger: '#C8553D',
-} as const;
+
+  // Texto sobre colores que no cambian con el tema
+  /** Sobre melocotón (botones, día elegido) y sobre los colores de los miembros. */
+  onPeach: '#43342B',
+  /** Sobre rojo. */
+  onDanger: '#FFFFFF',
+  white: '#FFFFFF',
+
+  // Avisos flotantes ("Hecho: …  Deshacer"): van en contraste con el fondo.
+  banner: '#43342B',
+  onBanner: '#FFFDF8',
+  bannerAccent: '#F6A77C',
+};
+
+type Palette = Record<keyof typeof lightColors, string>;
+
+/** Paleta oscura: los mismos tonos cálidos sobre marrón muy oscuro. */
+const darkColors: Palette = {
+  background: '#1F1A17',
+  surface: '#2A2420',
+  surfaceSunken: '#362E29',
+  border: '#4A3E36',
+
+  peach: '#F6A77C',
+  peachDeep: '#F4B592',
+  peachSoft: '#4E382D',
+
+  sage: '#7FA07A',
+  sageDeep: '#A8C3A0',
+  sageSoft: '#2F3A2D',
+
+  ink: '#F3E9DC',
+  inkSoft: '#C7B8A9',
+  inkMuted: '#928273',
+
+  danger: '#E5735B',
+
+  onPeach: '#43342B',
+  onDanger: '#FFFFFF',
+  white: '#FFFFFF',
+
+  banner: '#F3E9DC',
+  onBanner: '#2A2420',
+  bannerAccent: '#D96F42',
+};
+
+/**
+ * El tema sigue al del sistema. Se decide una vez, al arrancar la app: los estilos se
+ * crean con estos valores, así que un cambio de tema del sistema se ve al reabrirla.
+ */
+export const isDark = Appearance.getColorScheme() === 'dark';
+
+export const colors: Palette = isDark ? darkColors : lightColors;
 
 export type ColorName = keyof typeof colors;
 

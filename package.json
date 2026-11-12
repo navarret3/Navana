@@ -11,20 +11,26 @@
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
     "test": "jest",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run test && npm run test:rules",
+    "test:rules": "npx --yes firebase-tools@15 emulators:exec --only firestore --project demo-navana \"jest --config tests/rules/jest.config.js\"",
+    "deploy:rules": "npx --yes firebase-tools@15 deploy --only firestore:rules,firestore:indexes --project navana-1663e"
   },
   "jest": {
     "preset": "jest-expo",
     "moduleNameMapper": {
       "^@/assets/(.*)$": "<rootDir>/assets/$1",
       "^@/(.*)$": "<rootDir>/src/$1"
-    }
+    },
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/tests/rules/"
+    ]
   },
   "dependencies": {
     "@expo-google-fonts/nunito": "^0.4.2",
-    "@react-native-firebase/app": "^27.1.1",
-    "@react-native-firebase/auth": "^27.1.1",
-    "@react-native-firebase/firestore": "^27.1.1",
+    "@react-native-firebase/app": "26.4.2",
+    "@react-native-firebase/auth": "26.4.2",
+    "@react-native-firebase/firestore": "26.4.2",
     "@react-native-google-signin/google-signin": "^17.0.0",
     "date-fns": "^4.4.0",
     "expo": "~58.0.24",
@@ -58,6 +64,7 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
     "eslint": "^9.39.5",

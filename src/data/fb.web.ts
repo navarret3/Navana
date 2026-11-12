@@ -28,6 +28,7 @@ export const db = getFirestore(app);
 connectFirestoreEmulator(db, EMULATOR_HOST, 8080);
 
 export {
+  deleteUser,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithCredential,

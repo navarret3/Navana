@@ -1,0 +1,82 @@
+{
+  "produce": [
+    "tomates", "tomates cherry", "lechuga", "cebollas", "cebolletas", "ajos", "patatas", "boniatos",
+    "zanahorias", "pimientos rojos", "pimientos verdes", "pimientos", "pepinos", "calabacines",
+    "berenjenas", "calabaza", "brócoli", "coliflor", "col", "espinacas", "acelgas", "rúcula", "canónigos",
+    "apio", "puerros", "judías verdes", "champiñones", "setas", "espárragos", "alcachofas", "remolacha",
+    "rábanos", "maíz", "aguacates", "limones", "limas", "naranjas", "mandarinas", "manzanas", "peras",
+    "plátanos", "uvas", "fresas", "frambuesas", "arándanos", "melocotones", "nectarinas", "albaricoques",
+    "ciruelas", "cerezas", "kiwis", "piña", "mangos", "melón", "sandía", "granadas", "higos", "pomelos",
+    "perejil", "cilantro", "albahaca", "hierbabuena", "jengibre", "ensalada", "fruta", "verdura"
+  ],
+  "meatFish": [
+    "pollo", "pechugas de pollo", "muslos de pollo", "pavo", "pechuga de pavo", "ternera", "carne picada",
+    "filetes", "hamburguesas", "cerdo", "lomo", "costillas", "chuletas", "cordero", "conejo", "salchichas",
+    "chorizo", "jamón", "jamón serrano", "jamón york", "bacon", "panceta", "salchichón", "fuet", "mortadela",
+    "morcilla", "pescado", "salmón", "merluza", "bacalao", "atún fresco", "dorada", "lubina", "sardinas",
+    "boquerones", "gambas", "langostinos", "mejillones", "almejas", "calamares", "sepia", "pulpo", "surimi"
+  ],
+  "dairy": [
+    "leche", "leche sin lactosa", "leche de avena", "leche de soja", "leche de almendra", "yogures",
+    "yogures griegos", "yogures naturales", "kéfir", "queso", "queso rallado", "queso fresco",
+    "queso de cabra", "queso en lonchas", "queso crema", "mozzarella", "parmesano", "requesón",
+    "mantequilla", "margarina", "nata", "nata para cocinar", "huevos", "natillas", "flanes", "cuajada",
+    "batidos"
+  ],
+  "bakery": [
+    "pan", "barra de pan", "pan de molde", "pan integral", "pan rallado", "pan de hamburguesa", "baguette",
+    "tortillas de trigo", "pan tostado", "biscotes", "picos", "croissants", "magdalenas", "bollos",
+    "bizcocho", "empanada", "masa de pizza", "masa de hojaldre"
+  ],
+  "pantry": [
+    "arroz", "pasta", "espaguetis", "macarrones", "fideos", "tallarines", "lasaña", "cuscús", "quinoa",
+    "lentejas", "garbanzos", "alubias", "judías blancas", "harina", "azúcar", "sal", "pimienta", "aceite",
+    "aceite de oliva", "aceite de girasol", "vinagre", "tomate frito", "tomate triturado",
+    "salsa de tomate", "kétchup", "mayonesa", "mostaza", "salsa de soja", "caldo", "pastillas de caldo",
+    "sopa", "puré", "atún", "atún en lata", "sardinas en lata", "mejillones en lata", "berberechos",
+    "anchoas", "aceitunas", "pepinillos", "maíz dulce", "espárragos en lata", "pimientos del piquillo",
+    "champiñones en lata", "legumbres cocidas", "garbanzos cocidos", "lentejas cocidas", "pimentón",
+    "orégano", "comino", "canela", "curry", "laurel", "ajo en polvo", "levadura", "bicarbonato", "miel",
+    "mermelada", "nueces", "almendras", "avellanas", "cacahuetes", "pistachos", "pipas", "pasas",
+    "frutos secos", "tomates secos", "leche de coco", "leche condensada", "gelatina", "maicena", "sémola",
+    "tortitas de arroz", "picatostes"
+  ],
+  "frozen": [
+    "pizza", "pizza congelada", "helado", "hielo", "guisantes", "verdura congelada",
+    "espinacas congeladas", "patatas fritas congeladas", "croquetas", "empanadillas", "nuggets",
+    "varitas de pescado", "gambas congeladas", "lasaña congelada", "pescado congelado", "fruta congelada",
+    "san jacobos", "calamares a la romana"
+  ],
+  "drinks": [
+    "agua", "agua con gas", "zumo", "zumo de naranja", "refrescos", "cola", "tónica", "gaseosa", "cerveza",
+    "cerveza sin alcohol", "vino", "vino tinto", "vino blanco", "cava", "sidra", "vermut", "café",
+    "café molido", "cápsulas de café", "café soluble", "descafeinado", "té", "infusiones", "manzanilla",
+    "cacao", "bebida isotónica", "horchata", "limonada"
+  ],
+  "snacks": [
+    "galletas", "cereales", "avena", "muesli", "chocolate", "tableta de chocolate", "crema de cacao",
+    "bombones", "caramelos", "chicles", "gominolas", "patatas fritas", "palomitas", "snacks", "barritas",
+    "turrón", "polvorones", "tostadas", "crema de cacahuete", "sirope", "nata montada", "chuches",
+    "regaliz", "aperitivos"
+  ],
+  "cleaning": [
+    "detergente", "suavizante", "lavavajillas", "pastillas de lavavajillas", "sal de lavavajillas",
+    "abrillantador", "fregasuelos", "lejía", "amoniaco", "limpiacristales", "multiusos", "desengrasante",
+    "quitagrasas", "estropajos", "bayetas", "fregona", "escoba", "recogedor", "guantes",
+    "bolsas de basura", "papel de cocina", "papel de aluminio", "papel de horno", "film transparente",
+    "servilletas", "ambientador", "insecticida", "pilas", "bombillas", "velas", "cerillas", "mechero",
+    "bolsas de congelación"
+  ],
+  "hygiene": [
+    "papel higiénico", "gel", "gel de ducha", "champú", "acondicionador", "jabón", "jabón de manos",
+    "pasta de dientes", "cepillo de dientes", "hilo dental", "enjuague bucal", "desodorante", "crema",
+    "crema hidratante", "crema solar", "maquinillas", "espuma de afeitar", "compresas", "tampones",
+    "salvaslips", "pañuelos", "bastoncillos", "algodón", "toallitas", "tiritas", "paracetamol",
+    "ibuprofeno", "pañales", "colonia", "cuchillas", "esponja", "laca", "gomina"
+  ],
+  "pets": [
+    "pienso", "pienso de gato", "comida de gato", "latas de gato", "comida húmeda", "arena de gato",
+    "arena", "premios de gato", "snacks de gato", "malta", "rascador", "juguetes de gato",
+    "pienso de perro", "bolsas de perro"
+  ]
+}
