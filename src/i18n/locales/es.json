@@ -1,0 +1,81 @@
+{
+  "common": {
+    "appName": "Navana",
+    "back": "Volver"
+  },
+  "tabs": {
+    "today": "Hoy",
+    "tasks": "Tareas",
+    "shopping": "Compra",
+    "agenda": "Agenda"
+  },
+  "today": {
+    "greeting": {
+      "morning": "¡Buenos días!",
+      "afternoon": "¡Buenas tardes!",
+      "evening": "¡Buenas noches!"
+    },
+    "openSettings": "Abrir ajustes",
+    "noModules": {
+      "title": "Todo apagado",
+      "description": "Activa algún módulo en los ajustes para ver aquí vuestro día."
+    }
+  },
+  "tasks": {
+    "title": "Tareas",
+    "description": "Tareas de casa y a quién le tocan",
+    "empty": {
+      "title": "Ni una tarea a la vista",
+      "description": "Cuando añadáis las tareas de casa aparecerán aquí, repartidas entre los dos."
+    },
+    "todayCard": {
+      "title": "Tareas de hoy",
+      "empty": "Nada pendiente. Hasta los gatos aprueban esta calma."
+    }
+  },
+  "shopping": {
+    "title": "Compra",
+    "description": "Una lista compartida, también sin cobertura",
+    "empty": {
+      "title": "La lista está vacía",
+      "description": "Apuntad aquí lo que falte y lo veréis los dos al momento."
+    },
+    "todayCard": {
+      "title": "Lista de la compra",
+      "empty": "No hace falta nada por ahora."
+    }
+  },
+  "agenda": {
+    "title": "Agenda",
+    "description": "Planes, citas y cumpleaños",
+    "empty": {
+      "title": "Sin planes todavía",
+      "description": "Vuestros planes, citas y cumpleaños vivirán aquí."
+    },
+    "todayCard": {
+      "title": "Próximo plan",
+      "empty": "No hay planes a la vista. ¿Sofá y manta?"
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "modules": {
+      "title": "Módulos",
+      "description": "Elegid qué partes de Navana usáis en casa."
+    },
+    "environment": {
+      "title": "Entorno de desarrollo",
+      "backend": {
+        "emulator": "Emuladores locales de Firebase",
+        "firebase": "Proyecto de Firebase"
+      },
+      "status": {
+        "idle": "Sin comprobar",
+        "checking": "Comprobando…",
+        "ok": "Conectado",
+        "unreachable": "Sin conexión"
+      },
+      "check": "Comprobar conexión"
+    }
+  }
+}
