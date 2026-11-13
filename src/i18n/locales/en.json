@@ -521,6 +521,10 @@
     }
   },
   "updates": {
+    "title": "There is a new version of Navana",
+    "body": "Update to see the latest changes. It takes a couple of seconds and nothing is lost.",
+    "now": "Update now",
+    "later": "Later",
     "ready": "There is a new version of Navana.",
     "restart": "Update"
   },
