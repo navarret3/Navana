@@ -508,7 +508,11 @@
         "pushFailed": "No se ha podido entregar: {{reason}}",
         "invalidCredentials": "Falta o no vale la clave de Firebase (FCM V1) en Expo. Hay que subirla en expo.dev → Credentials → Android.",
         "deviceNotRegistered": "El identificador de este móvil ya no vale. Cierra la app del todo y vuelve a abrirla.",
-        "failed": "No se ha podido hacer la prueba: {{reason}}"
+        "failed": "No se ha podido hacer la prueba: {{reason}}",
+        "checking": "comprobando…",
+        "registerFailed": "No se ha podido registrar este móvil: {{reason}}",
+        "partnerNotRegistered": "El móvil de {{name}} ya no está registrado para recibir avisos. Que abra Navana en su móvil y entre en Ajustes → Avisos: al entrar se vuelve a registrar solo. Luego repite esta prueba.",
+        "partnerFailed": "No se ha podido entregar a {{name}}: {{reason}}"
       }
     },
     "account": {

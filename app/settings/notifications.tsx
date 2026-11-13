@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, StyleSheet, Switch, View } from 'react-native';
 
-import { updateNotifyPrefs } from '@/data/households';
+import { addPushToken, updateNotifyPrefs } from '@/data/households';
 import type { Member, NotifyPrefs } from '@/domain/household';
 import {
   getPermissionState,
@@ -48,6 +48,13 @@ export default function NotificationsScreen() {
   const [enabling, setEnabling] = useState(false);
   const [failed, setFailed] = useState(false);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
+  /** Identificador de avisos de este móvil. `undefined` mientras se averigua. */
+  const [deviceToken, setDeviceToken] = useState<string | null | undefined>(undefined);
+  const [registerError, setRegisterError] = useState<string | null>(null);
+
+  const householdId = household?.id;
+  const uid = me?.uid;
+  const savedTokens = me?.pushTokens;
 
   useEffect(() => {
     let cancelled = false;
@@ -58,6 +65,30 @@ export default function NotificationsScreen() {
       cancelled = true;
     };
   }, []);
+
+  // Al entrar se comprueba que el identificador de ESTE móvil está apuntado en la ficha, y
+  // si no lo está se apunta. Tener alguno apuntado no basta: puede ser de una instalación
+  // anterior que ya no vale, y entonces los avisos de la pareja no llegan a ningún sitio.
+  useEffect(() => {
+    if (permission !== 'granted' || !householdId || !uid || !savedTokens) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await getPushToken();
+        if (cancelled) return;
+        setDeviceToken(token);
+        setRegisterError(null);
+        if (token && !savedTokens.includes(token)) await addPushToken(householdId, uid, token);
+      } catch (error) {
+        if (cancelled) return;
+        setDeviceToken(null);
+        setRegisterError(reasonOf(error));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [permission, householdId, uid, savedTokens]);
 
   if (!household || !me) return null;
 
@@ -149,8 +180,8 @@ export default function NotificationsScreen() {
     }
   };
 
-  // Prueba 3: un aviso al móvil de la otra persona, por el mismo camino que cuando se hace
-  // una tarea. Dice si Expo y Google lo aceptan para sus móviles o por qué no.
+  // Prueba 3: un aviso a los móviles de la otra persona, por el mismo camino que cuando se
+  // hace una tarea. Dice, móvil por móvil, si Expo y Google lo aceptan o por qué no.
   const testPartner = async (member: Member) => {
     setTesting(true);
     setTestResult({ text: t('settings.notifications.test.pushSending'), ok: true });
@@ -162,17 +193,32 @@ export default function NotificationsScreen() {
       await wait(RECEIPT_WAIT_MS);
       const results = await Promise.all(
         tickets.map(async (ticket) =>
-          ticket.status === 'ok' && ticket.id ? ((await getExpoPushReceipt(ticket.id)) ?? ticket) : ticket,
+          ticket.status === 'ok' && ticket.id
+            ? ((await getExpoPushReceipt(ticket.id)) ?? ticket)
+            : ticket,
         ),
       );
-      const failed = results.find((result) => result.status === 'error');
-      if (results.some((result) => result.status === 'ok')) {
+      const failed = results.filter((result) => result.status === 'error');
+      const reasons = [
+        ...new Set(
+          failed.map((result) => [result.error, result.message].filter(Boolean).join(': ') || '?'),
+        ),
+      ].join(' · ');
+      if (failed.length < results.length) {
         setTestResult({
           text: t('settings.notifications.test.partnerOk', { name: member.name }),
           ok: true,
         });
+      } else if (failed.every((result) => result.error === 'DeviceNotRegistered')) {
+        setTestResult({
+          text: t('settings.notifications.test.partnerNotRegistered', { name: member.name }),
+          ok: false,
+        });
       } else {
-        setTestResult({ text: explain(failed ?? { status: 'error' }), ok: false });
+        setTestResult({
+          text: t('settings.notifications.test.partnerFailed', { name: member.name, reason: reasons }),
+          ok: false,
+        });
       }
     } catch (error) {
       setTestResult({
@@ -184,6 +230,7 @@ export default function NotificationsScreen() {
     }
   };
 
+  const registered = !!deviceToken && me.pushTokens.includes(deviceToken);
   const others = members.filter((member) => member.uid !== me.uid);
   const changeHour = (delta: number) =>
     change({ summaryHour: (me.notify.summaryHour + delta + 24) % 24 });
@@ -219,7 +266,7 @@ export default function NotificationsScreen() {
         <Card tone="sage">
           <Text>🔔 {t('settings.notifications.granted')}</Text>
           <Text variant="caption" color="inkSoft">
-            {me.pushTokens.length > 0
+            {registered
               ? t('settings.notifications.pushReady')
               : t('settings.notifications.pushMissing')}
           </Text>
@@ -244,8 +291,7 @@ export default function NotificationsScreen() {
       {failed ? (
         <Text variant="caption" color="danger">
           {t('settings.notifications.error')}
-          {__DEV__ && errorDetail ? `
-${errorDetail}` : ''}
+          {errorDetail ? ` ${errorDetail}` : ''}
         </Text>
       ) : null}
 
@@ -288,10 +334,17 @@ ${errorDetail}` : ''}
           <Text variant="heading">🧪 {t('settings.notifications.test.title')}</Text>
           <Text variant="caption" color="inkSoft">
             {t('settings.notifications.test.thisPhone')}:{' '}
-            {me.pushTokens.length > 0
+            {registered
               ? t('settings.notifications.test.registered')
-              : t('settings.notifications.test.notRegistered')}
+              : deviceToken === undefined && permission === 'granted'
+                ? t('settings.notifications.test.checking')
+                : t('settings.notifications.test.notRegistered')}
           </Text>
+          {registerError ? (
+            <Text variant="caption" color="danger">
+              {t('settings.notifications.test.registerFailed', { reason: registerError })}
+            </Text>
+          ) : null}
           {others.map((member) => (
             <Text key={member.uid} variant="caption" color="inkSoft">
               {member.pushTokens.length === 0

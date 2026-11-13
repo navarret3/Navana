@@ -508,7 +508,11 @@
         "pushFailed": "It could not be delivered: {{reason}}",
         "invalidCredentials": "The Firebase key (FCM V1) is missing or invalid in Expo. Upload it at expo.dev → Credentials → Android.",
         "deviceNotRegistered": "This phone's identifier is no longer valid. Close the app completely and open it again.",
-        "failed": "The test could not be run: {{reason}}"
+        "failed": "The test could not be run: {{reason}}",
+        "checking": "checking…",
+        "registerFailed": "This phone could not be registered: {{reason}}",
+        "partnerNotRegistered": "{{name}}’s phone is no longer registered to receive notifications. They should open Navana on their phone and go to Settings → Notifications: it registers itself again on entering. Then repeat this test.",
+        "partnerFailed": "It could not be delivered to {{name}}: {{reason}}"
       }
     },
     "account": {
