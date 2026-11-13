@@ -22,6 +22,26 @@ export async function saveUserProfile(user: UserProfile): Promise<void> {
 }
 
 /**
+ * Idioma que la persona ha elegido en su perfil, o `null` si no ha elegido ninguno. Va en su
+ * documento de usuario y no en el móvil, así que la acompaña si cambia de teléfono.
+ */
+export function watchUserLanguage(uid: string, onChange: (language: string | null) => void) {
+  return onSnapshot(
+    userRef(uid),
+    (snapshot) => {
+      const language: unknown = snapshot.data()?.settings?.language;
+      onChange(typeof language === 'string' ? language : null);
+    },
+    // Sin conexión o sin permiso no pasa nada: se sigue con el idioma que hubiera.
+    () => undefined,
+  );
+}
+
+export async function saveUserLanguage(uid: string, language: string): Promise<void> {
+  await setDoc(userRef(uid), { settings: { language } }, { merge: true });
+}
+
+/**
  * Avisa del hogar del usuario cada vez que cambia.
  *
  * Mientras se está creando un hogar o uniéndose a uno, espera a que la escritura

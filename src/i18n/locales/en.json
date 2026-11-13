@@ -395,7 +395,8 @@
       "nameLabel": "Name",
       "avatarLabel": "Avatar",
       "colorLabel": "Colour",
-      "nameRequired": "Write your name."
+      "nameRequired": "Write your name.",
+      "languageLabel": "Language"
     },
     "household": {
       "title": "Household",

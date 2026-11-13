@@ -2,8 +2,14 @@ import { create } from 'zustand';
 
 import { auth, onAuthStateChanged } from '@/data/fb';
 import { watchHousehold, watchMembers } from '@/data/households';
-import { saveUserProfile, watchUserHousehold, type UserProfile } from '@/data/users';
+import {
+  saveUserProfile,
+  watchUserHousehold,
+  watchUserLanguage,
+  type UserProfile,
+} from '@/data/users';
 import type { Household, Member } from '@/domain/household';
+import { isAppLanguage, setAppLanguage } from '@/i18n';
 import { startAgendaSync } from '@/state/agenda';
 import { startExtrasSync } from '@/state/extras';
 import { startShoppingSync } from '@/state/shopping';
@@ -51,6 +57,7 @@ export function useCurrentMember(): Member | null {
  */
 export function startSessionListener(): () => void {
   let stopUser: (() => void) | undefined;
+  let stopLanguage: (() => void) | undefined;
   let stopHousehold: (() => void) | undefined;
   let currentHouseholdId: string | null | undefined;
 
@@ -109,9 +116,13 @@ export function startSessionListener(): () => void {
   const stopAuth = onAuthStateChanged(auth, (firebaseUser) => {
     stopUser?.();
     stopUser = undefined;
+    stopLanguage?.();
+    stopLanguage = undefined;
     stopWatchingHousehold();
 
     if (!firebaseUser) {
+      // Sin sesión, la app vuelve al idioma del móvil.
+      setAppLanguage(null);
       useSession.setState({ status: 'signedOut', user: null, household: null, members: [] });
       return;
     }
@@ -126,11 +137,16 @@ export function startSessionListener(): () => void {
     // Si falla (sin conexión), se reintenta sola al volver la red: la escritura queda en cola.
     saveUserProfile(user).catch(() => undefined);
     stopUser = watchUserHousehold(user.uid, onHouseholdId, noHousehold);
+    // El idioma elegido en el perfil manda sobre el del móvil.
+    stopLanguage = watchUserLanguage(user.uid, (language) =>
+      setAppLanguage(isAppLanguage(language) ? language : null),
+    );
   });
 
   return () => {
     stopAuth();
     stopUser?.();
+    stopLanguage?.();
     stopWatchingHousehold();
   };
 }
