@@ -41,8 +41,9 @@ type TaskFormProps = {
   submitLabel: string;
   onSubmit: (draft: TaskDraft) => void;
   /**
-   * Alta de una tarea: propone tareas habituales mientras se escribe, elige el icono solo y
-   * deja plegado lo que casi nunca se toca. Al editar se ve todo.
+   * Alta de una tarea recurrente: propone tareas habituales mientras se escribe, elige el
+   * icono solo, no pregunta si se repite (siempre) y deja plegado lo que casi nunca se toca.
+   * Al editar se ve todo. Las tareas puntuales no pasan por aquí: se apuntan en "Tarea puntual".
    */
   isNew?: boolean;
   /** Títulos de las tareas que ya hay en el hogar, para no proponerlas otra vez. */
@@ -89,7 +90,8 @@ export function TaskForm({
   const [titleError, setTitleError] = useState<string | null>(null);
   const [intervalError, setIntervalError] = useState<string | null>(null);
 
-  const suggestions = isNew && title !== picked ? suggestChores(title, existingTitles) : [];
+  const suggestions =
+    isNew && title !== picked ? suggestChores(title, existingTitles, 5, true) : [];
 
   const changeTitle = (value: string) => {
     setTitle(value);
@@ -200,17 +202,19 @@ export function TaskForm({
         )}
       </View>
 
-      <ChipGroup<Frequency>
-        label={t('tasks.form.frequencyLabel')}
-        options={[
-          { value: 'repeat', label: t('tasks.form.repeat') },
-          { value: 'once', label: t('tasks.form.once') },
-          { value: 'onDemand', label: t('tasks.form.onDemand') },
-        ]}
-        value={frequency}
-        onChange={setFrequency}
-        hint={onDemand ? t('tasks.form.onDemandHint') : undefined}
-      />
+      {isNew ? null : (
+        <ChipGroup<Frequency>
+          label={t('tasks.form.frequencyLabel')}
+          options={[
+            { value: 'repeat', label: t('tasks.form.repeat') },
+            { value: 'once', label: t('tasks.form.once') },
+            { value: 'onDemand', label: t('tasks.form.onDemand') },
+          ]}
+          value={frequency}
+          onChange={setFrequency}
+          hint={onDemand ? t('tasks.form.onDemandHint') : undefined}
+        />
+      )}
       {repeats ? (
         <ChipGroup<number>
           label={t('tasks.form.everyLabel')}

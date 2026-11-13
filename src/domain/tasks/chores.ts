@@ -83,16 +83,21 @@ const MIN_WORD = 3;
 /**
  * Tareas habituales que encajan con lo escrito y que aún no existen en el hogar. Primero
  * las que empiezan por el texto y después las que tienen una palabra que empieza por él.
- * Sin texto devuelve las más habituales, como ideas.
+ * Sin texto devuelve las más habituales, como ideas. Con `recurringOnly` deja fuera las
+ * que se hacen "cuando surge": es lo que se propone al crear una tarea recurrente.
  */
 export function suggestChores(
   text: string,
   existingTitles: readonly string[] = [],
   limit = 5,
+  recurringOnly = false,
 ): Chore[] {
   const query = normalizeName(text);
   const existing = new Set(existingTitles.map(normalizeName));
-  const available = CHORES.filter((entry) => !existing.has(normalizeName(entry.title)));
+  const available = CHORES.filter(
+    (entry) =>
+      !existing.has(normalizeName(entry.title)) && (!recurringOnly || entry.intervalDays !== null),
+  );
   if (!query) return available.slice(0, limit);
 
   const starts: Chore[] = [];

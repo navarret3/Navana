@@ -16,6 +16,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { LoadingScreen } from '@/features/session/LoadingScreen';
 import { NoticeBanner } from '@/features/session/NoticeBanner';
+import { UpdateBanner } from '@/features/session/UpdateBanner';
+import { initNotifications } from '@/notifications/device';
 import { startSessionListener, useSession } from '@/state/session';
 import { colors, isDark } from '@/ui';
 
@@ -33,6 +35,12 @@ export default function RootLayout() {
   const status = useSession((state) => state.status);
 
   useEffect(() => startSessionListener(), []);
+
+  // El canal de avisos se crea nada más abrir la app, antes incluso de iniciar sesión: un
+  // aviso que llega a un móvil sin el canal creado no se muestra.
+  useEffect(() => {
+    initNotifications().catch((error) => console.warn('No se han podido preparar los avisos', error));
+  }, []);
 
   useEffect(() => {
     if (fontsReady) {
@@ -74,6 +82,7 @@ export default function RootLayout() {
           <Stack.Screen name="join/[code]" />
         </Stack>
       )}
+      <UpdateBanner />
       <NoticeBanner />
     </GestureHandlerRootView>
   );

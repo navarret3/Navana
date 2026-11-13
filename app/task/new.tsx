@@ -1,4 +1,3 @@
-import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { createTask } from '@/data/tasks';
@@ -14,8 +13,6 @@ import { Screen, ScreenHeader, useGoBack } from '@/ui';
 export default function NewTaskScreen() {
   const { t } = useTranslation();
   const goBack = useGoBack();
-  // Desde "Apuntar algo hecho" se llega con la opción "cuando surja" ya puesta.
-  const { onDemand } = useLocalSearchParams<{ onDemand?: string }>();
   const household = useSession((state) => state.household);
   const members = useSession((state) => state.members);
   const uid = useSession((state) => state.user?.uid);
@@ -28,11 +25,11 @@ export default function NewTaskScreen() {
     title: '',
     icon: TASK_ICONS[0],
     zoneId: null,
-    effort: onDemand ? 1 : 2,
+    effort: 2,
     mode: 'rotation',
     assigneeId: uid,
-    intervalDays: onDemand ? null : 7,
-    onDemand: !!onDemand,
+    intervalDays: 7,
+    onDemand: false,
     nextDueOn: toDateKey(new Date()),
   };
 

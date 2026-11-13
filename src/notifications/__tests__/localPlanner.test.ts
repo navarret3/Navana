@@ -76,10 +76,50 @@ describe('avisos locales', () => {
     ]);
   });
 
-  it('avisa de lo atrasado por la tarde, a partir del día siguiente al que tocaba', () => {
-    const overdue = plan([task({})]).filter((item) => item.kind === 'overdue');
-    expect(overdue[0]).toMatchObject({ day: '2026-11-13', at: new Date(2026, 10, 13, 19, 0) });
-    expect(overdue).toHaveLength(PLAN_DAYS - 1);
+  it('a las 18:00 recuerda lo del día que sigue sin hacer, desde el mismo día que toca', () => {
+    const pending = plan([task({})]).filter((item) => item.kind === 'overdue');
+    expect(pending[0]).toMatchObject({ day: '2026-11-12', at: new Date(2026, 10, 12, 18, 0), count: 1 });
+    expect(pending).toHaveLength(PLAN_DAYS);
+    // Pasadas las 18:00, el de hoy ya no se programa.
+    const evening = new Date(2026, 10, 12, 18, 30);
+    expect(plan([task({})], { now: evening }).filter((item) => item.kind === 'overdue')[0]?.day).toBe(
+      '2026-11-13',
+    );
+  });
+
+  describe('tareas por turnos', () => {
+    const daily = (assigneeId: string, overrides: Partial<Task> = {}) =>
+      task({ title: 'Arenero', mode: 'rotation', assigneeId, intervalDays: 1, ...overrides });
+    const summaryDays = (tasks: Task[]) =>
+      plan(tasks)
+        .filter((item) => item.kind === 'summary')
+        .map((item) => item.day);
+
+    it('si hoy le toca al otro, mi móvil ya sabe que mañana me toca a mí', () => {
+      expect(summaryDays([daily(BRUNO)])).toEqual(['2026-11-13', '2026-11-15', '2026-11-17']);
+    });
+
+    it('si hoy me toca a mí, sigue pendiente hasta que la haga', () => {
+      expect(summaryDays([daily(ANA)])).toHaveLength(PLAN_DAYS);
+    });
+
+    it('cuenta desde hoy si la del otro va con retraso', () => {
+      const late = daily(BRUNO, { intervalDays: 2, nextDueOn: '2026-11-09' });
+      // Se da por hecha hoy (día 12): la siguiente es mía el 14 y la otra mía, el 18.
+      expect(summaryDays([late])).toEqual(['2026-11-14', '2026-11-18']);
+    });
+
+    it('lo fijo de otra persona y lo que no se repite nunca pasan a ser míos', () => {
+      expect(summaryDays([task({ assigneeId: BRUNO, intervalDays: 1 })])).toEqual([]);
+      expect(summaryDays([daily(BRUNO, { intervalDays: null })])).toEqual([]);
+    });
+
+    it('nombra primero lo que lleva más tiempo esperando', () => {
+      const [first] = plan([daily(BRUNO), task({ title: 'Baño', nextDueOn: '2026-11-10' })]).filter(
+        (item) => item.day === '2026-11-13' && item.kind === 'summary',
+      );
+      expect(first).toMatchObject({ count: 2, firstTitle: 'Baño' });
+    });
   });
 
   it('respeta las preferencias', () => {
@@ -91,8 +131,14 @@ describe('avisos locales', () => {
   });
 
   it('usa la hora elegida para el resumen', () => {
-    const [first] = plan([task({})], { prefs: { ...PREFS, summaryHour: 20 } });
-    expect(first).toMatchObject({ kind: 'summary', at: new Date(2026, 10, 12, 20, 0) });
+    const summary = plan([task({})], { prefs: { ...PREFS, summaryHour: 20 } }).find(
+      (item) => item.kind === 'summary',
+    );
+    expect(summary).toMatchObject({ at: new Date(2026, 10, 12, 20, 0) });
+    // Vale cualquier hora del día, también de madrugada.
+    const early = new Date(2026, 10, 12, 0, 30);
+    const [first] = plan([task({})], { now: early, prefs: { ...PREFS, summaryHour: 6 } });
+    expect(first).toMatchObject({ kind: 'summary', at: new Date(2026, 10, 12, 6, 0) });
   });
 
   it('devuelve los avisos ordenados por fecha', () => {

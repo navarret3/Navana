@@ -68,18 +68,16 @@
     "empty": {
       "title": "Ni una tarea a la vista",
       "description": "Cuando añadáis las tareas de casa aparecerán aquí, repartidas entre los dos.",
-      "useTemplate": "Añadir tareas típicas",
-      "createOwn": "Crear una tarea"
+      "useTemplate": "Añadir tareas típicas"
     },
     "todayCard": {
       "title": "Tareas de hoy",
-      "empty": "Nada pendiente. Hasta los gatos aprueban esta calma.",
-      "free": "Libres, de quien las coja",
-      "others_one": "{{count}} tarea de los demás",
-      "others_other": "{{count}} tareas de los demás",
+      "empty": "Hoy no te toca nada. Hasta los gatos aprueban esta calma.",
       "seeAll": "Ver todas las tareas"
     },
-    "add": "Nueva tarea",
+    "addRecurring": "Añadir tarea recurrente",
+    "addRecurringHint": "Se repite cada cierto tiempo y le toca a alguien.",
+    "recurringHeading": "Tareas recurrentes",
     "noZone": "Sin zona",
     "due": {
       "today": "Hoy",
@@ -111,7 +109,7 @@
       "turnOf": "Le toca a {{name}}"
     },
     "form": {
-      "newTitle": "Nueva tarea",
+      "newTitle": "Nueva tarea recurrente",
       "editTitle": "Editar tarea",
       "titleLabel": "Qué hay que hacer",
       "titlePlaceholder": "Regar las plantas",
@@ -155,8 +153,9 @@
       "done": "Hecho: {{title}}",
       "history": "Historial",
       "balance": "Balance",
-      "nudge": "Dar un toque",
-      "nudgeSent": "Toque enviado"
+      "nudge": "Avisarle de esta tarea",
+      "nudgeSent": "Aviso enviado",
+      "nudgeTo": "Avisar a {{name}}: {{title}}"
     },
     "postpone": {
       "title": "Posponer hasta…",
@@ -232,10 +231,11 @@
       "uneven": "Esta vez {{name}} ha cargado con más."
     },
     "log": {
-      "button": "Realizar tarea",
-      "title": "Realizar tarea",
+      "buttonHint": "Algo que acabas de hacer. Solo hay que decir qué.",
+      "button": "Añadir tarea puntual",
+      "title": "Tarea puntual",
       "searchLabel": "¿Qué has hecho?",
-      "searchPlaceholder": "Busca una tarea o escribe una nueva",
+      "searchPlaceholder": "Escríbelo o elígelo de la lista",
       "hint": "Toca la que acabas de hacer: queda a tu nombre en el historial y en el balance.",
       "markDone": "Apuntar como hecha: {{title}}",
       "addNew": "Apuntar «{{title}}» como hecha",
@@ -418,6 +418,10 @@
       "newCode": "Generar otro código",
       "shareMessage": "Únete a «{{household}}» en Navana con el código {{code}}.\nSi ya tienes la app instalada: {{link}}"
     },
+    "version": {
+      "installed": "Navana {{version}}",
+      "updated": "Navana {{version}} · actualizada el {{date}}"
+    },
     "modules": {
       "title": "Módulos",
       "description": "Elegid qué partes de Navana usáis en casa."
@@ -458,14 +462,16 @@
       "title": "Avisos",
       "edit": "Qué avisos recibes y a qué hora",
       "dailySummary": "Resumen diario",
-      "dailySummaryHint": "Por la mañana, lo que te toca ese día.",
+      "dailySummaryHint": "A la hora que elijas, las tareas que te tocan ese día.",
       "summaryHour": "Hora del resumen",
-      "overdue": "Tareas atrasadas",
-      "overdueHint": "A las 19:00, si se te ha quedado algo.",
+      "earlier": "Una hora antes",
+      "later": "Una hora después",
+      "overdue": "Tareas sin hacer",
+      "overdueHint": "A las 18:00, si te queda alguna tarea del día.",
       "partnerCompleted": "Cuando el otro completa",
       "partnerCompletedHint": "Un aviso cuando tu pareja hace una tarea.",
-      "nudges": "Toques",
-      "nudgesHint": "Que te puedan dar un toque por una tarea.",
+      "nudges": "Avisos de tu pareja",
+      "nudgesHint": "Que te pueda avisar si no has hecho una tarea.",
       "denied": "Android tiene bloqueados los avisos de Navana. Hay que activarlos en los ajustes del sistema.",
       "unsupported": "Los avisos solo funcionan en el móvil.",
       "enable": "Activar avisos",
@@ -488,6 +494,10 @@
         "localSent": "Programado. Sal de la app: debería aparecer en 5 segundos.",
         "localTitle": "Aviso de prueba 🐾",
         "localBody": "Si ves esto, este móvil muestra los avisos de Navana.",
+        "partner": "Enviar aviso de prueba a {{name}}",
+        "partnerTitle": "Prueba de {{name}} 🐾",
+        "partnerBody": "Si ves esto, los avisos de {{name}} te llegan.",
+        "partnerOk": "Entregado a Google para el móvil de {{name}}. Si no lo ve, el problema está en su móvil: que abra Navana y revise en Android que los avisos de la app están permitidos y que el ahorro de batería no la limita.",
         "push": "Aviso de prueba por internet",
         "pushTitle": "Prueba por internet 🐾",
         "pushBody": "Si ves esto, los avisos entre móviles llegan a este.",
@@ -510,6 +520,10 @@
       "error": "No se ha podido completar. Comprueba la conexión e inténtalo de nuevo."
     }
   },
+  "updates": {
+    "ready": "Hay una versión nueva de Navana.",
+    "restart": "Actualizar"
+  },
   "notifications": {
     "summary": {
       "title": "Hoy en casa",
@@ -517,16 +531,16 @@
       "body_other": "Te tocan {{count}} tareas. La primera: {{first}}."
     },
     "overdue": {
-      "title": "Se ha quedado algo pendiente",
-      "body_one": "Sigue esperando: {{first}}.",
-      "body_other": "Tienes {{count}} tareas atrasadas, como {{first}}."
+      "title": "Te queda algo por hacer hoy",
+      "body_one": "Aún no has hecho: {{first}}.",
+      "body_other": "Te quedan {{count}} tareas por hacer, como {{first}}."
     },
     "completed": {
       "title": "{{name}} ha hecho una tarea",
       "body": "{{icon}} {{title}}"
     },
     "nudge": {
-      "title": "{{name}} te da un toque 🐾",
+      "title": "{{name}} te recuerda una tarea 🐾",
       "body": "{{icon}} {{title}}"
     },
     "event": {

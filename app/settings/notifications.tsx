@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Switch } from 'react-native';
+import { Linking, Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { updateNotifyPrefs } from '@/data/households';
-import type { NotifyPrefs } from '@/domain/household';
+import type { Member, NotifyPrefs } from '@/domain/household';
 import {
   getPermissionState,
   getPushToken,
@@ -14,9 +14,17 @@ import { getExpoPushReceipt, sendExpoPush, type PushResult } from '@/notificatio
 import { registerThisDevice } from '@/notifications/useNotificationSync';
 import { saveFailed } from '@/state/notices';
 import { useCurrentMember, useSession } from '@/state/session';
-import { Button, Card, ChipGroup, ListRow, Screen, ScreenHeader, Text, colors } from '@/ui';
-
-const SUMMARY_HOURS = [7, 8, 9, 10, 12, 20] as const;
+import {
+  Button,
+  Card,
+  ListRow,
+  Screen,
+  ScreenHeader,
+  Text,
+  colors,
+  minTouchSize,
+  spacing,
+} from '@/ui';
 
 /** Segundos que tarda en saltar el aviso de prueba: da tiempo a salir de la app. */
 const TEST_DELAY_SECONDS = 5;
@@ -70,6 +78,10 @@ export default function NotificationsScreen() {
     }
     setPermission(await getPermissionState());
     setEnabling(false);
+  };
+
+  const change = (changes: Partial<NotifyPrefs>) => {
+    updateNotifyPrefs(household.id, me.uid, changes).catch(saveFailed('No se han podido guardar los avisos'));
   };
 
   // Prueba 1: un aviso programado en este móvil. No pasa por internet: comprueba el permiso
@@ -137,11 +149,44 @@ export default function NotificationsScreen() {
     }
   };
 
-  const others = members.filter((member) => member.uid !== me.uid);
-
-  const change = (changes: Partial<NotifyPrefs>) => {
-    updateNotifyPrefs(household.id, me.uid, changes).catch(saveFailed('No se han podido guardar los avisos'));
+  // Prueba 3: un aviso al móvil de la otra persona, por el mismo camino que cuando se hace
+  // una tarea. Dice si Expo y Google lo aceptan para sus móviles o por qué no.
+  const testPartner = async (member: Member) => {
+    setTesting(true);
+    setTestResult({ text: t('settings.notifications.test.pushSending'), ok: true });
+    try {
+      const tickets = await sendExpoPush(member.pushTokens, {
+        title: t('settings.notifications.test.partnerTitle', { name: me.name }),
+        body: t('settings.notifications.test.partnerBody', { name: me.name }),
+      });
+      await wait(RECEIPT_WAIT_MS);
+      const results = await Promise.all(
+        tickets.map(async (ticket) =>
+          ticket.status === 'ok' && ticket.id ? ((await getExpoPushReceipt(ticket.id)) ?? ticket) : ticket,
+        ),
+      );
+      const failed = results.find((result) => result.status === 'error');
+      if (results.some((result) => result.status === 'ok')) {
+        setTestResult({
+          text: t('settings.notifications.test.partnerOk', { name: member.name }),
+          ok: true,
+        });
+      } else {
+        setTestResult({ text: explain(failed ?? { status: 'error' }), ok: false });
+      }
+    } catch (error) {
+      setTestResult({
+        text: t('settings.notifications.test.failed', { reason: reasonOf(error) }),
+        ok: false,
+      });
+    } finally {
+      setTesting(false);
+    }
   };
+
+  const others = members.filter((member) => member.uid !== me.uid);
+  const changeHour = (delta: number) =>
+    change({ summaryHour: (me.notify.summaryHour + delta + 24) % 24 });
 
   const toggleRow = (key: Toggle, icon: string) => (
     <ListRow
@@ -207,12 +252,28 @@ ${errorDetail}` : ''}
       <Card>
         {toggleRow('dailySummary', '🌅')}
         {me.notify.dailySummary ? (
-          <ChipGroup<number>
-            label={t('settings.notifications.summaryHour')}
-            options={SUMMARY_HOURS.map((hour) => ({ value: hour, label: `${hour}:00` }))}
-            value={me.notify.summaryHour}
-            onChange={(summaryHour) => change({ summaryHour })}
-          />
+          <View style={styles.hourRow}>
+            <Text color="inkSoft" style={styles.hourLabel}>
+              {t('settings.notifications.summaryHour')}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.notifications.earlier')}
+              onPress={() => changeHour(-1)}
+              style={({ pressed }) => [styles.hourButton, pressed && styles.pressed]}>
+              <Text variant="title">−</Text>
+            </Pressable>
+            <Text variant="heading" style={styles.hour} accessibilityLiveRegion="polite">
+              {me.notify.summaryHour}:00
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.notifications.later')}
+              onPress={() => changeHour(1)}
+              style={({ pressed }) => [styles.hourButton, pressed && styles.pressed]}>
+              <Text variant="title">+</Text>
+            </Pressable>
+          </View>
         ) : null}
         {toggleRow('overdue', '⏰')}
       </Card>
@@ -256,6 +317,17 @@ ${errorDetail}` : ''}
             loading={testing}
             onPress={testPush}
           />
+          {others
+            .filter((member) => member.pushTokens.length > 0)
+            .map((member) => (
+              <Button
+                key={member.uid}
+                variant="secondary"
+                label={t('settings.notifications.test.partner', { name: member.name })}
+                loading={testing}
+                onPress={() => testPartner(member)}
+              />
+            ))}
           {testResult ? (
             <Text
               variant="caption"
@@ -269,3 +341,30 @@ ${errorDetail}` : ''}
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  hourRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  hourLabel: {
+    flex: 1,
+  },
+  hourButton: {
+    width: minTouchSize,
+    height: minTouchSize,
+    borderRadius: minTouchSize / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  pressed: {
+    backgroundColor: colors.surfaceSunken,
+  },
+  hour: {
+    minWidth: 64,
+    textAlign: 'center',
+  },
+});

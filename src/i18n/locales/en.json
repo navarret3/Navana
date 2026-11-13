@@ -68,18 +68,16 @@
     "empty": {
       "title": "Not a chore in sight",
       "description": "Once you add your household chores they'll show up here, shared between the two of you.",
-      "useTemplate": "Add typical chores",
-      "createOwn": "Create a chore"
+      "useTemplate": "Add typical chores"
     },
     "todayCard": {
       "title": "Today's chores",
-      "empty": "Nothing to do. Even the cats approve of this calm.",
-      "free": "Up for grabs",
-      "others_one": "{{count}} chore for the others",
-      "others_other": "{{count}} chores for the others",
+      "empty": "Nothing for you today. Even the cats approve of this calm.",
       "seeAll": "See all chores"
     },
-    "add": "New chore",
+    "addRecurring": "Add recurring chore",
+    "addRecurringHint": "It repeats every so often and it is someone’s turn.",
+    "recurringHeading": "Recurring chores",
     "noZone": "No area",
     "due": {
       "today": "Today",
@@ -111,7 +109,7 @@
       "turnOf": "{{name}}'s turn"
     },
     "form": {
-      "newTitle": "New chore",
+      "newTitle": "New recurring chore",
       "editTitle": "Edit chore",
       "titleLabel": "What needs doing",
       "titlePlaceholder": "Water the plants",
@@ -155,8 +153,9 @@
       "done": "Done: {{title}}",
       "history": "History",
       "balance": "Balance",
-      "nudge": "Send a nudge",
-      "nudgeSent": "Nudge sent"
+      "nudge": "Remind them about this chore",
+      "nudgeSent": "Reminder sent",
+      "nudgeTo": "Remind {{name}}: {{title}}"
     },
     "postpone": {
       "title": "Postpone until…",
@@ -232,10 +231,11 @@
       "uneven": "This time {{name}} has carried more."
     },
     "log": {
-      "button": "Log a chore",
-      "title": "Log a chore",
+      "buttonHint": "Something you just did. Just say what.",
+      "button": "Add one-off chore",
+      "title": "One-off chore",
       "searchLabel": "What did you do?",
-      "searchPlaceholder": "Find a chore or type a new one",
+      "searchPlaceholder": "Type it or pick it from the list",
       "hint": "Tap what you just did: it goes under your name in the history and the balance.",
       "markDone": "Log as done: {{title}}",
       "addNew": "Log “{{title}}” as done",
@@ -418,6 +418,10 @@
       "newCode": "Generate another code",
       "shareMessage": "Join “{{household}}” on Navana with the code {{code}}.\nIf you already have the app installed: {{link}}"
     },
+    "version": {
+      "installed": "Navana {{version}}",
+      "updated": "Navana {{version}} · updated on {{date}}"
+    },
     "modules": {
       "title": "Modules",
       "description": "Choose which parts of Navana you use at home."
@@ -458,14 +462,16 @@
       "title": "Notifications",
       "edit": "Which notifications you get and when",
       "dailySummary": "Daily summary",
-      "dailySummaryHint": "In the morning, what's yours to do that day.",
+      "dailySummaryHint": "At the time you choose, the chores that are yours that day.",
       "summaryHour": "Summary time",
-      "overdue": "Overdue chores",
-      "overdueHint": "At 19:00, if something has been left undone.",
+      "earlier": "One hour earlier",
+      "later": "One hour later",
+      "overdue": "Chores not done",
+      "overdueHint": "At 18:00, if one of the day’s chores is still pending.",
       "partnerCompleted": "When the other completes",
       "partnerCompletedHint": "A notification when your partner does a chore.",
-      "nudges": "Nudges",
-      "nudgesHint": "Let the others nudge you about a chore.",
+      "nudges": "Reminders from your partner",
+      "nudgesHint": "Let them remind you when you have not done a chore.",
       "denied": "Android is blocking Navana's notifications. They have to be turned on in the system settings.",
       "unsupported": "Notifications only work on the phone.",
       "enable": "Turn on notifications",
@@ -488,6 +494,10 @@
         "localSent": "Scheduled. Leave the app: it should show up in 5 seconds.",
         "localTitle": "Test notification 🐾",
         "localBody": "If you can see this, this phone shows Navana's notifications.",
+        "partner": "Send a test notification to {{name}}",
+        "partnerTitle": "Test from {{name}} 🐾",
+        "partnerBody": "If you can see this, notifications from {{name}} reach you.",
+        "partnerOk": "Delivered to Google for {{name}}’s phone. If they cannot see it, the problem is on their phone: they should open Navana and check in Android that the app’s notifications are allowed and that battery saving does not restrict it.",
         "push": "Test notification over the internet",
         "pushTitle": "Internet test 🐾",
         "pushBody": "If you can see this, notifications between phones reach this one.",
@@ -510,6 +520,10 @@
       "error": "Couldn't complete it. Check your connection and try again."
     }
   },
+  "updates": {
+    "ready": "There is a new version of Navana.",
+    "restart": "Update"
+  },
   "notifications": {
     "summary": {
       "title": "Today at home",
@@ -517,16 +531,16 @@
       "body_other": "You have {{count}} chores. First up: {{first}}."
     },
     "overdue": {
-      "title": "Something has been left undone",
-      "body_one": "Still waiting: {{first}}.",
-      "body_other": "You have {{count}} overdue chores, like {{first}}."
+      "title": "Something is still left for today",
+      "body_one": "You have not done yet: {{first}}.",
+      "body_other": "You have {{count}} chores left to do, such as {{first}}."
     },
     "completed": {
       "title": "{{name}} has done a chore",
       "body": "{{icon}} {{title}}"
     },
     "nudge": {
-      "title": "{{name}} is giving you a nudge 🐾",
+      "title": "{{name}} reminds you of a chore 🐾",
       "body": "{{icon}} {{title}}"
     },
     "event": {

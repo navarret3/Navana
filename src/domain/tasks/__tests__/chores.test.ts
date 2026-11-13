@@ -38,6 +38,12 @@ describe('tareas habituales', () => {
     expect(titles('', ['Limpiar la cocina'])[0]).toBe('Limpiar el baño');
   });
 
+  it('al crear una tarea recurrente no propone las que se hacen cuando surgen', () => {
+    expect(titles('barr')).toEqual(['Barrer']);
+    expect(suggestChores('barr', [], 5, true)).toEqual([]);
+    expect(suggestChores('', [], 50, true).every((chore) => chore.intervalDays !== null)).toBe(true);
+  });
+
   it('las frecuencias de un toque incluyen las de las tareas más habituales', () => {
     expect(INTERVAL_PRESETS).toEqual([1, 2, 3, 7, 14, 30]);
   });

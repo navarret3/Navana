@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { Member } from '@/domain/household';
-import { dueStatus } from '@/domain/tasks/recurrence';
+import { dueStatus, isDue } from '@/domain/tasks/recurrence';
 import { currentAssignee } from '@/domain/tasks/rotation';
 import type { Task, Zone } from '@/domain/tasks/types';
 import { Avatar, Text, colors, minTouchSize, radii, spacing, type ColorName } from '@/ui';
@@ -17,6 +18,11 @@ type TaskRowProps = {
   zone?: Zone;
   onComplete: (task: Task) => void;
   onPress?: (task: Task) => void;
+  /**
+   * Avisar a quien le toca. Con esto, las tareas de otra persona que tocan hoy o van con
+   * retraso llevan una campana para recordárselo con un aviso en su móvil.
+   */
+  onNudge?: (task: Task, toUid: string) => void;
 };
 
 /** Texto y color de "cuándo toca" una tarea. */
@@ -42,14 +48,17 @@ export function TaskRow({
   zone,
   onComplete,
   onPress,
+  onNudge,
 }: TaskRowProps) {
   const { t } = useTranslation();
+  const [nudged, setNudged] = useState(false);
   const dueLabel = useDueLabel();
   const due = dueLabel(task.nextDueOn, today);
 
   const assigneeId = currentAssignee(task, memberIds);
   const assignee = members.find((member) => member.uid === assigneeId);
   const isOthers = assigneeId !== null && assigneeId !== currentUid;
+  const canNudge = onNudge !== undefined && isOthers && isDue(task.nextDueOn, today);
 
   const details = [zone ? `${zone.icon} ${zone.name}` : null, '●'.repeat(task.effort)].filter(
     Boolean,
@@ -94,6 +103,24 @@ export function TaskRow({
           </Text>
         )}
       </Pressable>
+      {canNudge && assigneeId ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            nudged
+              ? t('tasks.actions.nudgeSent')
+              : t('tasks.actions.nudgeTo', { name: assignee?.name ?? '', title: task.title })
+          }
+          disabled={nudged}
+          hitSlop={spacing.xs}
+          onPress={() => {
+            onNudge(task, assigneeId);
+            setNudged(true);
+          }}
+          style={({ pressed }) => [styles.nudge, pressed && styles.bodyPressed]}>
+          <Text style={styles.nudgeIcon}>{nudged ? '✓' : '🔔'}</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -138,5 +165,18 @@ const styles = StyleSheet.create({
   },
   texts: {
     flex: 1,
+  },
+  nudge: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  nudgeIcon: {
+    fontSize: 18,
+    lineHeight: 24,
   },
 });

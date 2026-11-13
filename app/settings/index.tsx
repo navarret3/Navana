@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +11,11 @@ import { AccountActions } from '@/features/household/AccountActions';
 import { isModuleEnabled, modules } from '@/modules/registry';
 import { saveFailed } from '@/state/notices';
 import { useCurrentMember, useSession } from '@/state/session';
+import { runningUpdateDate } from '@/updates/appUpdate';
 import { Avatar, Button, Card, ListRow, Screen, ScreenHeader, Text, colors } from '@/ui';
 
 export default function SettingsScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const user = useSession((state) => state.user);
   const household = useSession((state) => state.household);
@@ -21,6 +23,18 @@ export default function SettingsScreen() {
   const me = useCurrentMember();
 
   if (!household) return null;
+
+  // Qué versión está en marcha: sirve para saber si ya ha llegado la última actualización.
+  const version = Constants.expoConfig?.version ?? '';
+  const updateDate = runningUpdateDate();
+  const updated = updateDate
+    ? new Intl.DateTimeFormat(i18n.language, {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(updateDate)
+    : null;
 
   // Uno mismo primero y el resto por nombre.
   const sortedMembers = [...members].sort((a, b) => {
@@ -124,6 +138,12 @@ export default function SettingsScreen() {
       {__DEV__ ? <EnvironmentCard /> : null}
 
       <AccountActions />
+
+      <Text variant="caption" color="inkMuted" center>
+        {updated
+          ? t('settings.version.updated', { version, date: updated })
+          : t('settings.version.installed', { version })}
+      </Text>
     </Screen>
   );
 }
