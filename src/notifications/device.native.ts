@@ -36,14 +36,16 @@ export async function initNotifications(): Promise<void> {
     handleNotification: async () => ({
       shouldShowBanner: true,
       shouldShowList: true,
-      shouldPlaySound: false,
+      // En Android, sin sonido el aviso no se despliega en pantalla con la app abierta.
+      shouldPlaySound: true,
       shouldSetBadge: false,
     }),
   });
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNEL, {
       name: 'Navana',
-      importance: AndroidImportance.DEFAULT,
+      // Importancia alta: el aviso se despliega en pantalla en vez de quedarse en la bandeja.
+      importance: AndroidImportance.HIGH,
     });
   }
 }
@@ -99,6 +101,23 @@ export async function scheduleLocalNotifications(
       },
     });
   }
+}
+
+/** Aviso de prueba dentro de unos segundos, para comprobar que este móvil los muestra. */
+export async function showTestNotification(
+  title: string,
+  body: string,
+  seconds: number,
+): Promise<void> {
+  await initNotifications();
+  await Notifications.scheduleNotificationAsync({
+    content: { title, body, data: {} },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds,
+      channelId: NOTIFICATION_CHANNEL,
+    },
+  });
 }
 
 /**

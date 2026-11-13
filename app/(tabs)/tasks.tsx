@@ -5,7 +5,6 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { toDateKey } from '@/domain/dates';
 import { byDueDate, onDemandTasks, scheduledTasks } from '@/domain/tasks/today';
 import type { Task, Zone } from '@/domain/tasks/types';
-import { QuickLog } from '@/features/tasks/QuickLog';
 import { TaskRow } from '@/features/tasks/TaskRow';
 import { useTaskActions } from '@/features/tasks/useTaskActions';
 import { useSession } from '@/state/session';
@@ -102,9 +101,7 @@ export default function TasksScreen() {
         </Pressable>
       }>
       {header}
-      <Card tone="peach">
-        <QuickLog />
-      </Card>
+      <Button label={t('tasks.log.button')} onPress={() => router.push('/task/log')} />
       {sections.map((section) => (
         <Card key={section.zone?.id ?? 'none'}>
           <Text variant="heading">

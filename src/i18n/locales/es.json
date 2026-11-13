@@ -231,13 +231,18 @@
       "even": "Vais muy a la par.",
       "uneven": "Esta vez {{name}} ha cargado con más."
     },
-    "quickLog": {
-      "title": "Apuntar algo hecho",
-      "hint": "Lo que surge sin planear. Toca lo que acabas de hacer y queda apuntado a tu nombre.",
-      "empty": "Para lo que hacéis cuando surge, sin fecha: barrer, tender, fregar los platos… Añádelo aquí y luego bastará un toque para apuntarlo.",
-      "add": "Añadir",
-      "addTypical": "Añadir cosas típicas",
-      "editHint": "Mantén pulsada una para editarla o eliminarla."
+    "log": {
+      "button": "Realizar tarea",
+      "title": "Realizar tarea",
+      "searchLabel": "¿Qué has hecho?",
+      "searchPlaceholder": "Busca una tarea o escribe una nueva",
+      "hint": "Toca la que acabas de hacer: queda a tu nombre en el historial y en el balance.",
+      "markDone": "Apuntar como hecha: {{title}}",
+      "addNew": "Apuntar «{{title}}» como hecha",
+      "addNewHint": "Es nueva: se guarda para la próxima vez.",
+      "empty": "Aún no hay tareas. Escribe arriba lo que has hecho.",
+      "editHint": "Mantén pulsada una tarea para editarla o eliminarla.",
+      "addTypical": "Añadir cosas típicas"
     }
   },
   "shopping": {
@@ -307,12 +312,15 @@
     "today": "Hoy",
     "tomorrow": "Mañana",
     "goToToday": "Ir a hoy",
-    "upcoming": "Próximos",
-    "nothingThisDay": "Nada apuntado para este día.",
+    "previousDays": "7 días antes",
+    "nextDays": "7 días después",
+    "later": "Más adelante",
+    "addOn": "Añadir un evento el {{date}}",
+    "nothingTheseDays": "Nada apuntado para estos días.",
     "filter": {
       "label": "Ver",
       "all": "Todo",
-      "nothingThisDay": "Nada de esta selección para este día."
+      "nothingTheseDays": "Nada de esta selección para estos días."
     },
     "countdown": {
       "ongoing": "En curso",
@@ -466,7 +474,32 @@
       "openSettings": "Abrir ajustes de Android",
       "pushReady": "Push entre móviles: listo.",
       "pushMissing": "Push entre móviles: este móvil aún no tiene token.",
-      "error": "No se han podido activar los avisos."
+      "error": "No se han podido activar los avisos.",
+      "test": {
+        "title": "Probar los avisos",
+        "thisPhone": "Este móvil",
+        "registered": "registrado para recibir avisos",
+        "notRegistered": "sin registrar",
+        "partnerRegistered_one": "{{name}}: {{count}} móvil registrado",
+        "partnerRegistered_other": "{{name}}: {{count}} móviles registrados",
+        "partnerMissing": "{{name}}: sin registrar. Tiene que abrir Navana y aceptar los avisos.",
+        "partnerMuted": "{{name}} tiene desactivado «Cuando el otro completa».",
+        "local": "Aviso de prueba en 5 segundos",
+        "localSent": "Programado. Sal de la app: debería aparecer en 5 segundos.",
+        "localTitle": "Aviso de prueba 🐾",
+        "localBody": "Si ves esto, este móvil muestra los avisos de Navana.",
+        "push": "Aviso de prueba por internet",
+        "pushTitle": "Prueba por internet 🐾",
+        "pushBody": "Si ves esto, los avisos entre móviles llegan a este.",
+        "pushSending": "Enviando…",
+        "noToken": "Este móvil no tiene identificador para recibir avisos por internet.",
+        "pushOk": "Entregado a Google: el aviso debería llegar a este móvil ahora.",
+        "pushPending": "Expo lo ha aceptado, pero aún no confirma la entrega. Si no llega en un minuto, vuelve a probar.",
+        "pushFailed": "No se ha podido entregar: {{reason}}",
+        "invalidCredentials": "Falta o no vale la clave de Firebase (FCM V1) en Expo. Hay que subirla en expo.dev → Credentials → Android.",
+        "deviceNotRegistered": "El identificador de este móvil ya no vale. Cierra la app del todo y vuelve a abrirla.",
+        "failed": "No se ha podido hacer la prueba: {{reason}}"
+      }
     },
     "account": {
       "title": "Cuenta",
@@ -551,10 +584,9 @@
       "open": "Ver el menú de la semana"
     },
     "today": "hoy",
-    "thisWeek": "Esta semana",
-    "previousWeek": "Semana anterior",
-    "nextWeek": "Semana siguiente",
-    "weekOf": "Semana del {{date}}",
+    "backToToday": "Volver a hoy",
+    "previousWeek": "7 días antes",
+    "nextWeek": "7 días después",
     "emptySlot": "Sin planear",
     "slots": {
       "lunch": "Comida",

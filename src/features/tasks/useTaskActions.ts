@@ -2,8 +2,15 @@ import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 
-import { archiveTask, completeTask, postponeTask, undoCompletion } from '@/data/tasks';
+import {
+  archiveTask,
+  completeTask,
+  logNewTask,
+  postponeTask,
+  undoCompletion,
+} from '@/data/tasks';
 import { toDateKey } from '@/domain/dates';
+import { draftForLoggedTask } from '@/domain/tasks/log';
 import type { Completion, Task } from '@/domain/tasks/types';
 import { notifyOthers } from '@/notifications/notify';
 import { saveFailed } from '@/state/notices';
@@ -24,28 +31,52 @@ export function useTaskActions() {
   const me = useCurrentMember();
   const setJustCompleted = useTasks((state) => state.setJustCompleted);
 
-  const complete = (task: Task) => {
-    if (!household || !uid) return;
+  /** Lo que acompaña a apuntar algo hecho: vibración, opción de deshacer y aviso a la pareja. */
+  const afterCompletion = (
+    { completion, saved }: { completion: Completion; saved: Promise<void> },
+    fromUid: string,
+  ) => {
     if (Platform.OS !== 'web') {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
     }
-    const { completion, saved } = completeTask(household.id, task, {
-      completedBy: uid,
-      today: toDateKey(new Date()),
-      memberIds: household.memberIds,
-    });
     setJustCompleted(completion);
     saved.catch(saveFailed('No se ha podido completar la tarea'));
     notifyOthers({
       members,
-      fromUid: uid,
+      fromUid,
       pref: 'partnerCompleted',
       message: {
         title: t('notifications.completed.title', { name: me?.name ?? '' }),
-        body: t('notifications.completed.body', { icon: task.icon, title: task.title }),
-        data: { taskId: task.id },
+        body: t('notifications.completed.body', { icon: completion.icon, title: completion.title }),
+        data: { taskId: completion.taskId },
       },
     });
+  };
+
+  const complete = (task: Task) => {
+    if (!household || !uid) return;
+    afterCompletion(
+      completeTask(household.id, task, {
+        completedBy: uid,
+        today: toDateKey(new Date()),
+        memberIds: household.memberIds,
+      }),
+      uid,
+    );
+  };
+
+  /** Apunta como hecha una tarea que no existía: se crea "cuando surja" con solo su título. */
+  const logNew = (title: string) => {
+    if (!household || !uid) return;
+    const today = toDateKey(new Date());
+    afterCompletion(
+      logNewTask(household.id, draftForLoggedTask(title, today), {
+        completedBy: uid,
+        today,
+        memberIds: household.memberIds,
+      }),
+      uid,
+    );
   };
 
   /** Recuerda una tarea a quien le toca, con un aviso en su móvil. */
@@ -82,5 +113,5 @@ export function useTaskActions() {
     archiveTask(household.id, task.id).catch(saveFailed('No se ha podido eliminar la tarea'));
   };
 
-  return { complete, undo, postpone, archive, nudge };
+  return { complete, logNew, undo, postpone, archive, nudge };
 }

@@ -3,17 +3,29 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { daysOf, occurrencesBetween, upcomingOccurrences } from '@/domain/agenda/occurrences';
+import { occurrencesBetween, upcomingOccurrences } from '@/domain/agenda/occurrences';
 import { ALL_OWNERS, EVERYONE, filterByOwner, type Occurrence } from '@/domain/agenda/types';
-import { addDays, monthMatrix, toDateKey, yearMonthOf, type DateKey } from '@/domain/dates';
-import { EVENT_COLORS, EventRow } from '@/features/agenda/EventRow';
+import { addDays, daysFrom, toDateKey, type DateKey } from '@/domain/dates';
+import { EventRow } from '@/features/agenda/EventRow';
 import { useEventText } from '@/features/agenda/eventText';
 import { useAgenda } from '@/state/agenda';
 import { useSession } from '@/state/session';
-import { Card, Chip, ChipGroup, MonthGrid, Screen, Text, colors, shadows, spacing } from '@/ui';
+import {
+  Card,
+  Chip,
+  ChipGroup,
+  Screen,
+  Text,
+  colors,
+  minTouchSize,
+  shadows,
+  spacing,
+} from '@/ui';
 
-/** Cuántos eventos se enseñan en "Próximos". */
-const UPCOMING_LIMIT = 12;
+/** Días que se listan de una vez, empezando por hoy. */
+const DAYS_SHOWN = 7;
+/** Cuántos eventos se enseñan en "Más adelante". */
+const LATER_LIMIT = 12;
 
 export default function AgendaScreen() {
   const { t } = useTranslation();
@@ -23,8 +35,8 @@ export default function AgendaScreen() {
   const { day, sharedLabel } = useEventText();
 
   const today = toDateKey(new Date());
-  const [month, setMonth] = useState(() => yearMonthOf(today));
-  const [selected, setSelected] = useState<DateKey>(today);
+  /** Primer día de la lista. Empieza en hoy: lo pasado no se enseña si no se va a buscar. */
+  const [start, setStart] = useState<DateKey>(today);
   // De quién se ven los eventos: de todos, solo los compartidos o solo los de una persona.
   const [owner, setOwner] = useState<string>(ALL_OWNERS);
 
@@ -34,38 +46,27 @@ export default function AgendaScreen() {
     owner === ALL_OWNERS || owner === EVERYONE || memberIds.includes(owner) ? owner : ALL_OWNERS;
   const events = filterByOwner(allEvents, activeOwner, memberIds);
 
-  // Lo que cae en las semanas que se ven, para pintar los puntos del calendario.
-  const weeks = monthMatrix(month);
-  const firstVisible = weeks[0]?.[0] ?? today;
-  const lastVisible = weeks.at(-1)?.[6] ?? today;
-  const marks: Record<DateKey, string[]> = {};
-  for (const occurrence of occurrencesBetween(events, firstVisible, lastVisible)) {
-    for (const date of daysOf(occurrence)) {
-      (marks[date] ??= []).push(EVENT_COLORS[occurrence.event.type]);
-    }
-  }
-
-  const onSelectedDay = occurrencesBetween(events, selected, selected);
-  // Lo que ya se ve en la tarjeta del día elegido no se repite debajo en "Próximos".
-  const shownAbove = new Set(onSelectedDay.map((occurrence) => occurrence.event.id));
-  const upcoming = upcomingOccurrences(events, today)
-    .filter((occurrence) => !shownAbove.has(occurrence.event.id))
-    .slice(0, UPCOMING_LIMIT);
+  const days = daysFrom(start, DAYS_SHOWN);
+  const last = days.at(-1) ?? start;
+  const shown = occurrencesBetween(events, start, last);
+  // Un evento de varios días sale en cada uno de los suyos.
+  const onDay = (date: DateKey) =>
+    shown.filter((occurrence) => occurrence.date <= date && occurrence.endDate >= date);
+  // Lo que empieza después del último día de la lista.
+  const later = upcomingOccurrences(events, today)
+    .filter((occurrence) => occurrence.date > last)
+    .slice(0, LATER_LIMIT);
 
   const open = ({ event }: Occurrence) =>
     router.push({ pathname: '/event/[id]', params: { id: event.id } });
+  const addOn = (date: DateKey) => router.push({ pathname: '/event/new', params: { date } });
 
-  const goToToday = () => {
-    setMonth(yearMonthOf(today));
-    setSelected(today);
-  };
-
-  const selectedLabel =
-    selected === today
-      ? t('agenda.today')
-      : selected === addDays(today, 1)
-        ? t('agenda.tomorrow')
-        : day(selected);
+  const dayLabel = (date: DateKey) =>
+    date === today
+      ? `${t('agenda.today')} · ${day(date)}`
+      : date === addDays(today, 1)
+        ? `${t('agenda.tomorrow')} · ${day(date)}`
+        : day(date);
 
   return (
     <Screen
@@ -73,7 +74,7 @@ export default function AgendaScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('agenda.add')}
-          onPress={() => router.push({ pathname: '/event/new', params: { date: selected } })}
+          onPress={() => addOn(start < today ? today : start)}
           style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}>
           <Text style={styles.fabIcon}>＋</Text>
         </Pressable>
@@ -82,9 +83,9 @@ export default function AgendaScreen() {
         <Text variant="title" accessibilityRole="header" style={styles.title}>
           {t('agenda.title')}
         </Text>
-        {selected !== today || yearMonthOf(today).month !== month.month ? (
-          <Chip role="button" label={t('agenda.goToToday')} onPress={goToToday} />
-        ) : null}
+        {start === today ? null : (
+          <Chip role="button" label={t('agenda.goToToday')} onPress={() => setStart(today)} />
+        )}
       </View>
 
       <ChipGroup<string>
@@ -102,51 +103,80 @@ export default function AgendaScreen() {
         onChange={setOwner}
       />
 
-      <Card>
-        <MonthGrid
-          month={month}
-          onChangeMonth={setMonth}
-          today={today}
-          selected={selected}
-          onSelect={setSelected}
-          marks={marks}
-        />
-      </Card>
+      <View style={styles.range}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('agenda.previousDays')}
+          onPress={() => setStart(addDays(start, -DAYS_SHOWN))}
+          style={({ pressed }) => [styles.arrow, pressed && styles.pressed]}>
+          <Text variant="title">‹</Text>
+        </Pressable>
+        <Text variant="heading" center style={styles.title}>
+          {day(start)} – {day(last)}
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('agenda.nextDays')}
+          onPress={() => setStart(addDays(start, DAYS_SHOWN))}
+          style={({ pressed }) => [styles.arrow, pressed && styles.pressed]}>
+          <Text variant="title">›</Text>
+        </Pressable>
+      </View>
 
       <Card>
-        <Text variant="heading">{selectedLabel}</Text>
-        {onSelectedDay.length === 0 ? (
-          <Text color="inkSoft">
-            {t(activeOwner === ALL_OWNERS ? 'agenda.nothingThisDay' : 'agenda.filter.nothingThisDay')}
+        {days.map((date) => {
+          const occurrences = onDay(date);
+          return (
+            <View key={date} style={styles.day}>
+              <View style={styles.dayHeader}>
+                <Text
+                  variant={date === today ? 'heading' : 'bodyStrong'}
+                  color={occurrences.length > 0 || date === today ? 'ink' : 'inkMuted'}
+                  style={styles.title}>
+                  {dayLabel(date)}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('agenda.addOn', { date: day(date) })}
+                  hitSlop={spacing.xs}
+                  onPress={() => addOn(date)}
+                  style={({ pressed }) => [styles.addOn, pressed && styles.pressed]}>
+                  <Text color="inkSoft" style={styles.addOnIcon}>
+                    ＋
+                  </Text>
+                </Pressable>
+              </View>
+              {occurrences.map((occurrence) => (
+                <EventRow
+                  key={occurrence.event.id}
+                  occurrence={occurrence}
+                  today={today}
+                  onPress={open}
+                />
+              ))}
+            </View>
+          );
+        })}
+        {shown.length === 0 ? (
+          <Text variant="caption" color="inkSoft">
+            {allEvents.length === 0
+              ? t('agenda.empty.description')
+              : t(activeOwner === ALL_OWNERS ? 'agenda.nothingTheseDays' : 'agenda.filter.nothingTheseDays')}
           </Text>
-        ) : (
-          onSelectedDay.map((occurrence) => (
+        ) : null}
+      </Card>
+
+      {later.length > 0 ? (
+        <Card tone="sage">
+          <Text variant="heading">{t('agenda.later')}</Text>
+          {later.map((occurrence) => (
             <EventRow
               key={occurrence.event.id}
               occurrence={occurrence}
               today={today}
               onPress={open}
             />
-          ))
-        )}
-      </Card>
-
-      {/* Con la agenda vacía se explica para qué sirve; si no queda nada más que enseñar, se omite. */}
-      {allEvents.length === 0 || upcoming.length > 0 ? (
-        <Card tone="sage">
-          <Text variant="heading">{t('agenda.upcoming')}</Text>
-          {upcoming.length === 0 ? (
-            <Text color="inkSoft">{t('agenda.empty.description')}</Text>
-          ) : (
-            upcoming.map((occurrence) => (
-              <EventRow
-                key={occurrence.event.id}
-                occurrence={occurrence}
-                today={today}
-                onPress={open}
-              />
-            ))
-          )}
+          ))}
         </Card>
       ) : null}
       <View style={styles.fabSpace} />
@@ -155,6 +185,7 @@ export default function AgendaScreen() {
 }
 
 const FAB_SIZE = 60;
+const ADD_SIZE = 36;
 
 const styles = StyleSheet.create({
   header: {
@@ -164,6 +195,40 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
+  },
+  range: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  arrow: {
+    width: minTouchSize,
+    height: minTouchSize,
+    borderRadius: minTouchSize / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    backgroundColor: colors.surfaceSunken,
+  },
+  day: {
+    gap: spacing.xxs,
+  },
+  dayHeader: {
+    minHeight: ADD_SIZE,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  addOn: {
+    width: ADD_SIZE,
+    height: ADD_SIZE,
+    borderRadius: ADD_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addOnIcon: {
+    fontSize: 20,
+    lineHeight: 24,
   },
   fab: {
     position: 'absolute',

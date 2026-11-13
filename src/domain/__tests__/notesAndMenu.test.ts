@@ -1,4 +1,4 @@
-import { ingredientsToBuy, parseIngredients, weekDays, type DayMenu } from '@/domain/menu';
+import { ingredientsToBuy, parseIngredients, type DayMenu } from '@/domain/menu';
 import { isEmptyNote, noteHeading, sortNotes, type Note } from '@/domain/notes';
 
 const note = (id: string, overrides: Partial<Note> = {}): Note => ({
@@ -35,12 +35,6 @@ describe('notas', () => {
 });
 
 describe('menú semanal', () => {
-  it('la semana va de lunes a domingo', () => {
-    expect(weekDays('2026-11-12')).toEqual([
-      '2026-11-09', '2026-11-10', '2026-11-11', '2026-11-12', '2026-11-13', '2026-11-14', '2026-11-15',
-    ]);
-  });
-
   it('separa ingredientes por comas, punto y coma o líneas, sin repetidos ni vacíos', () => {
     expect(parseIngredients('tomates, cebolla;  ajo\nTomate\n\n , huevos')).toEqual([
       'Tomates',

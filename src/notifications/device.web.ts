@@ -28,6 +28,12 @@ export async function scheduleLocalNotifications(
   _notifications: readonly LocalNotification[],
 ): Promise<void> {}
 
+export async function showTestNotification(
+  _title: string,
+  _body: string,
+  _seconds: number,
+): Promise<void> {}
+
 export function onNotificationOpened(
   _handler: (data: Record<string, unknown>) => void,
 ): () => void {

@@ -1,5 +1,6 @@
 import {
   addDays,
+  daysFrom,
   diffDays,
   startOfMonth,
   startOfWeek,
@@ -35,6 +36,14 @@ describe('fechas de calendario', () => {
     expect(startOfWeek('2026-11-12')).toBe('2026-11-09'); // jueves
     expect(startOfWeek('2026-11-09')).toBe('2026-11-09'); // lunes
     expect(startOfWeek('2026-11-15')).toBe('2026-11-09'); // domingo
+  });
+
+  it('lista días seguidos desde uno dado, también cruzando de mes', () => {
+    expect(daysFrom('2026-11-13', 7)).toEqual([
+      '2026-11-13', '2026-11-14', '2026-11-15', '2026-11-16', '2026-11-17', '2026-11-18', '2026-11-19',
+    ]);
+    expect(daysFrom('2026-11-29', 3)).toEqual(['2026-11-29', '2026-11-30', '2026-12-01']);
+    expect(daysFrom('2026-11-13', 0)).toEqual([]);
   });
 
   it('el próximo fin de semana es el sábado, o el mismo día si ya es fin de semana', () => {

@@ -39,6 +39,11 @@ export function startOfWeek(key: DateKey): DateKey {
   return addDays(key, -((weekday + 6) % 7));
 }
 
+/** `count` días seguidos empezando por `start`: los que listan el menú y la agenda. */
+export function daysFrom(start: DateKey, count: number): DateKey[] {
+  return Array.from({ length: count }, (_, index) => addDays(start, index));
+}
+
 /** El sábado de esta semana o, si hoy ya es domingo, hoy: el próximo día de fin de semana. */
 export function upcomingWeekend(today: DateKey): DateKey {
   const saturday = addDays(startOfWeek(today), 5);

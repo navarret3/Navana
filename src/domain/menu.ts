@@ -1,7 +1,7 @@
-import { addDays, startOfWeek, type DateKey } from '@/domain/dates';
+import type { DateKey } from '@/domain/dates';
 import { displayName, productKey } from '@/domain/shopping/normalize';
 
-/** Menú semanal: qué se come y se cena cada día, y qué hace falta comprar para ello. */
+/** Menú: qué se come y se cena cada día, y qué hace falta comprar para ello. */
 
 export const MEAL_SLOTS = ['lunch', 'dinner'] as const;
 
@@ -20,12 +20,6 @@ export type DayMenu = {
 
 export const MEAL_TITLE_MAX = 80;
 export const MEAL_INGREDIENTS_MAX = 30;
-
-/** Los siete días, de lunes a domingo, de la semana que contiene `date`. */
-export function weekDays(date: DateKey): DateKey[] {
-  const monday = startOfWeek(date);
-  return Array.from({ length: 7 }, (_, index) => addDays(monday, index));
-}
 
 /**
  * Convierte lo escrito ("tomates, cebolla" o una cosa por línea) en una lista de

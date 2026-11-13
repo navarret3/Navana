@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { addDays, dateKeyToLocalDate, toDateKey, type DateKey } from '@/domain/dates';
-import { MEAL_SLOTS, ingredientsToBuy, mealOf, weekDays } from '@/domain/menu';
+import { addDays, dateKeyToLocalDate, daysFrom, toDateKey, type DateKey } from '@/domain/dates';
+import { MEAL_SLOTS, ingredientsToBuy, mealOf } from '@/domain/menu';
 import { pendingKeys } from '@/domain/shopping/suggest';
 import { useShoppingActions } from '@/features/shopping/useShoppingActions';
 import { useExtras } from '@/state/extras';
@@ -12,6 +12,9 @@ import { useShopping } from '@/state/shopping';
 import { Button, Card, Chip, Screen, Text, colors, minTouchSize, radii, spacing } from '@/ui';
 
 const SLOT_ICONS = { lunch: '🍲', dinner: '🌙' } as const;
+
+/** Días que se listan de una vez, empezando por hoy. */
+const DAYS_SHOWN = 7;
 
 export default function MenuScreen() {
   const { t, i18n } = useTranslation();
@@ -21,12 +24,12 @@ export default function MenuScreen() {
   const { add } = useShoppingActions();
 
   const today = toDateKey(new Date());
-  /** Un día cualquiera de la semana que se está viendo. */
+  /** Primer día de la lista. Empieza en hoy: lo pasado no se enseña si no se va a buscar. */
   const [anchor, setAnchor] = useState<DateKey>(today);
   const [message, setMessage] = useState<string | null>(null);
 
-  const days = weekDays(anchor);
-  const isCurrentWeek = days.includes(today);
+  const days = daysFrom(anchor, DAYS_SHOWN);
+  const startsToday = anchor === today;
   const byDate = new Map(menu.map((day) => [day.date, day]));
 
   const format = (date: DateKey, options: Intl.DateTimeFormatOptions) => {
@@ -35,11 +38,11 @@ export default function MenuScreen() {
   };
 
   const changeWeek = (delta: number) => {
-    setAnchor(addDays(anchor, delta * 7));
+    setAnchor(addDays(anchor, delta * DAYS_SHOWN));
     setMessage(null);
   };
 
-  // De la semana en curso solo interesa lo que queda por cocinar.
+  // De lo que se ve solo interesa lo que queda por cocinar.
   const daysAhead = days.filter((date) => date >= today);
   const toBuy = ingredientsToBuy(menu, daysAhead, pendingKeys(items));
 
@@ -54,8 +57,8 @@ export default function MenuScreen() {
         <Text variant="title" accessibilityRole="header" style={styles.title}>
           {t('menu.title')}
         </Text>
-        {isCurrentWeek ? null : (
-          <Chip role="button" label={t('menu.thisWeek')} onPress={() => setAnchor(today)} />
+        {startsToday ? null : (
+          <Chip role="button" label={t('menu.backToToday')} onPress={() => setAnchor(today)} />
         )}
       </View>
 
@@ -68,9 +71,8 @@ export default function MenuScreen() {
           <Text variant="title">‹</Text>
         </Pressable>
         <Text variant="heading" center style={styles.title}>
-          {t('menu.weekOf', {
-            date: format(days[0] ?? anchor, { day: 'numeric', month: 'long' }),
-          })}
+          {format(anchor, { day: 'numeric', month: 'short' })} –{' '}
+          {format(days.at(-1) ?? anchor, { day: 'numeric', month: 'short' })}
         </Text>
         <Pressable
           accessibilityRole="button"

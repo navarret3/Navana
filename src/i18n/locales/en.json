@@ -231,13 +231,18 @@
       "even": "You're sharing it very evenly.",
       "uneven": "This time {{name}} has carried more."
     },
-    "quickLog": {
-      "title": "Log something done",
-      "hint": "Things that come up unplanned. Tap what you've just done and it's logged under your name.",
-      "empty": "For things you do as they come up, with no date: sweeping, hanging the laundry, washing up… Add them here and then one tap will log them.",
-      "add": "Add",
-      "addTypical": "Add typical ones",
-      "editHint": "Press and hold one to edit or delete it."
+    "log": {
+      "button": "Log a chore",
+      "title": "Log a chore",
+      "searchLabel": "What did you do?",
+      "searchPlaceholder": "Find a chore or type a new one",
+      "hint": "Tap what you just did: it goes under your name in the history and the balance.",
+      "markDone": "Log as done: {{title}}",
+      "addNew": "Log “{{title}}” as done",
+      "addNewHint": "It's new: it will be saved for next time.",
+      "empty": "No chores yet. Type above what you did.",
+      "editHint": "Press and hold a chore to edit or delete it.",
+      "addTypical": "Add typical chores"
     }
   },
   "shopping": {
@@ -307,12 +312,15 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "goToToday": "Go to today",
-    "upcoming": "Upcoming",
-    "nothingThisDay": "Nothing planned for this day.",
+    "previousDays": "7 days earlier",
+    "nextDays": "7 days later",
+    "later": "Later on",
+    "addOn": "Add an event on {{date}}",
+    "nothingTheseDays": "Nothing planned for these days.",
     "filter": {
       "label": "Show",
       "all": "Everything",
-      "nothingThisDay": "Nothing from this selection on this day."
+      "nothingTheseDays": "Nothing from this selection on these days."
     },
     "countdown": {
       "ongoing": "Ongoing",
@@ -466,7 +474,32 @@
       "openSettings": "Open Android settings",
       "pushReady": "Push between phones: ready.",
       "pushMissing": "Push between phones: this phone has no token yet.",
-      "error": "Couldn't turn on notifications."
+      "error": "Notifications could not be turned on.",
+      "test": {
+        "title": "Test notifications",
+        "thisPhone": "This phone",
+        "registered": "registered to receive notifications",
+        "notRegistered": "not registered",
+        "partnerRegistered_one": "{{name}}: {{count}} phone registered",
+        "partnerRegistered_other": "{{name}}: {{count}} phones registered",
+        "partnerMissing": "{{name}}: not registered. They need to open Navana and allow notifications.",
+        "partnerMuted": "{{name}} has “When the other completes” turned off.",
+        "local": "Test notification in 5 seconds",
+        "localSent": "Scheduled. Leave the app: it should show up in 5 seconds.",
+        "localTitle": "Test notification 🐾",
+        "localBody": "If you can see this, this phone shows Navana's notifications.",
+        "push": "Test notification over the internet",
+        "pushTitle": "Internet test 🐾",
+        "pushBody": "If you can see this, notifications between phones reach this one.",
+        "pushSending": "Sending…",
+        "noToken": "This phone has no identifier to receive notifications over the internet.",
+        "pushOk": "Delivered to Google: the notification should reach this phone now.",
+        "pushPending": "Expo accepted it but has not confirmed delivery yet. If it does not arrive within a minute, try again.",
+        "pushFailed": "It could not be delivered: {{reason}}",
+        "invalidCredentials": "The Firebase key (FCM V1) is missing or invalid in Expo. Upload it at expo.dev → Credentials → Android.",
+        "deviceNotRegistered": "This phone's identifier is no longer valid. Close the app completely and open it again.",
+        "failed": "The test could not be run: {{reason}}"
+      }
     },
     "account": {
       "title": "Account",
@@ -551,10 +584,9 @@
       "open": "See the week's meals"
     },
     "today": "today",
-    "thisWeek": "This week",
-    "previousWeek": "Previous week",
-    "nextWeek": "Next week",
-    "weekOf": "Week of {{date}}",
+    "backToToday": "Back to today",
+    "previousWeek": "7 days earlier",
+    "nextWeek": "7 days later",
     "emptySlot": "Not planned",
     "slots": {
       "lunch": "Lunch",
