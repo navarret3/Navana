@@ -6,11 +6,17 @@ describe('registro de módulos', () => {
   });
 
   it('muestra los módulos por defecto cuando el hogar no ha guardado nada', () => {
-    expect(getEnabledModules({}).map((module) => module.id)).toEqual(['tasks', 'shopping', 'agenda']);
+    expect(getEnabledModules({}).map((module) => module.id)).toEqual([
+      'tasks',
+      'shopping',
+      'agenda',
+      'movies',
+    ]);
     expect(getEnabledModules({ notes: true, menu: true }).map((module) => module.id)).toEqual([
       'tasks',
       'shopping',
       'agenda',
+      'movies',
       'menu',
       'notes',
     ]);
@@ -18,7 +24,7 @@ describe('registro de módulos', () => {
 
   it('oculta los módulos desactivados y conserva el orden del registro', () => {
     const visible = getEnabledModules({ shopping: false, agenda: true });
-    expect(visible.map((module) => module.id)).toEqual(['tasks', 'agenda']);
+    expect(visible.map((module) => module.id)).toEqual(['tasks', 'agenda', 'movies']);
   });
 
   it('el valor guardado en el hogar manda sobre el valor por defecto', () => {
@@ -28,6 +34,6 @@ describe('registro de módulos', () => {
   });
 
   it('puede quedarse sin ningún módulo', () => {
-    expect(getEnabledModules({ tasks: false, shopping: false, agenda: false })).toEqual([]);
+    expect(getEnabledModules({ tasks: false, shopping: false, agenda: false, movies: false })).toEqual([]);
   });
 });

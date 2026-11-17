@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   code: {
     fontFamily: 'Nunito_800ExtraBold',
     fontSize: 40,
-    lineHeight: 52,
+    lineHeight: 56,
     letterSpacing: 8,
     color: colors.ink,
   },

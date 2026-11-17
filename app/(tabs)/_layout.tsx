@@ -89,7 +89,13 @@ function TabButton({
           <Text style={styles.tabIcon}>{icon}</Text>
         </Animated.View>
       </View>
-      <Text variant="label" color={isFocused ? 'ink' : 'inkSoft'}>
+      {/* Con muchas pestañas el nombre se encoge un poco antes que partirse o cortarse. */}
+      <Text
+        variant="label"
+        color={isFocused ? 'ink' : 'inkSoft'}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}>
         {label}
       </Text>
     </Pressable>
@@ -135,6 +141,6 @@ const styles = StyleSheet.create({
   },
   tabIcon: {
     fontSize: 22,
-    lineHeight: 28,
+    lineHeight: 31,
   },
 });

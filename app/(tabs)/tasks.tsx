@@ -1,36 +1,36 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { toDateKey } from '@/domain/dates';
-import { byDueDate, scheduledTasks } from '@/domain/tasks/today';
-import type { Task, Zone } from '@/domain/tasks/types';
+import { canUndo } from '@/domain/tasks/completion';
+import { groupByWhen, scheduledTasks, tasksFor } from '@/domain/tasks/today';
+import type { Task } from '@/domain/tasks/types';
 import { TaskRow } from '@/features/tasks/TaskRow';
 import { useTaskActions } from '@/features/tasks/useTaskActions';
 import { useSession } from '@/state/session';
 import { useTasks } from '@/state/tasks';
-import { Button, Card, Chip, EmptyState, Screen, Text, spacing } from '@/ui';
+import {
+  Avatar,
+  Button,
+  Card,
+  Chip,
+  ChipGroup,
+  EmptyState,
+  Screen,
+  Text,
+  minTouchSize,
+  spacing,
+} from '@/ui';
 
-type Section = { zone: Zone | null; tasks: Task[] };
-
-/** Agrupa las tareas por zona, en el orden de las zonas, y deja al final las que no tienen. */
-function sectionsByZone(tasks: readonly Task[], zones: readonly Zone[]): Section[] {
-  const known = new Set(zones.map((zone) => zone.id));
-  const sections: Section[] = zones.map((zone) => ({
-    zone,
-    tasks: tasks.filter((task) => task.zoneId === zone.id).sort(byDueDate),
-  }));
-  sections.push({
-    zone: null,
-    tasks: tasks.filter((task) => !task.zoneId || !known.has(task.zoneId)).sort(byDueDate),
-  });
-  return sections.filter((section) => section.tasks.length > 0);
-}
+/** Valor del filtro que enseña las tareas de todo el hogar. */
+const EVERYONE = 'all';
 
 /**
- * Pestaña Tareas. Hay dos clases y cada una tiene su botón:
- * - puntual: algo que se acaba de hacer; se apunta sin elegir nada más;
- * - recurrente: se repite cada cierto tiempo y le toca a alguien; son las que se listan aquí.
+ * Pestaña Tareas. Arriba, las dos formas de añadir: puntual (algo que se acaba de hacer) y
+ * recurrente (se repite y le toca a alguien). Debajo, las recurrentes según cuándo tocan,
+ * filtrables por persona, y lo que ya se ha hecho hoy, con opción de deshacer.
  */
 export default function TasksScreen() {
   const { t } = useTranslation();
@@ -39,12 +39,36 @@ export default function TasksScreen() {
   const members = useSession((state) => state.members);
   const uid = useSession((state) => state.user?.uid);
   const zones = useTasks((state) => state.zones);
-  const tasks = scheduledTasks(useTasks((state) => state.tasks));
-  const { complete, nudge } = useTaskActions();
+  const allTasks = useTasks((state) => state.tasks);
+  const completions = useTasks((state) => state.completions);
+  const { complete, nudge, undo } = useTaskActions();
+  const [who, setWho] = useState<string>(EVERYONE);
+  const [showLater, setShowLater] = useState(false);
 
   const today = toDateKey(new Date());
   const memberIds = household?.memberIds ?? [];
-  const sections = sectionsByZone(tasks, zones);
+  const activeWho = who === EVERYONE || memberIds.includes(who) ? who : EVERYONE;
+  const recurring = scheduledTasks(allTasks);
+  const groups = groupByWhen(
+    tasksFor(recurring, activeWho === EVERYONE ? null : activeWho, memberIds),
+    today,
+  );
+  const doneToday = completions.filter((completion) => completion.completedOn === today);
+
+  const row = (task: Task) => (
+    <TaskRow
+      key={task.id}
+      task={task}
+      today={today}
+      members={members}
+      memberIds={memberIds}
+      currentUid={uid}
+      zone={zones.find((zone) => zone.id === task.zoneId)}
+      onComplete={complete}
+      onNudge={nudge}
+      onPress={(pressed) => router.push({ pathname: '/task/[id]', params: { id: pressed.id } })}
+    />
+  );
 
   return (
     <Screen>
@@ -66,22 +90,25 @@ export default function TasksScreen() {
         />
       </View>
 
-      <View style={styles.actions}>
-        <Button label={t('tasks.log.button')} onPress={() => router.push('/task/log')} />
+      <View style={styles.group}>
+        <View style={styles.actions}>
+          <View style={styles.action}>
+            <Button label={t('tasks.quick.oneOff')} onPress={() => router.push('/task/log')} />
+          </View>
+          <View style={styles.action}>
+            <Button
+              variant="secondary"
+              label={t('tasks.quick.recurring')}
+              onPress={() => router.push('/task/new')}
+            />
+          </View>
+        </View>
         <Text variant="caption" color="inkSoft" center>
-          {t('tasks.log.buttonHint')}
-        </Text>
-        <Button
-          variant="secondary"
-          label={t('tasks.addRecurring')}
-          onPress={() => router.push('/task/new')}
-        />
-        <Text variant="caption" color="inkSoft" center>
-          {t('tasks.addRecurringHint')}
+          {t('tasks.quick.hint')}
         </Text>
       </View>
 
-      {sections.length === 0 ? (
+      {recurring.length === 0 ? (
         <EmptyState
           icon="🐈"
           title={t('tasks.empty.title')}
@@ -96,33 +123,79 @@ export default function TasksScreen() {
         />
       ) : (
         <>
-          <Text variant="label" color="inkSoft">
-            {t('tasks.recurringHeading')}
-          </Text>
-          {sections.map((section) => (
-            <Card key={section.zone?.id ?? 'none'}>
-              <Text variant="heading">
-                {section.zone ? `${section.zone.icon} ${section.zone.name}` : t('tasks.noZone')}
-              </Text>
-              {section.tasks.map((task) => (
-                <TaskRow
-                  key={task.id}
-                  task={task}
-                  today={today}
-                  members={members}
-                  memberIds={memberIds}
-                  currentUid={uid}
-                  onComplete={complete}
-                  onNudge={nudge}
-                  onPress={(pressed) =>
-                    router.push({ pathname: '/task/[id]', params: { id: pressed.id } })
-                  }
-                />
-              ))}
+          {members.length > 1 ? (
+            <ChipGroup<string>
+              options={[
+                { value: EVERYONE, label: t('tasks.filter.all') },
+                ...members.map((member) => ({
+                  value: member.uid,
+                  label: member.uid === uid ? t('tasks.filter.mine') : member.name,
+                  icon: member.avatar,
+                })),
+              ]}
+              value={activeWho}
+              onChange={setWho}
+            />
+          ) : null}
+
+          <Card tone="peach">
+            <Text variant="heading">{t('tasks.sections.today')}</Text>
+            {groups.today.length === 0 ? (
+              <Text color="inkSoft">{t('tasks.sections.nothingToday')}</Text>
+            ) : (
+              groups.today.map(row)
+            )}
+          </Card>
+
+          {groups.soon.length > 0 ? (
+            <Card>
+              <Text variant="heading">{t('tasks.sections.soon')}</Text>
+              {groups.soon.map(row)}
             </Card>
-          ))}
+          ) : null}
+
+          {groups.later.length > 0 ? (
+            <Card>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ expanded: showLater }}
+                onPress={() => setShowLater(!showLater)}
+                style={styles.toggle}>
+                <Text variant="heading" style={styles.title}>
+                  {t('tasks.sections.later')}
+                </Text>
+                <Text variant="label" color="inkSoft">
+                  {showLater
+                    ? t('tasks.sections.hide')
+                    : t('tasks.sections.show', { count: groups.later.length })}
+                </Text>
+              </Pressable>
+              {showLater ? groups.later.map(row) : null}
+            </Card>
+          ) : null}
         </>
       )}
+
+      {doneToday.length > 0 ? (
+        <Card tone="sage">
+          <Text variant="heading">✅ {t('tasks.sections.doneToday')}</Text>
+          {doneToday.map((completion) => {
+            const member = members.find((candidate) => candidate.uid === completion.completedBy);
+            const task = allTasks.find((candidate) => candidate.id === completion.taskId);
+            return (
+              <View key={completion.id} style={styles.doneRow}>
+                <Avatar emoji={member?.avatar} name={member?.name} color={member?.color} size={32} />
+                <Text style={styles.title} numberOfLines={2}>
+                  {completion.icon} {completion.title}
+                </Text>
+                {canUndo(completion, task) ? (
+                  <Chip role="button" label={t('tasks.actions.undo')} onPress={() => undo(completion)} />
+                ) : null}
+              </View>
+            );
+          })}
+        </Card>
+      ) : null}
     </Screen>
   );
 }
@@ -136,7 +209,26 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
   },
-  actions: {
+  group: {
     gap: spacing.xs,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  action: {
+    flex: 1,
+  },
+  toggle: {
+    minHeight: minTouchSize - 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  doneRow: {
+    minHeight: minTouchSize,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
 });

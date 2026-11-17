@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { productIcon } from '@/domain/shopping/icons';
 import type { ShoppingItem } from '@/domain/shopping/types';
 import { Text, colors, minTouchSize, radii, spacing } from '@/ui';
 
@@ -28,6 +29,9 @@ export function ShoppingItemRow({ item, onToggle, onOptions }: ShoppingItemRowPr
         <View style={[styles.box, item.checked && styles.boxChecked]}>
           {item.checked ? <Text style={styles.tick}>✓</Text> : null}
         </View>
+        <Text style={[styles.productIcon, item.checked && styles.faded]}>
+          {productIcon(item.name, item.categoryId)}
+        </Text>
         <Text
           color={item.checked ? 'inkMuted' : 'ink'}
           style={[styles.name, item.checked && styles.struck]}>
@@ -79,10 +83,19 @@ const styles = StyleSheet.create({
   tick: {
     color: colors.surface,
     fontSize: 15,
-    lineHeight: 19,
+    lineHeight: 21,
   },
   name: {
     flex: 1,
+  },
+  productIcon: {
+    fontSize: 20,
+    lineHeight: 28,
+    width: 26,
+    textAlign: 'center',
+  },
+  faded: {
+    opacity: 0.5,
   },
   struck: {
     textDecorationLine: 'line-through',
@@ -96,6 +109,6 @@ const styles = StyleSheet.create({
   },
   moreIcon: {
     fontSize: 20,
-    lineHeight: 24,
+    lineHeight: 28,
   },
 });

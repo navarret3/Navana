@@ -103,3 +103,15 @@ export function groupByCategory(
 export function learnedCategories(catalog: readonly CatalogEntry[]): Map<string, CategoryId> {
   return new Map(catalog.map((entry) => [entry.key, entry.categoryId]));
 }
+
+/**
+ * La lista de la compra, sin separar por secciones: lo último que se ha añadido arriba, que
+ * es donde se mira al apuntar. Lo recién añadido aún no tiene hora del servidor y va primero.
+ */
+export function newestFirst(items: readonly ShoppingItem[]): ShoppingItem[] {
+  return [...items].sort(
+    (a, b) =>
+      (b.addedAt ?? Number.MAX_SAFE_INTEGER) - (a.addedAt ?? Number.MAX_SAFE_INTEGER) ||
+      a.name.localeCompare(b.name),
+  );
+}

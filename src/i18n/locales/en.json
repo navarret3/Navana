@@ -14,6 +14,7 @@
     "tasks": "Chores",
     "shopping": "Shopping",
     "agenda": "Calendar",
+    "movies": "Movies",
     "notes": "Notes",
     "menu": "Meals"
   },
@@ -75,9 +76,6 @@
       "empty": "Nothing for you today. Even the cats approve of this calm.",
       "seeAll": "See all chores"
     },
-    "addRecurring": "Add recurring chore",
-    "addRecurringHint": "It repeats every so often and it is someone’s turn.",
-    "recurringHeading": "Recurring chores",
     "noZone": "No area",
     "due": {
       "today": "Today",
@@ -231,8 +229,6 @@
       "uneven": "This time {{name}} has carried more."
     },
     "log": {
-      "buttonHint": "Something you just did. Just say what.",
-      "button": "Add one-off chore",
       "title": "One-off chore",
       "searchLabel": "What did you do?",
       "searchPlaceholder": "Type it or pick it from the list",
@@ -243,6 +239,24 @@
       "empty": "No chores yet. Type above what you did.",
       "editHint": "Press and hold a chore to edit or delete it.",
       "addTypical": "Add typical chores"
+    },
+    "quick": {
+      "oneOff": "＋ One-off",
+      "recurring": "＋ Recurring",
+      "hint": "One-off: something you just did. Recurring: it repeats and it is someone’s turn."
+    },
+    "filter": {
+      "all": "All",
+      "mine": "Mine"
+    },
+    "sections": {
+      "today": "For today",
+      "nothingToday": "Nothing pending for today.",
+      "soon": "Coming days",
+      "later": "Later on",
+      "show": "Show {{count}}",
+      "hide": "Hide",
+      "doneToday": "Done today"
     }
   },
   "shopping": {
@@ -312,15 +326,11 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "goToToday": "Go to today",
-    "previousDays": "7 days earlier",
-    "nextDays": "7 days later",
-    "later": "Later on",
     "addOn": "Add an event on {{date}}",
-    "nothingTheseDays": "Nothing planned for these days.",
     "filter": {
       "label": "Show",
       "all": "Everything",
-      "nothingTheseDays": "Nothing from this selection on these days."
+      "nothingThisDay": "Nothing from this selection on this day."
     },
     "countdown": {
       "ongoing": "Ongoing",
@@ -385,6 +395,54 @@
     "whose": {
       "both": "Both",
       "everyone": "Everyone"
+    },
+    "addShort": "Add",
+    "nothingThisDay": "Nothing planned for this day.",
+    "restOfMonth": "Rest of {{month}}",
+    "inMonth": "In {{month}}",
+    "nothingMoreInMonth": "Nothing else planned this month."
+  },
+  "movies": {
+    "title": "Movies",
+    "description": "Films you want to watch, and who added them",
+    "empty": {
+      "title": "No movies yet",
+      "description": "Add the ones you want to watch and mark them when you have seen them."
+    },
+    "todayCard": {
+      "title": "To watch",
+      "empty": "No movies pending. Looking for one?",
+      "count_one": "{{count}} movie to watch",
+      "count_other": "{{count}} movies to watch",
+      "open": "See the movies"
+    },
+    "add": "＋ Add movie",
+    "filter": {
+      "toWatch": "To watch ({{count}})",
+      "watched": "Watched ({{count}})"
+    },
+    "emptyFilter": {
+      "toWatch": "You have watched them all. Add another?",
+      "watched": "You have not marked any as watched yet."
+    },
+    "detailTitle": "Movie",
+    "notFound": "This movie is no longer on the list.",
+    "addedBy": "Added by {{name}}",
+    "addedByOn": "Added by {{name}} on {{date}}",
+    "watchedByOn": "Watched on {{date}} (marked by {{name}})",
+    "markWatched": "Mark as watched",
+    "markUnwatched": "Mark as not watched",
+    "remove": "Remove from the list",
+    "search": {
+      "title": "Add movie",
+      "label": "Title",
+      "placeholder": "Search for a movie",
+      "notConfigured": "Movie search is not set up yet: only the title will be added.",
+      "error": "The search failed. Check the connection.",
+      "noResults": "No movie found with that title.",
+      "alreadyAdded": "Already on the list",
+      "addManual": "Add “{{title}}” without searching",
+      "attribution": "Data and images from TMDB. Navana uses the TMDB API but is not endorsed or certified by TMDB."
     }
   },
   "settings": {

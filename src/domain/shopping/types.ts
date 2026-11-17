@@ -10,6 +10,8 @@ export type ShoppingItem = {
   checked: boolean;
   addedBy: string;
   checkedBy: string | null;
+  /** Cuándo se añadió, en milisegundos. Falta mientras el servidor no lo ha confirmado. */
+  addedAt?: number;
 };
 
 /** Lo que el hogar sabe de un producto: su categoría y cuánto se compra. */

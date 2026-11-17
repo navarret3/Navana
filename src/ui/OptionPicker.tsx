@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 24,
-    lineHeight: 32,
+    lineHeight: 34,
   },
   swatch: {
     width: 32,

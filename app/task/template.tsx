@@ -211,12 +211,12 @@ const styles = StyleSheet.create({
   tick: {
     color: colors.surface,
     fontSize: 16,
-    lineHeight: 20,
+    lineHeight: 23,
   },
   icon: {
     fontSize: 22,
-    lineHeight: 28,
-    width: 28,
+    lineHeight: 31,
+    width: 32,
     textAlign: 'center',
   },
   texts: {

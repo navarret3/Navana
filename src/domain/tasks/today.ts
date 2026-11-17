@@ -1,4 +1,4 @@
-import type { DateKey } from '@/domain/dates';
+import { addDays, type DateKey } from '@/domain/dates';
 
 import { isDue } from './recurrence';
 import { currentAssignee } from './rotation';
@@ -57,4 +57,44 @@ export function groupForToday(
   groups.free.sort(byDueDate);
   groups.others.sort(byDueDate);
   return groups;
+}
+
+/** Días hacia delante que entran en "Próximos días" en la pestaña Tareas. */
+export const SOON_DAYS = 7;
+
+export type TasksByWhen = {
+  /** Lo de hoy y lo atrasado. */
+  today: Task[];
+  /** Lo que toca en los próximos días. */
+  soon: Task[];
+  /** El resto. */
+  later: Task[];
+};
+
+/** Reparte las tareas con fecha según cuándo tocan, cada grupo de lo más urgente a lo menos. */
+export function groupByWhen(tasks: readonly Task[], today: DateKey): TasksByWhen {
+  const limit = addDays(today, SOON_DAYS);
+  const groups: TasksByWhen = { today: [], soon: [], later: [] };
+  for (const task of [...scheduledTasks(tasks)].sort(byDueDate)) {
+    if (isDue(task.nextDueOn, today)) groups.today.push(task);
+    else if (task.nextDueOn <= limit) groups.soon.push(task);
+    else groups.later.push(task);
+  }
+  return groups;
+}
+
+/**
+ * Filtro de la pestaña Tareas por persona: `null` deja todas; con un `uid`, las que le tocan
+ * a esa persona y las libres, que puede coger cualquiera.
+ */
+export function tasksFor(
+  tasks: readonly Task[],
+  uid: string | null,
+  memberIds: readonly string[],
+): Task[] {
+  if (uid === null) return [...tasks];
+  return tasks.filter((task) => {
+    const assignee = currentAssignee(task, memberIds);
+    return assignee === null || assignee === uid;
+  });
 }

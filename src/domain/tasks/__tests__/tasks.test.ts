@@ -3,7 +3,13 @@ import { canUndo, planCompletion, planPostpone } from '@/domain/tasks/completion
 import { dueStatus, isDue, nextDueAfterCompletion } from '@/domain/tasks/recurrence';
 import { assigneeAfterCompletion, currentAssignee } from '@/domain/tasks/rotation';
 import { TEMPLATE_ON_DEMAND, TEMPLATE_TASKS, zonesForTemplate } from '@/domain/tasks/template';
-import { groupForToday, onDemandTasks, scheduledTasks } from '@/domain/tasks/today';
+import {
+  groupByWhen,
+  groupForToday,
+  onDemandTasks,
+  scheduledTasks,
+  tasksFor,
+} from '@/domain/tasks/today';
 import type { Completion, Task } from '@/domain/tasks/types';
 
 const ANA = 'ana';
@@ -366,5 +372,35 @@ describe('plantilla inicial', () => {
   it('ninguna tarea está a la vez como fija y como "cuando surge"', () => {
     const scheduled = new Set<string>(TEMPLATE_TASKS.map((item) => item.key));
     expect(TEMPLATE_ON_DEMAND.filter((item) => scheduled.has(item.key))).toEqual([]);
+  });
+});
+
+describe('pestaña Tareas', () => {
+  const titles = (tasks: readonly Task[]) => tasks.map((entry) => entry.title);
+  const list = [
+    task({ id: 'a', title: 'Atrasada', nextDueOn: '2026-11-10' }),
+    task({ id: 'b', title: 'Hoy', nextDueOn: TODAY }),
+    task({ id: 'c', title: 'En 3 días', nextDueOn: '2026-11-15' }),
+    task({ id: 'd', title: 'En 7 días', nextDueOn: '2026-11-19' }),
+    task({ id: 'e', title: 'En un mes', nextDueOn: '2026-12-12' }),
+    task({ id: 'f', title: 'Cuando surge', onDemand: true, intervalDays: null }),
+    task({ id: 'g', title: 'Archivada', archived: true }),
+  ];
+
+  it('reparte las recurrentes por cuándo tocan, de lo más urgente a lo menos', () => {
+    const groups = groupByWhen(list, TODAY);
+    expect(titles(groups.today)).toEqual(['Atrasada', 'Hoy']);
+    expect(titles(groups.soon)).toEqual(['En 3 días', 'En 7 días']);
+    expect(titles(groups.later)).toEqual(['En un mes']);
+  });
+
+  it('el filtro por persona deja lo suyo y lo libre', () => {
+    const mine = task({ id: 'm', title: 'Mía', mode: 'fixed', assigneeId: ANA });
+    const his = task({ id: 'h', title: 'De Bruno', mode: 'fixed', assigneeId: BRUNO });
+    const free = task({ id: 'l', title: 'Libre', mode: 'free', assigneeId: null });
+    const all = [mine, his, free];
+    expect(titles(tasksFor(all, null, MEMBERS))).toEqual(['Mía', 'De Bruno', 'Libre']);
+    expect(titles(tasksFor(all, ANA, MEMBERS))).toEqual(['Mía', 'Libre']);
+    expect(titles(tasksFor(all, BRUNO, MEMBERS))).toEqual(['De Bruno', 'Libre']);
   });
 });

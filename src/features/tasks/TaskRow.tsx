@@ -159,8 +159,8 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 22,
-    lineHeight: 28,
-    width: 28,
+    lineHeight: 31,
+    width: 32,
     textAlign: 'center',
   },
   texts: {
@@ -177,6 +177,6 @@ const styles = StyleSheet.create({
   },
   nudgeIcon: {
     fontSize: 18,
-    lineHeight: 24,
+    lineHeight: 26,
   },
 });

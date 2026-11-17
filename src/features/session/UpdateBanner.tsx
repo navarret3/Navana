@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   dialogIcon: {
     fontSize: 40,
-    lineHeight: 48,
+    lineHeight: 56,
     textAlign: 'center',
   },
   actions: {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 18,
-    lineHeight: 24,
+    lineHeight: 26,
   },
   message: {
     flex: 1,

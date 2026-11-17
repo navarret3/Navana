@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   logoEmoji: {
     fontSize: 60,
-    lineHeight: 76,
+    lineHeight: 84,
   },
   actions: {
     gap: spacing.md,

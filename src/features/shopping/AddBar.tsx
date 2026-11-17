@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     fontSize: 26,
-    lineHeight: 32,
+    lineHeight: 37,
     color: colors.onPeach,
   },
   pressed: {
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   suggestionIcon: {
     fontSize: 18,
-    lineHeight: 24,
+    lineHeight: 26,
     width: 26,
     textAlign: 'center',
   },

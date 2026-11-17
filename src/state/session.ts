@@ -12,6 +12,7 @@ import type { Household, Member } from '@/domain/household';
 import { isAppLanguage, setAppLanguage } from '@/i18n';
 import { startAgendaSync } from '@/state/agenda';
 import { startExtrasSync } from '@/state/extras';
+import { startMoviesSync } from '@/state/movies';
 import { startShoppingSync } from '@/state/shopping';
 import { startTasksSync } from '@/state/tasks';
 
@@ -103,6 +104,7 @@ export function startSessionListener(): () => void {
     const stopShopping = startShoppingSync(householdId);
     const stopAgenda = startAgendaSync(householdId);
     const stopExtras = startExtrasSync(householdId);
+    const stopMovies = startMoviesSync(householdId);
     stopHousehold = () => {
       stopDoc();
       stopMembers();
@@ -110,6 +112,7 @@ export function startSessionListener(): () => void {
       stopShopping();
       stopAgenda();
       stopExtras();
+      stopMovies();
     };
   };
 

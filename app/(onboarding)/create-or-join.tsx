@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   },
   wave: {
     fontSize: 40,
-    lineHeight: 52,
+    lineHeight: 56,
   },
   modes: {
     flexDirection: 'row',

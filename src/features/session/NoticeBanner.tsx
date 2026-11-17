@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 18,
-    lineHeight: 24,
+    lineHeight: 26,
   },
   message: {
     flex: 1,

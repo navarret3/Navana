@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 
 import { AgendaTodayCard } from '@/features/agenda/AgendaTodayCard';
 import { MenuTodayCard } from '@/features/menu/MenuTodayCard';
+import { MoviesTodayCard } from '@/features/movies/MoviesTodayCard';
 import { NotesTodayCard } from '@/features/notes/NotesTodayCard';
 import { ShoppingTodayCard } from '@/features/shopping/ShoppingTodayCard';
 import { TasksTodayCard } from '@/features/tasks/TasksTodayCard';
@@ -13,6 +14,7 @@ export const todayCards: Record<ModuleId, ComponentType> = {
   tasks: TasksTodayCard,
   shopping: ShoppingTodayCard,
   agenda: AgendaTodayCard,
+  movies: MoviesTodayCard,
   menu: MenuTodayCard,
   notes: NotesTodayCard,
 };

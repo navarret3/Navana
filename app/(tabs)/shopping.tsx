@@ -3,9 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { SHOPPING_CATEGORIES } from '@/domain/shopping/categories';
-import { categoryIcon, productIcon } from '@/domain/shopping/icons';
-import { frequentProducts, groupByCategory, recentProducts } from '@/domain/shopping/suggest';
+import { productIcon } from '@/domain/shopping/icons';
+import { frequentProducts, newestFirst, recentProducts } from '@/domain/shopping/suggest';
 import type { ShoppingItem } from '@/domain/shopping/types';
 import { AddBar } from '@/features/shopping/AddBar';
 import { ShoppingItemRow } from '@/features/shopping/ShoppingItemRow';
@@ -27,18 +26,15 @@ export default function ShoppingScreen() {
   const { t } = useTranslation();
   const items = useShopping((state) => state.items);
   const catalog = useShopping((state) => state.catalog);
-  const { add, toggle, remove, changeCategory, finish } = useShoppingActions();
+  const { add, toggle, remove, finish } = useShoppingActions();
 
   /** Producto cuyo menú de opciones está abierto. */
   const [selected, setSelected] = useState<ShoppingItem | null>(null);
-  /** Producto al que se le está eligiendo sección. Va aparte: el primer menú se cierra antes. */
-  const [recategorizing, setRecategorizing] = useState<ShoppingItem | null>(null);
 
-  const pending = items.filter((item) => !item.checked);
+  const pending = newestFirst(items.filter((item) => !item.checked));
   const checked = items
     .filter((item) => item.checked)
     .sort((a, b) => a.name.localeCompare(b.name));
-  const groups = groupByCategory(pending);
   const frequent = frequentProducts(catalog, items);
   const recent = recentProducts(catalog, items, frequent);
 
@@ -96,12 +92,10 @@ export default function ShoppingScreen() {
             />
           ) : null}
 
-          {groups.map((group) => (
-            <Card key={group.categoryId}>
-              <Text variant="heading">
-                {categoryIcon(group.categoryId)} {t(`shopping.categories.${group.categoryId}`)}
-              </Text>
-              {group.items.map((item) => (
+          {/* Todo en una sola lista, sin secciones: así se lee de un vistazo. */}
+          {pending.length > 0 ? (
+            <Card>
+              {pending.map((item) => (
                 <ShoppingItemRow
                   key={item.id}
                   item={item}
@@ -110,7 +104,7 @@ export default function ShoppingScreen() {
                 />
               ))}
             </Card>
-          ))}
+          ) : null}
 
           {checked.length > 0 ? (
             <Card tone="sage">
@@ -141,22 +135,12 @@ export default function ShoppingScreen() {
         title={selected?.name ?? ''}
         onClose={() => setSelected(null)}
         options={[
-          { label: t('shopping.changeCategory'), onPress: () => setRecategorizing(selected) },
           {
             label: t('shopping.remove'),
             destructive: true,
             onPress: () => selected && remove(selected),
           },
         ]}
-      />
-      <ActionSheet
-        visible={recategorizing !== null}
-        title={t('shopping.chooseCategory')}
-        onClose={() => setRecategorizing(null)}
-        options={SHOPPING_CATEGORIES.map((category) => ({
-          label: `${category.icon}  ${t(`shopping.categories.${category.id}`)}`,
-          onPress: () => recategorizing && changeCategory(recategorizing, category.id),
-        }))}
       />
     </SafeAreaView>
   );

@@ -31,6 +31,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 20,
-    lineHeight: 26,
+    lineHeight: 28,
   },
 });

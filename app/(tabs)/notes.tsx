@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   fabIcon: {
     fontSize: 30,
-    lineHeight: 36,
+    lineHeight: 42,
     color: colors.onPeach,
   },
   fabSpace: {

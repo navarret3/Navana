@@ -24,6 +24,12 @@ type OnError = (error: unknown) => void;
 const text = (value: unknown) => (typeof value === 'string' ? value : '');
 const categoryOf = (value: unknown): CategoryId => (isCategoryId(value) ? value : OTHER_CATEGORY);
 
+/** Una marca de tiempo de Firestore en milisegundos; `undefined` si aún no la hay. */
+function millisOf(value: unknown): number | undefined {
+  const stamp = value as { toMillis?: () => number } | null | undefined;
+  return typeof stamp?.toMillis === 'function' ? stamp.toMillis() : undefined;
+}
+
 function toItem(id: string, data: Raw): ShoppingItem {
   return {
     id,
@@ -33,6 +39,7 @@ function toItem(id: string, data: Raw): ShoppingItem {
     checked: data.checked === true,
     addedBy: text(data.addedBy),
     checkedBy: typeof data.checkedBy === 'string' ? data.checkedBy : null,
+    addedAt: millisOf(data.addedAt),
   };
 }
 

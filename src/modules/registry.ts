@@ -9,7 +9,7 @@ import type { Href } from 'expo-router';
  * usar desde los tests y desde la lógica de dominio.
  */
 
-export const moduleIds = ['tasks', 'shopping', 'agenda', 'menu', 'notes'] as const;
+export const moduleIds = ['tasks', 'shopping', 'agenda', 'movies', 'menu', 'notes'] as const;
 
 export type ModuleId = (typeof moduleIds)[number];
 
@@ -27,6 +27,7 @@ export const modules: readonly AppModule[] = [
   { id: 'tasks', icon: '🧹', href: '/tasks', enabledByDefault: true },
   { id: 'shopping', icon: '🛒', href: '/shopping', enabledByDefault: true },
   { id: 'agenda', icon: '📅', href: '/agenda', enabledByDefault: true },
+  { id: 'movies', icon: '🎬', href: '/movies', enabledByDefault: true },
   // Los módulos opcionales empiezan apagados: se activan en Ajustes → Módulos.
   { id: 'menu', icon: '🍽️', href: '/menu', enabledByDefault: false },
   { id: 'notes', icon: '📝', href: '/notes', enabledByDefault: false },

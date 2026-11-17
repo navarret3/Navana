@@ -706,3 +706,61 @@ describe('notas y menú semanal', () => {
     await assertFails(setDoc(doc(db, 'households', HOME, 'menu', '2026-11-12'), { lunch: meal }));
   });
 });
+
+describe('películas', () => {
+  const film = (extra: Record<string, unknown> = {}) => ({
+    title: 'Origen',
+    year: 2010,
+    posterPath: '/origen.jpg',
+    overview: 'Un ladrón que roba secretos.',
+    tmdbId: 27205,
+    addedBy: ANA,
+    addedAt: 1000,
+    watched: false,
+    watchedAt: null,
+    watchedBy: null,
+    ...extra,
+  });
+
+  beforeEach(seedHome);
+
+  it('un miembro añade, marca como vista y quita películas', async () => {
+    const db = as(ANA);
+    const ref = doc(db, 'households', HOME, 'movies', 'm1');
+    await assertSucceeds(setDoc(ref, film()));
+    // Escrita a mano: solo el título.
+    await assertSucceeds(
+      setDoc(
+        doc(db, 'households', HOME, 'movies', 'm2'),
+        film({ title: 'Dune', year: null, posterPath: null, overview: '', tmdbId: null }),
+      ),
+    );
+    await assertSucceeds(updateDoc(ref, { watched: true, watchedAt: 2000, watchedBy: ANA }));
+    await assertSucceeds(updateDoc(ref, { watched: false, watchedAt: null, watchedBy: null }));
+    await assertSucceeds(deleteDoc(ref));
+  });
+
+  it('cada uno añade a su nombre y luego solo cambia si está vista', async () => {
+    const db = as(ANA);
+    await assertFails(setDoc(doc(db, 'households', HOME, 'movies', 'm9'), film({ addedBy: BRUNO })));
+    const ref = doc(db, 'households', HOME, 'movies', 'm1');
+    await assertSucceeds(setDoc(ref, film()));
+    await assertFails(updateDoc(ref, { title: 'Otra' }));
+    await assertFails(updateDoc(ref, { addedBy: BRUNO }));
+  });
+
+  it('rechaza películas mal formadas', async () => {
+    const ref = doc(as(ANA), 'households', HOME, 'movies', 'm9');
+    await assertFails(setDoc(ref, film({ title: '' })));
+    await assertFails(setDoc(ref, film({ year: '2010' })));
+    await assertFails(setDoc(ref, film({ overview: 'x'.repeat(1001) })));
+    await assertFails(setDoc(ref, film({ watched: 'no' })));
+    await assertFails(setDoc(ref, film({ extra: true })));
+  });
+
+  it('quien no es del hogar no ve ni toca las películas', async () => {
+    const db = as(BRUNO);
+    await assertFails(getDocs(collection(db, 'households', HOME, 'movies')));
+    await assertFails(setDoc(doc(db, 'households', HOME, 'movies', 'm9'), film({ addedBy: BRUNO })));
+  });
+});

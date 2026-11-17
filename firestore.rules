@@ -268,6 +268,37 @@ service cloud.firestore {
         allow create, update: if isMember(hid) && validNote();
       }
 
+      // ---------- Películas ----------
+      match /movies/{movieId} {
+        function validMovie() {
+          let data = request.resource.data;
+          return data.keys().hasOnly([
+                   'title', 'year', 'posterPath', 'overview', 'tmdbId', 'addedBy', 'addedAt',
+                   'watched', 'watchedAt', 'watchedBy'])
+            && validText(data.title, 120)
+            && (data.year == null || data.year is number)
+            && (data.posterPath == null
+                || (data.posterPath is string && data.posterPath.size() <= 200))
+            && data.overview is string && data.overview.size() <= 1000
+            && (data.tmdbId == null || data.tmdbId is number)
+            && data.addedBy is string
+            && data.addedAt is number
+            && data.watched is bool
+            && (data.watchedAt == null || data.watchedAt is number)
+            && (data.watchedBy == null || data.watchedBy is string);
+        }
+
+        allow read, delete: if isMember(hid);
+        // Cada uno añade a su nombre.
+        allow create: if isMember(hid)
+          && validMovie()
+          && request.resource.data.addedBy == uid();
+        // Lo único que cambia después es si está vista.
+        allow update: if isMember(hid)
+          && validMovie()
+          && changedOnly(['watched', 'watchedAt', 'watchedBy']);
+      }
+
       // ---------- Menú semanal: un documento por día ----------
       match /menu/{date} {
         function validMeal(meal) {

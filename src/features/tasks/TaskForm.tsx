@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   },
   suggestionIcon: {
     fontSize: 18,
-    lineHeight: 24,
+    lineHeight: 26,
     width: 26,
     textAlign: 'center',
   },

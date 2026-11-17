@@ -4,8 +4,9 @@ import { displayName, normalizeName, productKey } from '@/domain/shopping/normal
 import {
   frequentProducts,
   groupByCategory,
-  recentProducts,
   learnedCategories,
+  newestFirst,
+  recentProducts,
   suggest,
 } from '@/domain/shopping/suggest';
 import type { CatalogEntry, ShoppingItem } from '@/domain/shopping/types';
@@ -236,5 +237,17 @@ describe('lista agrupada', () => {
     ]);
     expect(groups.map((group) => group.categoryId)).toEqual(['produce', 'bakery', 'dairy', 'other']);
     expect(groups[0]?.items.map((i) => i.name)).toEqual(['Ajo', 'Tomates']);
+  });
+});
+
+describe('lista de la compra en una sola lista', () => {
+  it('lo último que se añade va arriba; lo recién apuntado, aún sin hora, primero', () => {
+    const list = [
+      item('Leche', { id: 'l', addedAt: 1000 }),
+      item('Pan', { id: 'p', addedAt: 3000 }),
+      item('Huevos', { id: 'h' }),
+      item('Arroz', { id: 'a', addedAt: 2000 }),
+    ];
+    expect(newestFirst(list).map((entry) => entry.name)).toEqual(['Huevos', 'Pan', 'Arroz', 'Leche']);
   });
 });

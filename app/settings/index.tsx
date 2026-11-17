@@ -8,6 +8,7 @@ import { backend } from '@/data/fb';
 import { checkBackend, type BackendStatus } from '@/data/health';
 import { setHouseholdModuleEnabled } from '@/data/households';
 import { AccountActions } from '@/features/household/AccountActions';
+import { LanguagePicker } from '@/features/household/LanguagePicker';
 import { isModuleEnabled, modules } from '@/modules/registry';
 import { saveFailed } from '@/state/notices';
 import { useCurrentMember, useSession } from '@/state/session';
@@ -56,6 +57,7 @@ export default function SettingsScreen() {
           trailing={<Text color="inkMuted">›</Text>}
           onPress={() => router.push('/settings/profile')}
         />
+        <LanguagePicker />
       </Card>
 
       <Card>

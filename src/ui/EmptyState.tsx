@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 44,
-    lineHeight: 56,
+    lineHeight: 62,
   },
   action: {
     marginTop: spacing.lg,

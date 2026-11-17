@@ -29,7 +29,7 @@ export function Avatar({ emoji, name, color, size = 44 }: AvatarProps) {
       <Text
         variant="bodyStrong"
         color="onPeach"
-        style={{ fontSize: size * 0.46, lineHeight: size * 0.6 }}>
+        style={{ fontSize: size * 0.46, lineHeight: size * 0.66 }}>
         {emoji || initial || '🐱'}
       </Text>
     </View>

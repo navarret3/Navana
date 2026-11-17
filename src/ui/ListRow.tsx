@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 24,
-    lineHeight: 32,
+    lineHeight: 34,
     width: 32,
     textAlign: 'center',
   },

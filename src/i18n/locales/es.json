@@ -14,6 +14,7 @@
     "tasks": "Tareas",
     "shopping": "Compra",
     "agenda": "Agenda",
+    "movies": "Películas",
     "notes": "Notas",
     "menu": "Menú"
   },
@@ -75,9 +76,6 @@
       "empty": "Hoy no te toca nada. Hasta los gatos aprueban esta calma.",
       "seeAll": "Ver todas las tareas"
     },
-    "addRecurring": "Añadir tarea recurrente",
-    "addRecurringHint": "Se repite cada cierto tiempo y le toca a alguien.",
-    "recurringHeading": "Tareas recurrentes",
     "noZone": "Sin zona",
     "due": {
       "today": "Hoy",
@@ -231,8 +229,6 @@
       "uneven": "Esta vez {{name}} ha cargado con más."
     },
     "log": {
-      "buttonHint": "Algo que acabas de hacer. Solo hay que decir qué.",
-      "button": "Añadir tarea puntual",
       "title": "Tarea puntual",
       "searchLabel": "¿Qué has hecho?",
       "searchPlaceholder": "Escríbelo o elígelo de la lista",
@@ -243,6 +239,24 @@
       "empty": "Aún no hay tareas. Escribe arriba lo que has hecho.",
       "editHint": "Mantén pulsada una tarea para editarla o eliminarla.",
       "addTypical": "Añadir cosas típicas"
+    },
+    "quick": {
+      "oneOff": "＋ Puntual",
+      "recurring": "＋ Recurrente",
+      "hint": "Puntual: algo que acabas de hacer. Recurrente: se repite y le toca a alguien."
+    },
+    "filter": {
+      "all": "Todas",
+      "mine": "Mías"
+    },
+    "sections": {
+      "today": "Para hoy",
+      "nothingToday": "Nada pendiente para hoy.",
+      "soon": "Próximos días",
+      "later": "Más adelante",
+      "show": "Ver {{count}}",
+      "hide": "Ocultar",
+      "doneToday": "Hecho hoy"
     }
   },
   "shopping": {
@@ -312,15 +326,11 @@
     "today": "Hoy",
     "tomorrow": "Mañana",
     "goToToday": "Ir a hoy",
-    "previousDays": "7 días antes",
-    "nextDays": "7 días después",
-    "later": "Más adelante",
     "addOn": "Añadir un evento el {{date}}",
-    "nothingTheseDays": "Nada apuntado para estos días.",
     "filter": {
       "label": "Ver",
       "all": "Todo",
-      "nothingTheseDays": "Nada de esta selección para estos días."
+      "nothingThisDay": "Nada de esta selección para este día."
     },
     "countdown": {
       "ongoing": "En curso",
@@ -385,6 +395,54 @@
     "whose": {
       "both": "Los dos",
       "everyone": "Todos"
+    },
+    "addShort": "Añadir",
+    "nothingThisDay": "Nada apuntado para este día.",
+    "restOfMonth": "Lo que queda de {{month}}",
+    "inMonth": "En {{month}}",
+    "nothingMoreInMonth": "Nada más apuntado este mes."
+  },
+  "movies": {
+    "title": "Películas",
+    "description": "Las pelis que queréis ver, con quién las añadió",
+    "empty": {
+      "title": "Ninguna película todavía",
+      "description": "Añadid las que queráis ver y marcadlas cuando las hayáis visto."
+    },
+    "todayCard": {
+      "title": "Para ver",
+      "empty": "No hay películas pendientes. ¿Buscáis alguna?",
+      "count_one": "{{count}} película pendiente",
+      "count_other": "{{count}} películas pendientes",
+      "open": "Ver las películas"
+    },
+    "add": "＋ Añadir película",
+    "filter": {
+      "toWatch": "Por ver ({{count}})",
+      "watched": "Vistas ({{count}})"
+    },
+    "emptyFilter": {
+      "toWatch": "Lo habéis visto todo. ¿Añadís otra?",
+      "watched": "Aún no habéis marcado ninguna como vista."
+    },
+    "detailTitle": "Película",
+    "notFound": "Esta película ya no está en la lista.",
+    "addedBy": "Añadida por {{name}}",
+    "addedByOn": "Añadida por {{name}} el {{date}}",
+    "watchedByOn": "Vista el {{date}} (la marcó {{name}})",
+    "markWatched": "Marcar como vista",
+    "markUnwatched": "Marcar como no vista",
+    "remove": "Quitar de la lista",
+    "search": {
+      "title": "Añadir película",
+      "label": "Título",
+      "placeholder": "Busca una película",
+      "notConfigured": "La búsqueda de películas aún no está activada: se añadirá solo el título.",
+      "error": "No se ha podido buscar. Comprueba la conexión.",
+      "noResults": "No aparece ninguna película con ese título.",
+      "alreadyAdded": "Ya está en la lista",
+      "addManual": "Añadir «{{title}}» sin buscar",
+      "attribution": "Datos e imágenes de TMDB. Navana usa la API de TMDB, pero TMDB no la avala ni la certifica."
     }
   },
   "settings": {

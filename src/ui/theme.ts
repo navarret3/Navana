@@ -119,13 +119,13 @@ export const fonts = {
 } as const;
 
 export const typography = {
-  display: { fontFamily: fonts.extrabold, fontSize: 30, lineHeight: 36 },
-  title: { fontFamily: fonts.extrabold, fontSize: 22, lineHeight: 28 },
+  display: { fontFamily: fonts.extrabold, fontSize: 30, lineHeight: 42 },
+  title: { fontFamily: fonts.extrabold, fontSize: 22, lineHeight: 31 },
   heading: { fontFamily: fonts.bold, fontSize: 17, lineHeight: 24 },
   body: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 23 },
   bodyStrong: { fontFamily: fonts.bold, fontSize: 16, lineHeight: 23 },
-  caption: { fontFamily: fonts.semibold, fontSize: 13, lineHeight: 18 },
-  label: { fontFamily: fonts.bold, fontSize: 12, lineHeight: 16, letterSpacing: 0.3 },
+  caption: { fontFamily: fonts.semibold, fontSize: 13, lineHeight: 19 },
+  label: { fontFamily: fonts.bold, fontSize: 12, lineHeight: 17, letterSpacing: 0.3 },
 } as const satisfies Record<string, TextStyle>;
 
 export type TextVariant = keyof typeof typography;

@@ -92,6 +92,9 @@ const config: ExpoConfig = {
   extra: {
     eas: { projectId: EAS_PROJECT_ID },
     googleWebClientId: readGoogleWebClientId(),
+    // Clave de TMDB para buscar películas. Va en la variable de entorno TMDB_API_TOKEN (en
+    // EAS, por entorno), nunca en el repositorio. Sin ella se añaden solo con el título.
+    tmdbToken: process.env.TMDB_API_TOKEN ?? null,
   },
 };
 
