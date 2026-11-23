@@ -14,9 +14,12 @@ import {
   doc,
   getDoc,
   getDocs,
+  orderBy,
+  query,
   setDoc,
   setLogLevel,
   updateDoc,
+  where,
   writeBatch,
   type Firestore,
 } from 'firebase/firestore';
@@ -428,6 +431,28 @@ describe('zonas, tareas e historial', () => {
       lastCompletionId: 'c2',
     });
     await assertSucceeds(batch.commit());
+  });
+
+  it('las estadísticas leen el periodo completo, aunque supere 300 registros, solo dentro del hogar', async () => {
+    await seed(async (db) => {
+      const batch = writeBatch(db);
+      for (let index = 0; index < 350; index++) {
+        batch.set(doc(db, 'households', HOME, 'completions', `history-${index}`), {
+          ...completion(ANA), completedOn: index % 2 ? '2026-11-01' : '2026-11-30',
+        });
+      }
+      batch.set(doc(db, 'households', HOME, 'completions', 'older'), {
+        ...completion(ANA), completedOn: '2025-12-31',
+      });
+      await batch.commit();
+    });
+    const inNovember = (db: Firestore) => query(collection(db, 'households', HOME, 'completions'),
+      orderBy('completedOn', 'desc'), where('completedOn', '>=', '2026-11-01'), where('completedOn', '<=', '2026-11-30'));
+    const month = await assertSucceeds(getDocs(inNovember(as(ANA))));
+    expect(month.size).toBe(351);
+    const all = await assertSucceeds(getDocs(query(collection(as(ANA), 'households', HOME, 'completions'), orderBy('completedOn', 'desc'))));
+    expect(all.size).toBe(352);
+    await assertFails(getDocs(inNovember(as(BRUNO))));
   });
 
   it('deshacer borra el registro; el historial no se edita', async () => {

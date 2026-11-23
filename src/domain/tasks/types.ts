@@ -59,6 +59,8 @@ export type Completion = {
   zoneId: string | null;
   completedBy: string;
   completedOn: DateKey;
+  /** Timestamp de Firestore convertido a milisegundos al leer; no forma parte de las escrituras. */
+  completedAtMs?: number;
   previous: TaskProgress;
 };
 

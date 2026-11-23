@@ -78,9 +78,9 @@ export default function TasksScreen() {
         </Text>
         <Chip
           role="button"
-          label={t('tasks.actions.balance')}
-          icon="⚖️"
-          onPress={() => router.push('/task/balance')}
+          label={t('tasks.statistics.title')}
+          icon="📊"
+          onPress={() => router.push('/task/statistics')}
         />
         <Chip
           role="button"
@@ -203,6 +203,7 @@ export default function TasksScreen() {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     gap: spacing.sm,
   },

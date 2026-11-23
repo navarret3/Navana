@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -83,6 +83,12 @@ export default function TaskScreen() {
           />
         ) : null}
       </Card>
+
+      <Button
+        variant="secondary"
+        label={t('tasks.statistics.taskHistory')}
+        onPress={() => router.push({ pathname: '/task/statistics', params: { taskId: task.id } })}
+      />
 
       <TaskForm
         key={task.id}

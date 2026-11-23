@@ -10,9 +10,11 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
+  where,
   writeBatch,
 } from '@/data/fb';
 import type { DateKey } from '@/domain/dates';
+import type { DateRange } from '@/domain/tasks/balance';
 import { planCompletion, planPostpone } from '@/domain/tasks/completion';
 import type {
   Completion,
@@ -29,7 +31,7 @@ const tasksCol = (hid: string) => collection(db, 'households', hid, 'tasks');
 const completionsCol = (hid: string) => collection(db, 'households', hid, 'completions');
 const taskRef = (hid: string, id: string) => doc(db, 'households', hid, 'tasks', id);
 
-/** Registros del historial que se mantienen cargados: de sobra para el balance del mes. */
+/** Historial reciente para Hoy y deshacer. Las estadísticas consultan su propio periodo. */
 const COMPLETIONS_LIMIT = 300;
 
 type Raw = Record<string, unknown>;
@@ -76,6 +78,7 @@ function toTask(id: string, data: Raw): Task {
 }
 
 function toCompletion(id: string, data: Raw): Completion {
+  const timestamp = data.completedAt as { toMillis?: () => number } | null;
   return {
     id,
     taskId: text(data.taskId),
@@ -85,6 +88,7 @@ function toCompletion(id: string, data: Raw): Completion {
     zoneId: textOrNull(data.zoneId),
     completedBy: text(data.completedBy),
     completedOn: text(data.completedOn),
+    completedAtMs: timestamp?.toMillis?.(),
     previous: toProgress((data.previous ?? {}) as Raw),
   };
 }
@@ -120,6 +124,35 @@ export function watchCompletions(
     query(completionsCol(hid), orderBy('completedAt', 'desc'), limit(COMPLETIONS_LIMIT)),
     (snapshot) =>
       onChange(snapshot.docs.map((entry) => toCompletion(entry.id, entry.data()))),
+    onError,
+  );
+}
+
+/**
+ * Solo mientras se consulta el historial: todos los registros del periodo, sin el límite
+ * de Hoy. Un único campo de consulta evita necesitar índices compuestos o una migración.
+ * `null` carga todo el historial a petición del usuario. La UI virtualiza las filas.
+ */
+export function watchCompletionHistory(
+  hid: string,
+  range: DateRange | null,
+  onChange: (entries: Completion[], fromCache: boolean) => void,
+  onError: OnError,
+) {
+  return onSnapshot(
+    query(
+      completionsCol(hid),
+      orderBy('completedOn', 'desc'),
+      ...(range ? [where('completedOn', '>=', range.from), where('completedOn', '<=', range.to)] : []),
+    ),
+    { includeMetadataChanges: true },
+    (snapshot) =>
+      onChange(
+        snapshot.docs.map((entry) =>
+          toCompletion(entry.id, entry.data({ serverTimestamps: 'estimate' })),
+        ),
+        snapshot.metadata.fromCache,
+      ),
     onError,
   );
 }
