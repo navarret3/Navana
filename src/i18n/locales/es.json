@@ -7,7 +7,8 @@
     "cancel": "Cancelar",
     "loadingSlow": "Está tardando más de lo normal. Comprueba la conexión; si sigue igual, cierra sesión y vuelve a entrar.",
     "saveFailed": "No se ha podido guardar el último cambio y se ha deshecho. Inténtalo de nuevo.",
-    "formerMember": "Antiguo miembro"
+    "formerMember": "Antiguo miembro",
+    "close": "Cerrar"
   },
   "tabs": {
     "today": "Hoy",
@@ -128,8 +129,8 @@
         "custom": "Otro…"
       },
       "ideas": "Ideas: toca una y se rellena sola.",
-      "moreOptions": "Más opciones",
-      "moreOptionsHint": "Icono, zona, esfuerzo y cuándo toca la primera vez.",
+      "moreOptions": "Detalles opcionales",
+      "moreOptionsHint": "Icono, zona y esfuerzo.",
       "everyHint": "Se cuenta desde la última vez que se hizo.",
       "modeLabel": "Quién la hace",
       "assigneeLabel": "Responsable",
@@ -139,7 +140,11 @@
       "create": "Crear tarea",
       "onDemand": "Cuando surja",
       "onDemandHint": "No tiene fecha ni turno: se apunta cada vez que alguien la hace.",
-      "dueLabel": "Cuándo toca"
+      "dueLabel": "Cuándo toca",
+      "typeLabel": "Tipo de tarea",
+      "scheduleSection": "Cuándo",
+      "assignmentSection": "Reparto",
+      "firstDueLabel": "Primera vez"
     },
     "actions": {
       "complete": "Marcar como hecha: {{title}}",
@@ -250,13 +255,14 @@
       "addTypical": "Añadir cosas típicas"
     },
     "quick": {
-      "oneOff": "＋ Puntual",
-      "recurring": "＋ Recurrente",
-      "hint": "Puntual: algo que acabas de hacer. Recurrente: se repite y le toca a alguien."
+      "add": "Añadir tarea",
+      "oneOff": "Añadir tarea puntual",
+      "recurring": "Añadir tarea recurrente"
     },
     "filter": {
       "all": "Todas",
-      "mine": "Mías"
+      "mine": "Mías",
+      "label": "Mostrar tareas"
     },
     "sections": {
       "today": "Para hoy",

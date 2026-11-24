@@ -7,7 +7,8 @@
     "cancel": "Cancel",
     "loadingSlow": "This is taking longer than usual. Check your connection; if nothing changes, sign out and sign in again.",
     "saveFailed": "Your last change couldn't be saved and has been undone. Please try again.",
-    "formerMember": "Former member"
+    "formerMember": "Former member",
+    "close": "Close"
   },
   "tabs": {
     "today": "Today",
@@ -128,8 +129,8 @@
         "custom": "Other…"
       },
       "ideas": "Ideas: tap one and it fills itself in.",
-      "moreOptions": "More options",
-      "moreOptionsHint": "Icon, area, effort and when it's first due.",
+      "moreOptions": "Optional details",
+      "moreOptionsHint": "Icon, area and effort.",
       "everyHint": "Counted from the last time it was done.",
       "modeLabel": "Who does it",
       "assigneeLabel": "Responsible",
@@ -139,7 +140,11 @@
       "create": "Create chore",
       "onDemand": "As it comes up",
       "onDemandHint": "No date and no turns: it's logged each time someone does it.",
-      "dueLabel": "Due on"
+      "dueLabel": "Due on",
+      "typeLabel": "Task type",
+      "scheduleSection": "Schedule",
+      "assignmentSection": "Assignment",
+      "firstDueLabel": "First due date"
     },
     "actions": {
       "complete": "Mark as done: {{title}}",
@@ -250,13 +255,14 @@
       "addTypical": "Add typical chores"
     },
     "quick": {
-      "oneOff": "＋ One-off",
-      "recurring": "＋ Recurring",
-      "hint": "One-off: something you just did. Recurring: it repeats and it is someone’s turn."
+      "add": "Add task",
+      "oneOff": "Add one-off task",
+      "recurring": "Add recurring task"
     },
     "filter": {
       "all": "All",
-      "mine": "Mine"
+      "mine": "Mine",
+      "label": "Show tasks"
     },
     "sections": {
       "today": "For today",

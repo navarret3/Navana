@@ -7,6 +7,7 @@ import { toDateKey } from '@/domain/dates';
 import { canUndo } from '@/domain/tasks/completion';
 import { groupByWhen, scheduledTasks, tasksFor } from '@/domain/tasks/today';
 import type { Task } from '@/domain/tasks/types';
+import { TaskAddButton } from '@/features/tasks/TaskAddButton';
 import { TaskRow } from '@/features/tasks/TaskRow';
 import { useTaskActions } from '@/features/tasks/useTaskActions';
 import { useSession } from '@/state/session';
@@ -16,9 +17,9 @@ import {
   Button,
   Card,
   Chip,
-  ChipGroup,
   EmptyState,
   Screen,
+  SelectField,
   Text,
   minTouchSize,
   spacing,
@@ -28,9 +29,8 @@ import {
 const EVERYONE = 'all';
 
 /**
- * Pestaña Tareas. Arriba, las dos formas de añadir: puntual (algo que se acaba de hacer) y
- * recurrente (se repite y le toca a alguien). Debajo, las recurrentes según cuándo tocan,
- * filtrables por persona, y lo que ya se ha hecho hoy, con opción de deshacer.
+ * Tareas por fecha, filtrables por persona, y lo hecho hoy. El botón flotante abre
+ * las dos formas de añadir sin ocupar espacio en la lista.
  */
 export default function TasksScreen() {
   const { t } = useTranslation();
@@ -71,41 +71,23 @@ export default function TasksScreen() {
   );
 
   return (
-    <Screen>
+    <Screen floating={<TaskAddButton />}>
       <View style={styles.header}>
         <Text variant="title" accessibilityRole="header" style={styles.title}>
           {t('tasks.title')}
         </Text>
-        <Chip
-          role="button"
-          label={t('tasks.statistics.title')}
-          icon="📊"
+        <Pressable
+          accessibilityRole="button"
           onPress={() => router.push('/task/statistics')}
-        />
-        <Chip
-          role="button"
-          label={t('tasks.actions.history')}
-          icon="🕘"
+          style={({ pressed }) => [styles.navLink, pressed && styles.pressed]}>
+          <Text variant="caption">{t('tasks.statistics.title')}</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
           onPress={() => router.push('/task/history')}
-        />
-      </View>
-
-      <View style={styles.group}>
-        <View style={styles.actions}>
-          <View style={styles.action}>
-            <Button label={t('tasks.quick.oneOff')} onPress={() => router.push('/task/log')} />
-          </View>
-          <View style={styles.action}>
-            <Button
-              variant="secondary"
-              label={t('tasks.quick.recurring')}
-              onPress={() => router.push('/task/new')}
-            />
-          </View>
-        </View>
-        <Text variant="caption" color="inkSoft" center>
-          {t('tasks.quick.hint')}
-        </Text>
+          style={({ pressed }) => [styles.navLink, pressed && styles.pressed]}>
+          <Text variant="caption">{t('tasks.actions.history')}</Text>
+        </Pressable>
       </View>
 
       {recurring.length === 0 ? (
@@ -124,7 +106,8 @@ export default function TasksScreen() {
       ) : (
         <>
           {members.length > 1 ? (
-            <ChipGroup<string>
+            <SelectField<string>
+              label={t('tasks.filter.label')}
               options={[
                 { value: EVERYONE, label: t('tasks.filter.all') },
                 ...members.map((member) => ({
@@ -184,18 +167,28 @@ export default function TasksScreen() {
             const task = allTasks.find((candidate) => candidate.id === completion.taskId);
             return (
               <View key={completion.id} style={styles.doneRow}>
-                <Avatar emoji={member?.avatar} name={member?.name} color={member?.color} size={32} />
+                <Avatar
+                  emoji={member?.avatar}
+                  name={member?.name}
+                  color={member?.color}
+                  size={32}
+                />
                 <Text style={styles.title} numberOfLines={2}>
                   {completion.icon} {completion.title}
                 </Text>
                 {canUndo(completion, task) ? (
-                  <Chip role="button" label={t('tasks.actions.undo')} onPress={() => undo(completion)} />
+                  <Chip
+                    role="button"
+                    label={t('tasks.actions.undo')}
+                    onPress={() => undo(completion)}
+                  />
                 ) : null}
               </View>
             );
           })}
         </Card>
       ) : null}
+      <View style={styles.fabSpace} />
     </Screen>
   );
 }
@@ -210,16 +203,9 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
   },
-  group: {
-    gap: spacing.xs,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  action: {
-    flex: 1,
-  },
+  navLink: { minHeight: minTouchSize, justifyContent: 'center', paddingHorizontal: spacing.xs },
+  pressed: { opacity: 0.7 },
+  fabSpace: { height: 76 },
   toggle: {
     minHeight: minTouchSize - 8,
     flexDirection: 'row',

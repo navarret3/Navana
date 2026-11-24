@@ -12,6 +12,7 @@ const lightColors = {
   surface: '#FFFDF8',
   surfaceSunken: '#F5E9D6',
   border: '#EBDDC8',
+  scrim: 'rgba(0, 0, 0, 0.4)',
 
   // Melocotón: acción principal
   peach: '#F6A77C',
@@ -55,6 +56,7 @@ const darkColors: Palette = {
   surface: '#2A2420',
   surfaceSunken: '#362E29',
   border: '#4A3E36',
+  scrim: 'rgba(0, 0, 0, 0.55)',
 
   peach: '#F6A77C',
   peachDeep: '#F4B592',

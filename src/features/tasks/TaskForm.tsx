@@ -3,21 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { Member } from '@/domain/household';
-import {
-  INTERVAL_PRESETS,
-  iconForTitle,
-  suggestChores,
-  type Chore,
-} from '@/domain/tasks/chores';
+import { INTERVAL_PRESETS, iconForTitle, suggestChores, type Chore } from '@/domain/tasks/chores';
 import { TASK_ICONS, TEMPLATE_ZONES } from '@/domain/tasks/template';
 import type { Effort, TaskDraft, TaskMode, Zone } from '@/domain/tasks/types';
 import {
+  BottomSheet,
   Button,
-  Chip,
-  ChipGroup,
   DateField,
-  MoreRow,
   OptionPicker,
+  SelectField,
   Text,
   TextField,
   colors,
@@ -29,7 +23,7 @@ import {
 
 const TITLE_MAX = 60;
 const NO_ZONE = '';
-/** Valor de la pastilla "Otro…" entre las frecuencias. */
+/** Valor de "Otro…" entre las frecuencias. */
 const CUSTOM = 0;
 
 type Frequency = 'repeat' | 'once' | 'onDemand';
@@ -43,7 +37,7 @@ type TaskFormProps = {
   /**
    * Alta de una tarea recurrente: propone tareas habituales mientras se escribe, elige el
    * icono solo, no pregunta si se repite (siempre) y deja plegado lo que casi nunca se toca.
-   * Al editar se ve todo. Las tareas puntuales no pasan por aquí: se apuntan en "Tarea puntual".
+   * Los detalles opcionales se despliegan también al editar. Las tareas puntuales se apuntan aparte.
    */
   isNew?: boolean;
   /** Títulos de las tareas que ya hay en el hogar, para no proponerlas otra vez. */
@@ -86,15 +80,17 @@ export function TaskForm({
   const [dueOn, setDueOn] = useState(initial.nextDueOn);
   const [mode, setMode] = useState<TaskMode>(initial.mode);
   const [assigneeId, setAssigneeId] = useState(initial.assigneeId ?? firstMember);
-  const [showMore, setShowMore] = useState(!isNew);
+  const [showMore, setShowMore] = useState(false);
+  const [choosingIcon, setChoosingIcon] = useState(false);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [intervalError, setIntervalError] = useState<string | null>(null);
 
   const suggestions =
-    isNew && title !== picked ? suggestChores(title, existingTitles, 5, true) : [];
+    isNew && title.trim() && title !== picked ? suggestChores(title, existingTitles, 4, true) : [];
 
   const changeTitle = (value: string) => {
     setTitle(value);
+    if (value.trim()) setTitleError(null);
     if (iconChosen) return;
     const auto = iconForTitle(value);
     if (auto) setIcon(auto);
@@ -165,7 +161,7 @@ export function TaskForm({
           autoCapitalize="sentences"
           error={titleError}
         />
-        {suggestions.length === 0 ? null : title.trim() ? (
+        {suggestions.length > 0 ? (
           <View style={styles.suggestions}>
             {suggestions.map((chore) => (
               <Pressable
@@ -175,162 +171,205 @@ export function TaskForm({
                 onPress={() => pick(chore)}
                 style={({ pressed }) => [styles.suggestion, pressed && styles.pressed]}>
                 <Text style={styles.suggestionIcon}>{chore.icon}</Text>
-                <Text style={styles.suggestionTitle}>{chore.title}</Text>
-                <Text variant="caption" color="inkSoft">
-                  {choreCaption(chore)}
-                </Text>
+                <View style={styles.grow}>
+                  <Text>{chore.title}</Text>
+                  <Text variant="caption" color="inkSoft">
+                    {choreCaption(chore)}
+                  </Text>
+                </View>
               </Pressable>
             ))}
           </View>
-        ) : (
-          <View style={styles.group}>
-            <Text variant="caption" color="inkSoft">
-              {t('tasks.form.ideas')}
-            </Text>
-            <View style={styles.chips}>
-              {suggestions.map((chore) => (
-                <Chip
-                  key={chore.title}
-                  role="button"
-                  icon={chore.icon}
-                  label={chore.title}
-                  onPress={() => pick(chore)}
-                />
-              ))}
-            </View>
-          </View>
-        )}
+        ) : null}
       </View>
 
-      {isNew ? null : (
-        <ChipGroup<Frequency>
-          label={t('tasks.form.frequencyLabel')}
+      {!isNew ? (
+        <SelectField<Frequency>
+          label={t('tasks.form.typeLabel')}
           options={[
             { value: 'repeat', label: t('tasks.form.repeat') },
             { value: 'once', label: t('tasks.form.once') },
-            { value: 'onDemand', label: t('tasks.form.onDemand') },
+            {
+              value: 'onDemand',
+              label: t('tasks.form.onDemand'),
+              description: t('tasks.form.onDemandHint'),
+            },
           ]}
           value={frequency}
           onChange={setFrequency}
-          hint={onDemand ? t('tasks.form.onDemandHint') : undefined}
         />
-      )}
-      {repeats ? (
-        <ChipGroup<number>
-          label={t('tasks.form.everyLabel')}
-          options={[
-            ...INTERVAL_PRESETS.map((days) => ({
-              value: days,
-              label: t(`tasks.form.presets.${days}`),
-            })),
-            { value: CUSTOM, label: t('tasks.form.presets.custom') },
-          ]}
-          value={customInterval || !isPreset(Number(interval)) ? CUSTOM : Number(interval)}
-          onChange={(days) => {
-            setCustomInterval(days === CUSTOM);
-            if (days !== CUSTOM) {
-              setIntervalText(String(days));
-              setIntervalError(null);
-            }
+      ) : null}
+
+      {!onDemand ? (
+        <View style={styles.section}>
+          <Text variant="heading" accessibilityRole="header">
+            {t('tasks.form.scheduleSection')}
+          </Text>
+          {repeats ? (
+            <SelectField<number>
+              label={t('tasks.form.frequencyLabel')}
+              options={[
+                ...INTERVAL_PRESETS.map((days) => ({
+                  value: days,
+                  label: t(`tasks.form.presets.${days}`),
+                })),
+                { value: CUSTOM, label: t('tasks.form.presets.custom') },
+              ]}
+              value={customInterval || !isPreset(Number(interval)) ? CUSTOM : Number(interval)}
+              onChange={(days) => {
+                setCustomInterval(days === CUSTOM);
+                if (days !== CUSTOM) {
+                  setIntervalText(String(days));
+                  setIntervalError(null);
+                }
+              }}
+              hint={customInterval ? undefined : t('tasks.form.everyHint')}
+            />
+          ) : null}
+          {repeats && customInterval ? (
+            <TextField
+              label={t('tasks.form.customLabel')}
+              value={interval}
+              onChangeText={(value) => {
+                const digits = value.replace(/[^0-9]/g, '');
+                setIntervalText(digits);
+                if (Number(digits) >= 1 && Number(digits) <= 365) setIntervalError(null);
+              }}
+              keyboardType="number-pad"
+              maxLength={3}
+              error={intervalError}
+              hint={t('tasks.form.everyHint')}
+            />
+          ) : null}
+          <DateField
+            label={t(isNew ? 'tasks.form.firstDueLabel' : 'tasks.form.dueLabel')}
+            value={dueOn}
+            onChange={setDueOn}
+          />
+        </View>
+      ) : null}
+
+      {!onDemand ? (
+        <View style={styles.section}>
+          <Text variant="heading" accessibilityRole="header">
+            {t('tasks.form.assignmentSection')}
+          </Text>
+          <SelectField<TaskMode>
+            label={t('tasks.form.modeLabel')}
+            options={(['rotation', 'fixed', 'free'] as const).map((value) => ({
+              value,
+              label: t(`tasks.mode.${value}`),
+              description: t(`tasks.modeHint.${value}`),
+            }))}
+            value={mode}
+            onChange={setMode}
+          />
+          {mode !== 'free' && assigneeId ? (
+            <SelectField
+              label={t(mode === 'fixed' ? 'tasks.form.assigneeLabel' : 'tasks.form.firstTurnLabel')}
+              options={memberOptions}
+              value={assigneeId}
+              onChange={setAssigneeId}
+            />
+          ) : null}
+        </View>
+      ) : null}
+
+      <View style={styles.details}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: showMore }}
+          accessibilityLabel={t('tasks.form.moreOptions')}
+          onPress={() => setShowMore(!showMore)}
+          style={({ pressed }) => [styles.detailsToggle, pressed && styles.pressed]}>
+          <View style={styles.grow}>
+            <Text variant="bodyStrong">{t('tasks.form.moreOptions')}</Text>
+            <Text variant="caption" color="inkSoft">
+              {t('tasks.form.moreOptionsHint')}
+            </Text>
+          </View>
+          <Text color="inkSoft">{showMore ? '⌃' : '⌄'}</Text>
+        </Pressable>
+        {showMore ? (
+          <View style={styles.detailFields}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('tasks.form.iconLabel')}
+              onPress={() => setChoosingIcon(true)}
+              style={styles.iconField}>
+              <Text style={styles.suggestionIcon}>{icon}</Text>
+              <Text style={styles.grow}>{t('tasks.form.iconLabel')}</Text>
+              <Text color="inkSoft">›</Text>
+            </Pressable>
+            <SelectField
+              label={t('tasks.form.zoneLabel')}
+              value={zoneId}
+              onChange={setZoneId}
+              options={[
+                { value: NO_ZONE, label: t('tasks.noZone') },
+                ...zones.map((zone) => ({ value: zone.id, label: zone.name, icon: zone.icon })),
+              ]}
+            />
+            <SelectField<Effort>
+              label={t('tasks.effort.label')}
+              value={effort}
+              onChange={setEffort}
+              options={([1, 2, 3] as const).map((value) => ({
+                value,
+                label: t(`tasks.effort.${value}`),
+              }))}
+            />
+          </View>
+        ) : null}
+      </View>
+      <BottomSheet
+        visible={choosingIcon}
+        title={t('tasks.form.iconLabel')}
+        onClose={() => setChoosingIcon(false)}>
+        <OptionPicker
+          kind="emoji"
+          label={t('tasks.form.iconLabel')}
+          options={
+            (TASK_ICONS as readonly string[]).includes(icon) ? TASK_ICONS : [icon, ...TASK_ICONS]
+          }
+          value={icon}
+          onChange={(value) => {
+            setIcon(value);
+            setIconChosen(true);
+            setChoosingIcon(false);
           }}
-          hint={customInterval ? undefined : t('tasks.form.everyHint')}
         />
-      ) : null}
-      {repeats && customInterval ? (
-        <TextField
-          label={t('tasks.form.customLabel')}
-          value={interval}
-          onChangeText={(value) => setIntervalText(value.replace(/[^0-9]/g, ''))}
-          keyboardType="number-pad"
-          maxLength={3}
-          error={intervalError}
-          hint={t('tasks.form.everyHint')}
-        />
-      ) : null}
-
-      {onDemand ? null : (
-        <ChipGroup<TaskMode>
-          label={t('tasks.form.modeLabel')}
-          options={[
-            { value: 'rotation', label: t('tasks.mode.rotation') },
-            { value: 'fixed', label: t('tasks.mode.fixed') },
-            { value: 'free', label: t('tasks.mode.free') },
-          ]}
-          value={mode}
-          onChange={setMode}
-          hint={t(`tasks.modeHint.${mode}`)}
-        />
-      )}
-      {!onDemand && mode !== 'free' && assigneeId ? (
-        <ChipGroup
-          label={mode === 'fixed' ? t('tasks.form.assigneeLabel') : t('tasks.form.firstTurnLabel')}
-          options={memberOptions}
-          value={assigneeId}
-          onChange={setAssigneeId}
-        />
-      ) : null}
-
-      {showMore ? (
-        <>
-          <OptionPicker
-            kind="emoji"
-            label={t('tasks.form.iconLabel')}
-            // El icono puede venir de una tarea habitual y no estar entre los de elegir.
-            options={(TASK_ICONS as readonly string[]).includes(icon) ? TASK_ICONS : [icon, ...TASK_ICONS]}
-            value={icon}
-            onChange={(value) => {
-              setIcon(value);
-              setIconChosen(true);
-            }}
-          />
-          <ChipGroup
-            label={t('tasks.form.zoneLabel')}
-            options={[
-              { value: NO_ZONE, label: t('tasks.noZone') },
-              ...zones.map((zone) => ({ value: zone.id, label: zone.name, icon: zone.icon })),
-            ]}
-            value={zoneId}
-            onChange={setZoneId}
-          />
-          <ChipGroup<Effort>
-            label={t('tasks.effort.label')}
-            options={[
-              { value: 1, label: t('tasks.effort.1') },
-              { value: 2, label: t('tasks.effort.2') },
-              { value: 3, label: t('tasks.effort.3') },
-            ]}
-            value={effort}
-            onChange={setEffort}
-          />
-          {onDemand ? null : (
-            <DateField label={t('tasks.form.dueLabel')} value={dueOn} onChange={setDueOn} />
-          )}
-        </>
-      ) : (
-        <MoreRow
-          label={t('tasks.form.moreOptions')}
-          hint={t('tasks.form.moreOptionsHint')}
-          icon={icon}
-          onPress={() => setShowMore(true)}
-        />
-      )}
-
+      </BottomSheet>
       <Button label={submitLabel} onPress={submit} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  form: {
-    gap: spacing.lg,
-  },
-  group: {
-    gap: spacing.xs,
-  },
-  chips: {
+  form: { gap: spacing.xl },
+  group: { gap: spacing.xs },
+  section: { gap: spacing.md },
+  grow: { flex: 1 },
+  details: { borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border },
+  detailsToggle: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
+    alignItems: 'center',
+    gap: spacing.md,
+    minHeight: minTouchSize,
+    paddingVertical: spacing.md,
+  },
+  detailFields: { gap: spacing.md, paddingBottom: spacing.lg },
+  iconField: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    minHeight: minTouchSize,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radii.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
   },
   suggestions: {
     borderRadius: radii.md,
@@ -346,17 +385,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
-  suggestionIcon: {
-    fontSize: 18,
-    lineHeight: 26,
-    width: 26,
-    textAlign: 'center',
-  },
-  suggestionTitle: {
-    flex: 1,
-  },
-  pressed: {
-    opacity: 0.75,
-  },
+  suggestionIcon: { fontSize: 18, lineHeight: 26, width: 26, textAlign: 'center' },
+  pressed: { opacity: 0.75 },
 });

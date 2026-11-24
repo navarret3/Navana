@@ -106,6 +106,7 @@ Reglas de seguridad: solo los miembros (`memberIds`) leen y escriben su hogar; u
 ### Tareas
 
 - Alta y edición con icono, zona, esfuerzo, frecuencia (cada X días o puntual) y modo (fija, rotación, libre).
+- En Tareas, un botón «+» flotante abajo a la derecha abre un panel con animación ascendente para añadir una tarea puntual o recurrente. Historial y Estadísticas se mantienen como accesos separados; el filtro de persona es un selector. El formulario recurrente se organiza en nombre, cuándo y reparto: las alternativas se eligen en paneles, la primera fecha está visible y los detalles opcionales (icono, zona y esfuerzo) se despliegan solo cuando se necesitan. Las sugerencias de tareas aparecen al escribir.
 - Plantilla inicial en el onboarding: cocina, baño, fregar, aspirar, arenero, basura, lavadora, sábanas. Se marcan las que se quieran.
 - Completar es una escritura atómica: registra quién la hizo, pone `nextDueOn = hoy + intervalDays` y, en rotación, pasa el turno al siguiente de quien la hizo.
 - "La hice yo" aunque fuera del otro. Deshacer y posponer.

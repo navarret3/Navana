@@ -1,6 +1,7 @@
 export { ActionSheet } from './ActionSheet';
 export { Avatar } from './Avatar';
 export { Button } from './Button';
+export { BottomSheet } from './BottomSheet';
 export { Card } from './Card';
 export { Chip } from './Chip';
 export { ChipGroup } from './ChipGroup';
@@ -11,6 +12,7 @@ export { MonthGrid } from './MonthGrid';
 export { MoreRow } from './MoreRow';
 export { OptionPicker } from './OptionPicker';
 export { Screen } from './Screen';
+export { SelectField } from './SelectField';
 export { ScreenHeader, useGoBack } from './ScreenHeader';
 export { Text, type TextProps } from './Text';
 export { TextField } from './TextField';
