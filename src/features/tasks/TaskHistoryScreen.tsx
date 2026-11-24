@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SectionList, StyleSheet, View } from 'react-native';
+import { Pressable, SectionList, StyleSheet, View } from 'react-native';
 
 import { addDays, dateKeyToLocalDate, toDateKey } from '@/domain/dates';
 import { canUndo } from '@/domain/tasks/completion';
@@ -9,7 +9,6 @@ import { completionDays, filterCompletions, historyTasks } from '@/domain/tasks/
 import { useSession } from '@/state/session';
 import { useTasks } from '@/state/tasks';
 import {
-  Avatar,
   Button,
   Card,
   EmptyState,
@@ -17,6 +16,8 @@ import {
   ScreenHeader,
   Text,
   colors,
+  minTouchSize,
+  radii,
   spacing,
 } from '@/ui';
 
@@ -166,34 +167,27 @@ function HistoryContent({ hid, initialTaskId }: { hid: string; initialTaskId?: s
             </Text>
           </View>
         )}
-        renderItem={({ item }) => {
-          const member = memberMap.get(item.completedBy);
-          return (
-            <Card style={styles.entry}>
-              <Text variant="bodyStrong">
-                {item.icon} {item.title}
-              </Text>
-              <View style={styles.row}>
-                <Avatar
-                  emoji={member?.avatar}
-                  name={nameOf(item.completedBy)}
-                  color={member?.color}
-                  size={28}
-                />
-                <Text variant="caption" color="inkSoft" style={styles.grow}>
-                  {nameOf(item.completedBy)}
+        renderItem={({ item }) => (
+          <Card style={styles.entry}>
+            <Text variant="bodyStrong" numberOfLines={1} style={styles.title}>
+              {item.icon} {item.title}
+            </Text>
+            <Text variant="caption" color="inkSoft" numberOfLines={1} style={styles.person}>
+              {nameOf(item.completedBy)}
+            </Text>
+            {canUndo(item, taskMap.get(item.taskId)) ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`${t('tasks.actions.undo')}: ${item.title}`}
+                onPress={() => undo(item)}
+                style={({ pressed }) => [styles.undo, pressed && styles.pressed]}>
+                <Text variant="caption" color="peachDeep" numberOfLines={1}>
+                  {t('tasks.actions.undo')}
                 </Text>
-                {canUndo(item, taskMap.get(item.taskId)) ? (
-                  <Button
-                    variant="ghost"
-                    label={t('tasks.actions.undo')}
-                    onPress={() => undo(item)}
-                  />
-                ) : null}
-              </View>
-            </Card>
-          );
-        }}
+              </Pressable>
+            ) : null}
+          </Card>
+        )}
       />
     </Screen>
   );
@@ -210,7 +204,25 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
     backgroundColor: colors.background,
   },
-  entry: { marginBottom: spacing.sm },
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  grow: { flex: 1 },
+  entry: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: minTouchSize + spacing.sm,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.xs,
+    gap: spacing.sm,
+  },
+  title: { flex: 1, minWidth: 0 },
+  person: { maxWidth: '30%', flexShrink: 1 },
+  undo: {
+    minHeight: minTouchSize,
+    minWidth: minTouchSize,
+    paddingHorizontal: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radii.sm,
+    flexShrink: 0,
+  },
+  pressed: { backgroundColor: colors.surfaceSunken },
 });
