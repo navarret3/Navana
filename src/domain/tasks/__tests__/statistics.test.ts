@@ -1,5 +1,6 @@
 import {
   activityTimeline,
+  completionDays,
   filterCompletions,
   historyTasks,
   newestCompletions,
@@ -99,9 +100,11 @@ describe('filtrar el historial', () => {
     ).toEqual(['d']);
   });
   it('un periodo invertido o una persona sin actividad no arrojan registros', () => {
-    expect(filterCompletions(entries, { range: { from: '2026-12-01', to: '2026-01-01' } })).toEqual(
-      [],
-    );
+    expect(
+      filterCompletions(entries, {
+        range: { from: '2026-12-01', to: '2026-01-01' },
+      }),
+    ).toEqual([]);
     expect(filterCompletions(entries, { range: null, memberId: 'missing' })).toEqual([]);
   });
   it('ordena también dentro del mismo día, sin modificar el origen', () => {
@@ -118,6 +121,50 @@ describe('filtrar el historial', () => {
       'old',
     ]);
     expect(source[0]?.id).toBe('first');
+  });
+});
+
+describe('historial separado por días', () => {
+  it('agrupa días de calendario entre meses y años, con lo más reciente primero', () => {
+    const source = [
+      entry('old', { completedOn: '2025-12-31' }),
+      entry('morning', { completedOn: '2026-01-01', completedAtMs: 1 }),
+      entry('later', {
+        completedOn: '2026-01-01',
+        completedAtMs: 2,
+        completedBy: 'bruno',
+      }),
+      entry('leap', { completedOn: '2024-02-29' }),
+    ];
+    expect(
+      completionDays(source).map(({ day, data }) => ({
+        day,
+        ids: data.map((item) => item.id),
+      })),
+    ).toEqual([
+      { day: '2026-01-01', ids: ['later', 'morning'] },
+      { day: '2025-12-31', ids: ['old'] },
+      { day: '2024-02-29', ids: ['leap'] },
+    ]);
+    expect(source[0]?.id).toBe('old');
+  });
+  it('al combinar filtros desaparecen los días vacíos y conserva cada repetición', () => {
+    const source = [
+      entry('1'),
+      entry('2'),
+      entry('3', { completedBy: 'bruno' }),
+      entry('4', { taskId: 'laundry', completedOn: '2026-11-21' }),
+    ];
+    const days = completionDays(
+      filterCompletions(source, {
+        range: null,
+        taskId: 'sweep',
+        memberId: 'ana',
+      }),
+    );
+    expect(days).toHaveLength(1);
+    expect(days[0]?.data.map((item) => item.id)).toEqual(['2', '1']);
+    expect(completionDays([])).toEqual([]);
   });
 });
 
@@ -139,7 +186,11 @@ describe('resumen completo del trabajo', () => {
       { uid: 'bruno', count: 0, effort: 0, share: 0 },
       { uid: 'former', count: 1, effort: 3, share: 0.5 },
     ]);
-    expect(stats.tasks[0]).toMatchObject({ taskId: 'sweep', count: 2, latest: { id: '2' } });
+    expect(stats.tasks[0]).toMatchObject({
+      taskId: 'sweep',
+      count: 2,
+      latest: { id: '2' },
+    });
   });
   it('cuenta más de 300 registros y resta lo deshecho al recibir la nueva colección', () => {
     const entries = Array.from({ length: 450 }, (_, index) => entry(String(index)));
@@ -185,7 +236,12 @@ describe('actividad a lo largo del tiempo', () => {
     expect(result.buckets).toEqual([
       { from: '2024-02-28', to: '2024-02-28', count: 1, byMember: { ana: 1 } },
       { from: '2024-02-29', to: '2024-02-29', count: 0, byMember: {} },
-      { from: '2024-03-01', to: '2024-03-01', count: 1, byMember: { bruno: 1 } },
+      {
+        from: '2024-03-01',
+        to: '2024-03-01',
+        count: 1,
+        byMember: { bruno: 1 },
+      },
     ]);
   });
   it('agrupa por semanas recortando sus extremos al periodo elegido', () => {

@@ -96,10 +96,10 @@
       "free": "No es de nadie: la hace quien la coja."
     },
     "effort": {
-      "label": "Esfuerzo",
       "1": "Poco",
       "2": "Normal",
-      "3": "Mucho"
+      "3": "Mucho",
+      "label": "Esfuerzo"
     },
     "assignee": {
       "free": "Libre",
@@ -214,6 +214,15 @@
       "empty": {
         "title": "Aún no hay nada hecho",
         "description": "Lo que vayáis completando aparecerá aquí, con quién lo hizo."
+      },
+      "intro": "Qué se ha hecho cada día y quién lo ha hecho.",
+      "clearFilters": "Quitar filtros",
+      "viewTask": "Ver historial",
+      "dailyCount_one": "{{count}} tarea completada",
+      "dailyCount_other": "{{count}} tareas completadas",
+      "filteredEmpty": {
+        "title": "No hay tareas con estos filtros",
+        "description": "Elige otra persona o tarea, o quita los filtros para ver todo el historial."
       }
     },
     "balance": {
@@ -260,7 +269,7 @@
     },
     "statistics": {
       "title": "Estadísticas",
-      "intro": "Quién ha hecho qué y cómo se reparte el trabajo de casa.",
+      "intro": "Un resumen de lo que habéis hecho.",
       "period": "Periodo",
       "periods": {
         "week": "Esta semana",
@@ -294,11 +303,11 @@
       "activeDays": "Días con actividad",
       "latest": "Última vez: {{name}} · {{date}}",
       "emptyTitle": "Sin actividad con estos filtros",
-      "emptyDescription": "Prueba otro periodo, persona o tarea. Aquí aparecerá lo que vayáis completando.",
-      "byPerson": "Reparto por persona",
+      "emptyDescription": "Prueba otro periodo o tarea.",
+      "byPerson": "Quién las ha hecho",
       "times": "Veces",
       "effortHint": "El porcentaje pondera cada tarea según su esfuerzo al completarla: poco (1), normal (2) o mucho (3).",
-      "countHint": "El porcentaje cuenta las veces que cada persona ha realizado una tarea. Toca su nombre para filtrar.",
+      "countHint": "Cada vez que se completa una tarea cuenta una vez.",
       "filterPerson": "Ver lo que ha hecho {{name}}",
       "filterZone": "Ver actividad de {{name}}",
       "percent": "{{value}} %",
@@ -312,14 +321,16 @@
         "year": "Veces por año"
       },
       "zoneEffort": "Reparto del esfuerzo en esta zona",
-      "byTask": "Tarea a tarea",
-      "taskHint": "Toca una tarea para ver su reparto y sus últimas veces.",
+      "byTask": "Por tarea",
+      "taskHint": "Toca una tarea para ver quién la ha hecho.",
       "latestTimes": "Últimas veces en este periodo",
       "historyResults_one": "{{count}} registro",
       "historyResults_other": "{{count}} registros",
       "openTask": "Ver estadísticas de {{title}}",
       "fullHistory": "Ver todo el historial de esta tarea",
-      "taskHistory": "Ver estadísticas e historial"
+      "taskHistory": "Ver estadísticas",
+      "totalCompletions": "tareas completadas",
+      "lastInPeriod": "Última vez en este periodo"
     }
   },
   "shopping": {

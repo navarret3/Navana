@@ -96,10 +96,10 @@
       "free": "It's nobody's: whoever gets to it does it."
     },
     "effort": {
-      "label": "Effort",
       "1": "Light",
       "2": "Normal",
-      "3": "Heavy"
+      "3": "Heavy",
+      "label": "Effort"
     },
     "assignee": {
       "free": "Anyone",
@@ -214,6 +214,15 @@
       "empty": {
         "title": "Nothing done yet",
         "description": "Whatever you complete will show up here, with who did it."
+      },
+      "intro": "What was done each day and who did it.",
+      "clearFilters": "Clear filters",
+      "viewTask": "View history",
+      "dailyCount_one": "{{count}} task completed",
+      "dailyCount_other": "{{count}} tasks completed",
+      "filteredEmpty": {
+        "title": "No tasks match these filters",
+        "description": "Choose another person or task, or clear the filters to see the full history."
       }
     },
     "balance": {
@@ -260,7 +269,7 @@
     },
     "statistics": {
       "title": "Statistics",
-      "intro": "Who did what and how the housework is shared.",
+      "intro": "A summary of what you have done.",
       "period": "Period",
       "periods": {
         "week": "This week",
@@ -294,11 +303,11 @@
       "activeDays": "Active days",
       "latest": "Last time: {{name}} · {{date}}",
       "emptyTitle": "No activity with these filters",
-      "emptyDescription": "Try another period, person or task. Completed tasks will appear here.",
-      "byPerson": "Share by person",
+      "emptyDescription": "Try another period or task.",
+      "byPerson": "Who did them",
       "times": "Times",
       "effortHint": "The percentage weights each task by its effort when completed: low (1), medium (2) or high (3).",
-      "countHint": "The percentage counts how many times each person completed a task. Tap their name to filter.",
+      "countHint": "Each time a task is completed counts once.",
       "filterPerson": "See what {{name}} has done",
       "filterZone": "See activity in {{name}}",
       "percent": "{{value}}%",
@@ -312,14 +321,16 @@
         "year": "Completions per year"
       },
       "zoneEffort": "Share of effort in this area",
-      "byTask": "Task by task",
-      "taskHint": "Tap a task to see who did it and its latest completions.",
+      "byTask": "By task",
+      "taskHint": "Tap a task to see who has done it.",
       "latestTimes": "Latest completions in this period",
       "historyResults_one": "{{count}} record",
       "historyResults_other": "{{count}} records",
       "openTask": "View statistics for {{title}}",
       "fullHistory": "View all history for this task",
-      "taskHistory": "View statistics and history"
+      "taskHistory": "View statistics",
+      "totalCompletions": "tasks completed",
+      "lastInPeriod": "Last time in this period"
     }
   },
   "shopping": {

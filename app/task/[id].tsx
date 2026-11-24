@@ -89,6 +89,11 @@ export default function TaskScreen() {
         label={t('tasks.statistics.taskHistory')}
         onPress={() => router.push({ pathname: '/task/statistics', params: { taskId: task.id } })}
       />
+      <Button
+        variant="ghost"
+        label={t('tasks.history.viewTask')}
+        onPress={() => router.push({ pathname: '/task/history', params: { taskId: task.id } })}
+      />
 
       <TaskForm
         key={task.id}

@@ -111,7 +111,7 @@ Reglas de seguridad: solo los miembros (`memberIds`) leen y escriben su hogar; u
 - "La hice yo" aunque fuera del otro. Deshacer y posponer.
 - Pantalla Hoy: mis tareas de hoy y atrasadas, las libres, las de la pareja (plegadas), próximo plan con cuenta atrás y resumen de la compra.
 - Balance de equidad: reparto del esfuerzo por semana o mes y por zona, en tono neutro. Historial de quién hizo qué.
-- Estadísticas desde Tareas y desde la ficha de cada tarea: filtros combinables por periodo (semana, mes, año, todo o fechas propias), persona, tarea y zona histórica. Resumen de veces realizadas, tareas distintas y días activos; reparto por veces o esfuerzo, evolución temporal y últimas realizaciones por tarea. El historial completo se consulta al abrir la pantalla, sin el límite de 300 registros de Hoy; listas virtualizadas y aviso cuando los datos proceden de caché. Incluye tareas archivadas y antiguos miembros.
+- Historial y Estadísticas son pantallas independientes, accesibles desde Tareas y desde la ficha de cada tarea. Historial agrupa lo completado por días (más reciente primero), indica quién lo hizo y permite combinar filtros de persona y tarea, además de deshacer cuando corresponda. Estadísticas tiene solo dos selectores: periodo (semana, mes, año, todo o fechas propias) y tarea; muestra el total de realizaciones, cuántas corresponden a cada persona y el desglose por tarea. Al elegir una tarea muestra su última realización en el periodo y un enlace a su historial completo. El historial se consulta al abrir la pantalla, sin el límite de 300 registros de Hoy; listas virtualizadas y aviso cuando los datos proceden de caché. Incluye tareas archivadas y antiguos miembros.
 
 ### Compra
 

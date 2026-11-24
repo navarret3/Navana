@@ -1,5 +1,1 @@
-import TaskStatisticsScreen from '@/features/tasks/TaskStatisticsScreen';
-
-export default function TaskHistoryScreen() {
-  return <TaskStatisticsScreen initialView="history" initialPeriod="all" />;
-}
+export { default } from '@/features/tasks/TaskHistoryScreen';

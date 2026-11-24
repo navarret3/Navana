@@ -57,6 +57,19 @@ export function filterCompletions(
   );
 }
 
+/** Días de calendario, del más reciente al más antiguo, sin convertirlos a UTC. */
+export function completionDays(
+  entries: readonly Completion[],
+): { day: DateKey; data: Completion[] }[] {
+  const days = new Map<DateKey, Completion[]>();
+  for (const entry of newestCompletions(entries)) {
+    const day = days.get(entry.completedOn);
+    if (day) day.push(entry);
+    else days.set(entry.completedOn, [entry]);
+  }
+  return [...days].map(([day, data]) => ({ day, data }));
+}
+
 export type HistoryTask = Pick<Task, 'id' | 'title' | 'icon' | 'archived'>;
 
 /** Incluye puntuales, archivadas y borradas; dos títulos iguales siguen siendo dos tareas. */
@@ -131,7 +144,11 @@ export function activityTimeline(
   return { unit, buckets: [...buckets.values()] };
 }
 
-export type TaskActivity = { taskId: string; count: number; latest: Completion };
+export type TaskActivity = {
+  taskId: string;
+  count: number;
+  latest: Completion;
+};
 
 export function taskStatistics(
   entries: readonly Completion[],
@@ -145,7 +162,12 @@ export function taskStatistics(
     days.add(entry.completedOn);
     const task = byTask.get(entry.taskId);
     if (task) task.count++;
-    else byTask.set(entry.taskId, { taskId: entry.taskId, count: 1, latest: entry });
+    else
+      byTask.set(entry.taskId, {
+        taskId: entry.taskId,
+        count: 1,
+        latest: entry,
+      });
   }
   return {
     count: entries.length,
