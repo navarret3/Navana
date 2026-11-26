@@ -12,8 +12,9 @@ import {
 } from '@/data/fb';
 import { OTHER_CATEGORY, isCategoryId, type CategoryId } from '@/domain/shopping/categories';
 import { canonicalName } from '@/domain/shopping/categorize';
-import type { CatalogEntry, ShoppingItem } from '@/domain/shopping/types';
+import type { CatalogEntry, ShoppingItem, ShoppingStore } from '@/domain/shopping/types';
 
+const storesCol = (hid: string) => collection(db, 'households', hid, 'shoppingStores');
 const itemsCol = (hid: string) => collection(db, 'households', hid, 'shoppingItems');
 const itemRef = (hid: string, id: string) => doc(db, 'households', hid, 'shoppingItems', id);
 const catalogRef = (hid: string, key: string) => doc(db, 'households', hid, 'catalog', key);
@@ -35,6 +36,7 @@ function toItem(id: string, data: Raw): ShoppingItem {
     id,
     name: canonicalName(text(data.name)),
     key: text(data.key),
+    storeId: text(data.storeId) || null,
     categoryId: categoryOf(data.categoryId),
     checked: data.checked === true,
     addedBy: text(data.addedBy),
@@ -51,6 +53,25 @@ function toCatalogEntry(key: string, data: Raw): CatalogEntry {
     timesBought: typeof data.timesBought === 'number' ? data.timesBought : 0,
     lastBoughtAt: typeof data.lastBoughtAt === 'number' ? data.lastBoughtAt : null,
   };
+}
+
+export function watchShoppingStores(hid: string, onChange: (stores: ShoppingStore[]) => void, onError: OnError) {
+  return onSnapshot(storesCol(hid), (snapshot) => {
+    const stores = snapshot.docs.map((entry) => ({ id: entry.id, name: text(entry.data().name) }));
+    onChange(stores.sort((a, b) => a.name.localeCompare(b.name)));
+  }, onError);
+}
+
+export function addShoppingStore(hid: string, name: string) {
+  return setDoc(doc(storesCol(hid)), { name });
+}
+
+export function removeShoppingStore(hid: string, id: string) {
+  return deleteDoc(doc(storesCol(hid), id));
+}
+
+export function setItemStore(hid: string, id: string, storeId: string | null) {
+  return updateDoc(itemRef(hid, id), { storeId });
 }
 
 export function watchShoppingItems(
@@ -79,7 +100,7 @@ export function watchCatalog(
 
 export async function addShoppingItem(
   hid: string,
-  item: Pick<ShoppingItem, 'name' | 'key' | 'categoryId' | 'addedBy'>,
+  item: Pick<ShoppingItem, 'name' | 'key' | 'categoryId' | 'addedBy' | 'storeId'>,
 ): Promise<void> {
   await setDoc(doc(itemsCol(hid)), {
     ...item,
@@ -94,8 +115,13 @@ export async function setItemChecked(
   id: string,
   checked: boolean,
   uid: string,
+  storeId?: string | null,
 ): Promise<void> {
-  await updateDoc(itemRef(hid, id), { checked, checkedBy: checked ? uid : null });
+  await updateDoc(itemRef(hid, id), {
+    checked,
+    checkedBy: checked ? uid : null,
+    ...(storeId !== undefined && { storeId }),
+  });
 }
 
 export async function removeShoppingItem(hid: string, id: string): Promise<void> {

@@ -154,26 +154,6 @@ function StatisticsContent({
             {!invalidRange ? <CompletionHistoryStatus history={history} /> : null}
             {ready ? (
               <>
-                <Card tone="peach">
-                  <Text variant="caption" color="inkSoft">
-                    {range
-                      ? `${formatDate(range.from)} – ${formatDate(range.to)}`
-                      : t('tasks.statistics.periods.all')}
-                  </Text>
-                  <View style={styles.total}>
-                    <Text variant="display">{stats.count}</Text>
-                    <Text style={styles.grow}>
-                      {t(
-                        taskId === ALL
-                          ? 'tasks.statistics.totalCompletions'
-                          : 'tasks.statistics.completed',
-                      )}
-                    </Text>
-                  </View>
-                  <Text variant="caption" color="inkSoft">
-                    {t('tasks.statistics.countHint')}
-                  </Text>
-                </Card>
                 {stats.count === 0 ? (
                   <EmptyState
                     icon="🕘"
@@ -233,11 +213,16 @@ function StatisticsContent({
             })}
             onPress={() => selectTask(item.taskId)}
             style={({ pressed }) => [styles.taskCard, pressed && styles.pressed]}>
-            <Text variant="bodyStrong" style={styles.grow}>
-              {taskMap.get(item.taskId)?.icon ?? item.latest.icon}{' '}
-              {taskMap.get(item.taskId)?.title ?? item.latest.title}
-            </Text>
-            <Text variant="caption">{t('tasks.statistics.timesCount', { count: item.count })}</Text>
+            <View style={styles.grow}>
+              <Text variant="bodyStrong">
+                {taskMap.get(item.taskId)?.icon ?? item.latest.icon}{' '}
+                {taskMap.get(item.taskId)?.title ?? item.latest.title}
+              </Text>
+              <Text variant="caption" color="inkSoft">
+                {t('tasks.statistics.timesCount', { count: item.count })}{' · '}
+                {t('tasks.statistics.effortCount', { count: item.effort })}
+              </Text>
+            </View>
             <Text color="inkSoft">›</Text>
           </Pressable>
         )}
@@ -253,7 +238,6 @@ const styles = StyleSheet.create({
   filters: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   filter: { flexGrow: 1, flexBasis: 140 },
   grow: { flex: 1 },
-  total: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   taskCard: {
     flexDirection: 'row',
     alignItems: 'center',

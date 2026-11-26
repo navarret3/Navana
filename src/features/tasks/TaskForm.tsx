@@ -9,6 +9,7 @@ import type { Effort, TaskDraft, TaskMode, Zone } from '@/domain/tasks/types';
 import {
   BottomSheet,
   Button,
+  ChipGroup,
   DateField,
   OptionPicker,
   SelectField,
@@ -35,9 +36,7 @@ type TaskFormProps = {
   submitLabel: string;
   onSubmit: (draft: TaskDraft) => void;
   /**
-   * Alta de una tarea recurrente: propone tareas habituales mientras se escribe, elige el
-   * icono solo, no pregunta si se repite (siempre) y deja plegado lo que casi nunca se toca.
-   * Los detalles opcionales se despliegan también al editar. Las tareas puntuales se apuntan aparte.
+   * Alta en la lista del hogar: propone tareas habituales y elige el icono según el título.
    */
   isNew?: boolean;
   /** Títulos de las tareas que ya hay en el hogar, para no proponerlas otra vez. */
@@ -86,7 +85,7 @@ export function TaskForm({
   const [intervalError, setIntervalError] = useState<string | null>(null);
 
   const suggestions =
-    isNew && title.trim() && title !== picked ? suggestChores(title, existingTitles, 4, true) : [];
+    isNew && title.trim() && title !== picked ? suggestChores(title, existingTitles, 4) : [];
 
   const changeTitle = (value: string) => {
     setTitle(value);
@@ -183,22 +182,31 @@ export function TaskForm({
         ) : null}
       </View>
 
-      {!isNew ? (
-        <SelectField<Frequency>
-          label={t('tasks.form.typeLabel')}
-          options={[
-            { value: 'repeat', label: t('tasks.form.repeat') },
-            { value: 'once', label: t('tasks.form.once') },
-            {
-              value: 'onDemand',
-              label: t('tasks.form.onDemand'),
-              description: t('tasks.form.onDemandHint'),
-            },
-          ]}
-          value={frequency}
-          onChange={setFrequency}
-        />
-      ) : null}
+      <ChipGroup<Effort>
+        label={t('tasks.effort.label')}
+        value={effort}
+        onChange={setEffort}
+        options={([1, 2, 3] as const).map((value) => ({
+          value,
+          label: t(`tasks.effort.${value}`),
+        }))}
+        hint={t('tasks.effort.hint')}
+      />
+
+      <SelectField<Frequency>
+        label={t('tasks.form.typeLabel')}
+        options={[
+          { value: 'repeat', label: t('tasks.form.repeat') },
+          { value: 'once', label: t('tasks.form.once') },
+          {
+            value: 'onDemand',
+            label: t('tasks.form.onDemand'),
+            description: t('tasks.form.onDemandHint'),
+          },
+        ]}
+        value={frequency}
+        onChange={setFrequency}
+      />
 
       {!onDemand ? (
         <View style={styles.section}>
@@ -309,15 +317,6 @@ export function TaskForm({
                 { value: NO_ZONE, label: t('tasks.noZone') },
                 ...zones.map((zone) => ({ value: zone.id, label: zone.name, icon: zone.icon })),
               ]}
-            />
-            <SelectField<Effort>
-              label={t('tasks.effort.label')}
-              value={effort}
-              onChange={setEffort}
-              options={([1, 2, 3] as const).map((value) => ({
-                value,
-                label: t(`tasks.effort.${value}`),
-              }))}
             />
           </View>
         ) : null}

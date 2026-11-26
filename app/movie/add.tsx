@@ -165,11 +165,6 @@ export default function AddMovieScreen() {
         </Pressable>
       ) : null}
 
-      {canSearch ? (
-        <Text variant="caption" color="inkMuted" center>
-          {t('movies.search.attribution')}
-        </Text>
-      ) : null}
     </Screen>
   );
 }

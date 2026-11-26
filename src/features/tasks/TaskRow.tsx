@@ -60,9 +60,10 @@ export function TaskRow({
   const isOthers = assigneeId !== null && assigneeId !== currentUid;
   const canNudge = onNudge !== undefined && isOthers && isDue(task.nextDueOn, today);
 
-  const details = [zone ? `${zone.icon} ${zone.name}` : null, '●'.repeat(task.effort)].filter(
-    Boolean,
-  );
+  const details = [
+    zone ? `${zone.icon} ${zone.name}` : null,
+    t('tasks.effort.value', { value: task.effort }),
+  ].filter(Boolean);
 
   return (
     <View style={styles.row}>

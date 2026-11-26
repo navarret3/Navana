@@ -43,7 +43,7 @@ Descartado a propósito: puntos y recompensas, varias listas de compra, cantidad
 
 ## Arquitectura
 
-- **App**: Expo (última SDK estable, se fija al crear el proyecto con `create-expo-app@latest`) + Expo Router con pestañas Hoy, Tareas, Compra y Agenda; ajustes desde el avatar.
+- **App**: Expo (última SDK estable, se fija al crear el proyecto con `create-expo-app@latest`) + Expo Router con pestañas Hoy, Tareas, Compra y Agenda; ajustes desde la barra inferior.
 - **Firebase nativo** (`@react-native-firebase/app`, `auth`, `firestore`): da caché offline en disco, imprescindible para usar la compra en el súper sin cobertura. Implica *development build*, no Expo Go.
 - **Login**: `@react-native-google-signin/google-signin` y credencial de Firebase Auth.
 - **Compilación**: EAS Build en la nube. APK "preview" instalado en los dos móviles y EAS Update para mandar cambios sin reinstalar.
@@ -93,7 +93,8 @@ households/{hid}                 nombre, icono, memberIds[], enabledModules{}
                                  lastCompletedAt/By, archived
   completions/{id}               taskId, título, esfuerzo, zoneId, completedBy, completedAt,
                                  estado previo de la tarea (para deshacer)
-  shoppingItems/{id}             nombre, categoryId, checked, addedBy, checkedBy, fechas
+  shoppingStores/{id}            nombre del establecimiento
+  shoppingItems/{id}             nombre, categoryId, storeId opcional, checked, addedBy, checkedBy, fechas
   catalog/{nombreNormalizado}    nombre, categoryId, timesBought, lastBoughtAt
   events/{id}                    título, tipo(viaje|concierto|cita|evento), inicio/fin, allDay, lugar, notas,
                                  participantes[], recordatorios[min], repetición anual
@@ -105,26 +106,27 @@ Reglas de seguridad: solo los miembros (`memberIds`) leen y escriben su hogar; u
 
 ### Tareas
 
-- Alta y edición con icono, zona, esfuerzo, frecuencia (cada X días o puntual) y modo (fija, rotación, libre).
-- En Tareas, un botón «+» flotante abajo a la derecha abre un panel con animación ascendente para añadir una tarea puntual o recurrente. Historial y Estadísticas se mantienen como accesos separados; el filtro de persona es un selector. El formulario recurrente se organiza en nombre, cuándo y reparto: las alternativas se eligen en paneles, la primera fecha está visible y los detalles opcionales (icono, zona y esfuerzo) se despliegan solo cuando se necesitan. Las sugerencias de tareas aparecen al escribir.
+- Lista fija del hogar, editable desde «Gestionar lista de tareas»: se pueden añadir, editar y quitar tareas. Las tareas existentes forman la lista sin migración; quitar una la archiva y conserva su historial. «Realizar tarea» solo permite seleccionar tareas activas de esa lista, nunca registrar texto libre ni crear y completar en un mismo lote (también validado en Firestore).
+- Alta y edición con icono, zona, esfuerzo obligatorio de 1, 2 o 3, frecuencia (cuando surja, cada X días o puntual) y modo (fija, rotación, libre). El esfuerzo se elige con tres opciones visibles, y solo afecta a futuras realizaciones: cada registro conserva el esfuerzo que tenía al completarse.
+- En Tareas, un botón «+» flotante abre las opciones «Realizar tarea» y «Gestionar lista de tareas». Historial y Estadísticas se mantienen como accesos separados; el filtro de persona está dentro del menú «+». El formulario se organiza en nombre, esfuerzo, cuándo y reparto; los detalles opcionales (icono y zona) se despliegan. Las sugerencias de tareas aparecen al escribir al añadir a la lista.
 - Plantilla inicial en el onboarding: cocina, baño, fregar, aspirar, arenero, basura, lavadora, sábanas. Se marcan las que se quieran.
 - Completar es una escritura atómica: registra quién la hizo, pone `nextDueOn = hoy + intervalDays` y, en rotación, pasa el turno al siguiente de quien la hizo.
 - "La hice yo" aunque fuera del otro. Deshacer y posponer.
 - Pantalla Hoy: mis tareas de hoy y atrasadas, las libres, las de la pareja (plegadas), próximo plan con cuenta atrás y resumen de la compra.
 - Balance de equidad: reparto del esfuerzo por semana o mes y por zona, en tono neutro. Historial de quién hizo qué.
-- Historial y Estadísticas son pantallas independientes, accesibles desde Tareas y desde la ficha de cada tarea. Historial agrupa lo completado por días (más reciente primero), indica quién lo hizo y permite combinar filtros de persona y tarea, además de deshacer cuando corresponda. Estadísticas tiene solo dos selectores: periodo (semana, mes, año, todo o fechas propias) y tarea; muestra el total de realizaciones, cuántas corresponden a cada persona y el desglose por tarea. Al elegir una tarea muestra su última realización en el periodo y un enlace a su historial completo. El historial se consulta al abrir la pantalla, sin el límite de 300 registros de Hoy; listas virtualizadas y aviso cuando los datos proceden de caché. Incluye tareas archivadas y antiguos miembros.
+- Historial y Estadísticas son pantallas independientes, accesibles desde Tareas y desde la ficha de cada tarea. Historial agrupa lo completado por días (más reciente primero). Cada fila muestra en una sola línea la tarea, el esfuerzo compacto y el avatar junto al nombre de quien la hizo, con un botón de deshacer cuando corresponda. Los nombres largos se abrevian visualmente para mantener la fila compacta. Permite combinar filtros de persona y tarea. Estadísticas tiene solo dos selectores: periodo (semana, mes, año, todo o fechas propias) y tarea; muestra cuántas realizaciones y cuánto esfuerzo corresponden a cada persona (con porcentaje del esfuerzo total), y el desglose de ambas medidas por tarea. No incluye una tarjeta de totales generales. Al elegir una tarea muestra su última realización en el periodo y un enlace a su historial completo. El historial se consulta al abrir la pantalla, sin el límite de 300 registros de Hoy; listas virtualizadas y aviso cuando los datos proceden de caché. Incluye tareas archivadas y antiguos miembros.
 
 ### Compra
 
 - Barra de añadir siempre a mano; autocompletar con el historial del hogar y un diccionario inicial de unos 300 productos en español.
 - Categoría automática: primero lo aprendido en el hogar, luego el diccionario y, si no, "Otros". Si se corrige una categoría, se recuerda.
-- Chips de frecuentes y recién tachados para volver a añadir con un toque.
+- Establecimientos del hogar editables. Se elige el destino al añadir y se puede cambiar desde cada producto. Al quitar una tienda, sus productos quedan sin establecimiento.
 - "Terminar compra" limpia lo tachado y actualiza las frecuencias.
 - Sincronización en vivo y funcionamiento offline.
 
 ### Agenda
 
-- Vista de mes y lista de próximos.
+- Vista de mes con los días de evento sombreados y lista de próximos.
 - Tipos: viaje, concierto, cita (veterinario, médico, un trámite) y evento (lo demás). Cada uno puede ser de uno, del otro o de los dos. Los cumpleaños anuales se quitaron como tipo; los que ya estaban guardados se siguen repitiendo cada año.
 - Recordatorios configurables (1 día, 1 hora) como notificaciones locales en el móvil de cada participante.
 - Cuenta atrás en "Hoy".

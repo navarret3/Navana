@@ -82,18 +82,20 @@ export function MonthGrid({ month, onChangeMonth, today, selected, onSelect, mar
           {week.map((day) => {
             const inMonth = yearMonthOf(day).month === month.month;
             const isSelected = day === selected;
-            const dots = marks?.[day]?.slice(0, MAX_DOTS) ?? [];
+            const events = marks?.[day] ?? [];
+            const label = dayLabelFormat.format(dateKeyToLocalDate(day));
             return (
               <Pressable
                 key={day}
                 accessibilityRole="button"
-                accessibilityLabel={dayLabelFormat.format(dateKeyToLocalDate(day))}
+                accessibilityLabel={events.length ? t('calendar.events', { date: label, count: events.length }) : label}
                 accessibilityState={{ selected: isSelected }}
                 onPress={() => onSelect(day)}
                 style={styles.cell}>
                 <View
                   style={[
                     styles.day,
+                    events.length > 0 && styles.marked,
                     day === today && styles.today,
                     isSelected && styles.selected,
                   ]}>
@@ -104,7 +106,7 @@ export function MonthGrid({ month, onChangeMonth, today, selected, onSelect, mar
                   </Text>
                 </View>
                 <View style={styles.dots}>
-                  {dots.map((color, index) => (
+                  {events.slice(0, MAX_DOTS).map((color, index) => (
                     <View key={index} style={[styles.dot, { backgroundColor: color }]} />
                   ))}
                 </View>
@@ -154,6 +156,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: 'transparent',
+  },
+  marked: {
+    backgroundColor: colors.sageSoft,
+    borderColor: colors.sage,
   },
   today: {
     borderColor: colors.peach,

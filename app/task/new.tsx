@@ -28,8 +28,8 @@ export default function NewTaskScreen() {
     effort: 2,
     mode: 'rotation',
     assigneeId: uid,
-    intervalDays: 7,
-    onDemand: false,
+    intervalDays: null,
+    onDemand: true,
     nextDueOn: toDateKey(new Date()),
   };
 

@@ -30,6 +30,14 @@ export default function TaskScreen() {
   const uid = useSession((state) => state.user?.uid);
 
   if (!household || !task) return null;
+  if (task.archived) {
+    return (
+      <Screen edges={['top', 'bottom']}>
+        <ScreenHeader title={t('tasks.form.editTitle')} />
+        <Text color="inkSoft">{t('tasks.catalog.unavailable')}</Text>
+      </Screen>
+    );
+  }
 
   const due = dueLabel(task.nextDueOn, toDateKey(new Date()));
   const assigneeId = currentAssignee(task, household.memberIds);
@@ -51,13 +59,15 @@ export default function TaskScreen() {
         <Text variant="caption" color={task.onDemand ? 'inkSoft' : due.color}>
           {task.onDemand ? t('tasks.form.onDemand') : due.label}
         </Text>
+        <Text variant="caption" color="inkSoft">
+          {t('tasks.effort.value', { value: task.effort })}
+        </Text>
         <View style={styles.actions}>
           <View style={styles.action}>
             <Button
               label={task.onDemand ? t('tasks.actions.iDidIt') : t('tasks.actions.markDone')}
               onPress={() => {
-                complete(task);
-                goBack();
+                if (complete(task)) goBack();
               }}
             />
           </View>
@@ -90,7 +100,7 @@ export default function TaskScreen() {
         onPress={() => router.push({ pathname: '/task/statistics', params: { taskId: task.id } })}
       />
       <Button
-        variant="ghost"
+        variant="secondary"
         label={t('tasks.history.viewTask')}
         onPress={() => router.push({ pathname: '/task/history', params: { taskId: task.id } })}
       />
@@ -112,6 +122,9 @@ export default function TaskScreen() {
           goBack();
         }}
       />
+      <Text variant="caption" color="inkSoft">
+        {t('tasks.catalog.removeHint')}
+      </Text>
 
       <ActionSheet
         visible={postponing}

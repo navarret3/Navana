@@ -147,6 +147,7 @@ export function activityTimeline(
 export type TaskActivity = {
   taskId: string;
   count: number;
+  effort: number;
   latest: Completion;
 };
 
@@ -161,13 +162,17 @@ export function taskStatistics(
   for (const entry of ordered) {
     days.add(entry.completedOn);
     const task = byTask.get(entry.taskId);
-    if (task) task.count++;
-    else
+    if (task) {
+      task.count++;
+      task.effort += entry.effort;
+    } else {
       byTask.set(entry.taskId, {
         taskId: entry.taskId,
         count: 1,
+        effort: entry.effort,
         latest: entry,
       });
+    }
   }
   return {
     count: entries.length,

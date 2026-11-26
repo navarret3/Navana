@@ -198,7 +198,8 @@ export async function updateTask(hid: string, id: string, changes: Partial<TaskD
 }
 
 export async function archiveTask(hid: string, id: string) {
-  await updateDoc(taskRef(hid, id), { archived: true });
+  // Quitar del catálogo no debe poder revertirse al deshacer una realización antigua.
+  await updateDoc(taskRef(hid, id), { archived: true, lastCompletionId: null });
 }
 
 export async function postponeTask(hid: string, id: string, today: DateKey, days: number) {
@@ -228,40 +229,6 @@ export function completeTask(
   const batch = writeBatch(db);
   batch.set(completionRef, { ...completionData, completedAt: serverTimestamp() });
   batch.update(taskRef(hid, task.id), progress);
-  return { completion, saved: batch.commit() };
-}
-
-/**
- * Crea una tarea y la apunta como hecha en el mismo lote: es lo que hace "Realizar tarea"
- * cuando se escribe algo que aún no existe. Igual que `completeTask`, devuelve el registro
- * al momento y la promesa de guardado aparte.
- */
-export function logNewTask(
-  hid: string,
-  draft: TaskDraft,
-  context: { completedBy: string; today: DateKey; memberIds: readonly string[] },
-): { completion: Completion; saved: Promise<void> } {
-  const newTaskRef = doc(tasksCol(hid));
-  const completionRef = doc(completionsCol(hid));
-  const task: Task = {
-    id: newTaskRef.id,
-    ...draft,
-    rotationOrder: [],
-    lastCompletedOn: null,
-    lastCompletedBy: null,
-    lastCompletionId: null,
-    archived: false,
-  };
-  const { completion, progress } = planCompletion({
-    task,
-    completionId: completionRef.id,
-    ...context,
-  });
-  const { id: _id, ...completionData } = completion;
-
-  const batch = writeBatch(db);
-  batch.set(newTaskRef, { ...newTaskData(draft), ...progress });
-  batch.set(completionRef, { ...completionData, completedAt: serverTimestamp() });
   return { completion, saved: batch.commit() };
 }
 

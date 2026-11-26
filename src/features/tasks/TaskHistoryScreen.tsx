@@ -9,6 +9,7 @@ import { completionDays, filterCompletions, historyTasks } from '@/domain/tasks/
 import { useSession } from '@/state/session';
 import { useTasks } from '@/state/tasks';
 import {
+  Avatar,
   Button,
   Card,
   EmptyState,
@@ -167,27 +168,45 @@ function HistoryContent({ hid, initialTaskId }: { hid: string; initialTaskId?: s
             </Text>
           </View>
         )}
-        renderItem={({ item }) => (
-          <Card style={styles.entry}>
-            <Text variant="bodyStrong" numberOfLines={1} style={styles.title}>
-              {item.icon} {item.title}
-            </Text>
-            <Text variant="caption" color="inkSoft" numberOfLines={1} style={styles.person}>
-              {nameOf(item.completedBy)}
-            </Text>
-            {canUndo(item, taskMap.get(item.taskId)) ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`${t('tasks.actions.undo')}: ${item.title}`}
-                onPress={() => undo(item)}
-                style={({ pressed }) => [styles.undo, pressed && styles.pressed]}>
-                <Text variant="caption" color="peachDeep" numberOfLines={1}>
-                  {t('tasks.actions.undo')}
+        renderItem={({ item }) => {
+          const member = memberMap.get(item.completedBy);
+          const name = nameOf(item.completedBy);
+          return (
+            <Card style={styles.entry}>
+              <Text variant="bodyStrong" numberOfLines={1} style={styles.title}>
+                {item.icon} {item.title}
+              </Text>
+              <View
+                accessible
+                accessibilityLabel={t('tasks.effort.value', { value: item.effort })}
+                style={styles.effort}>
+                <Text variant="label" color="sageDeep" numberOfLines={1}>
+                  {t('tasks.effort.short', { value: item.effort })}
                 </Text>
-              </Pressable>
-            ) : null}
-          </Card>
-        )}
+              </View>
+              <View accessible accessibilityLabel={name} style={styles.person}>
+                <Avatar
+                  emoji={member?.avatar}
+                  name={name}
+                  color={member?.color || colors.peach}
+                  size={26}
+                />
+                <Text variant="caption" numberOfLines={1} style={styles.personName}>
+                  {name}
+                </Text>
+              </View>
+              {canUndo(item, taskMap.get(item.taskId)) ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${t('tasks.actions.undo')}: ${item.title}`}
+                  onPress={() => undo(item)}
+                  style={({ pressed }) => [styles.undo, pressed && styles.pressed]}>
+                  <Text style={styles.undoIcon} color="peachDeep">↶</Text>
+                </Pressable>
+              ) : null}
+            </Card>
+          );
+        }}
       />
     </Screen>
   );
@@ -211,18 +230,35 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
     marginBottom: spacing.xs,
+    borderRadius: radii.md,
     gap: spacing.sm,
   },
   title: { flex: 1, minWidth: 0 },
-  person: { maxWidth: '30%', flexShrink: 1 },
+  effort: {
+    alignItems: 'center',
+    minWidth: 30,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.xxs,
+    borderRadius: radii.sm,
+    backgroundColor: colors.sageSoft,
+    flexShrink: 0,
+  },
+  person: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    maxWidth: '32%',
+    flexShrink: 1,
+  },
+  personName: { flexShrink: 1, minWidth: 0 },
   undo: {
     minHeight: minTouchSize,
     minWidth: minTouchSize,
-    paddingHorizontal: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radii.sm,
     flexShrink: 0,
   },
+  undoIcon: { fontSize: 22, lineHeight: 31 },
   pressed: { backgroundColor: colors.surfaceSunken },
 });

@@ -189,6 +189,7 @@ describe('resumen completo del trabajo', () => {
     expect(stats.tasks[0]).toMatchObject({
       taskId: 'sweep',
       count: 2,
+      effort: 5,
       latest: { id: '2' },
     });
   });
@@ -196,6 +197,25 @@ describe('resumen completo del trabajo', () => {
     const entries = Array.from({ length: 450 }, (_, index) => entry(String(index)));
     expect(taskStatistics(entries, ['ana'], null).count).toBe(450);
     expect(taskStatistics(entries.slice(1), ['ana'], null).count).toBe(449);
+    expect(taskStatistics(entries, ['ana'], null).balance.totalEffort).toBe(900);
+    expect(taskStatistics(entries.slice(1), ['ana'], null).balance.totalEffort).toBe(898);
+  });
+  it('suma los esfuerzos históricos por tarea y persona con los filtros de periodo y tarea', () => {
+    const entries = [
+      entry('old', { effort: 3, completedOn: '2026-10-31' }),
+      entry('low', { effort: 1, completedBy: 'ana' }),
+      entry('high', { effort: 3, completedBy: 'bruno' }),
+      entry('other', { taskId: 'dishes', effort: 2 }),
+    ];
+    const range = { from: '2026-11-01', to: '2026-11-30' };
+    const stats = taskStatistics(filterCompletions(entries, { range, taskId: 'sweep' }), ['ana', 'bruno'], range);
+    expect(stats.balance.totalEffort).toBe(4);
+    expect(stats.balance.members).toEqual([
+      { uid: 'ana', count: 1, effort: 1, share: 0.25 },
+      { uid: 'bruno', count: 1, effort: 3, share: 0.75 },
+    ]);
+    expect(stats.tasks).toHaveLength(1);
+    expect(stats.tasks[0]).toMatchObject({ taskId: 'sweep', count: 2, effort: 4 });
   });
   it('vacío no produce NaN ni inventa una última vez', () => {
     expect(taskStatistics([], ['ana'], null)).toMatchObject({

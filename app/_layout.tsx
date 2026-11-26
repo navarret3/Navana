@@ -73,6 +73,7 @@ export default function RootLayout() {
             <Stack.Screen name="note" />
             <Stack.Screen name="meal" />
             <Stack.Screen name="movie" />
+            <Stack.Screen name="shopping-stores" />
           </Stack.Protected>
           <Stack.Protected guard={status === 'needsHousehold'}>
             <Stack.Screen name="(onboarding)/create-or-join" />

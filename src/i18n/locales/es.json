@@ -97,10 +97,13 @@
       "free": "No es de nadie: la hace quien la coja."
     },
     "effort": {
-      "1": "Poco",
-      "2": "Normal",
-      "3": "Mucho",
-      "label": "Esfuerzo"
+      "1": "1 · Poco",
+      "2": "2 · Medio",
+      "3": "3 · Mucho",
+      "short": "{{value}}/3",
+      "label": "Esfuerzo",
+      "value": "Esfuerzo {{value}}/3",
+      "hint": "Cada realización suma este esfuerzo. Los cambios solo afectan a las próximas realizaciones."
     },
     "assignee": {
       "free": "Libre",
@@ -108,7 +111,7 @@
       "turnOf": "Le toca a {{name}}"
     },
     "form": {
-      "newTitle": "Nueva tarea recurrente",
+      "newTitle": "Añadir a la lista",
       "editTitle": "Editar tarea",
       "titleLabel": "Qué hay que hacer",
       "titlePlaceholder": "Regar las plantas",
@@ -130,14 +133,14 @@
       },
       "ideas": "Ideas: toca una y se rellena sola.",
       "moreOptions": "Detalles opcionales",
-      "moreOptionsHint": "Icono, zona y esfuerzo.",
+      "moreOptionsHint": "Icono y zona.",
       "everyHint": "Se cuenta desde la última vez que se hizo.",
       "modeLabel": "Quién la hace",
       "assigneeLabel": "Responsable",
       "firstTurnLabel": "Empieza",
       "titleRequired": "Escribe qué hay que hacer.",
       "intervalInvalid": "Pon un número de días entre 1 y 365.",
-      "create": "Crear tarea",
+      "create": "Guardar en la lista",
       "onDemand": "Cuando surja",
       "onDemandHint": "No tiene fecha ni turno: se apunta cada vez que alguien la hace.",
       "dueLabel": "Cuándo toca",
@@ -151,7 +154,7 @@
       "iDidIt": "La hice yo",
       "markDone": "Marcar como hecha",
       "postpone": "Posponer",
-      "archive": "Eliminar tarea",
+      "archive": "Quitar de la lista",
       "undo": "Deshacer",
       "done": "Hecho: {{title}}",
       "history": "Historial",
@@ -243,26 +246,22 @@
       "uneven": "Esta vez {{name}} ha cargado con más."
     },
     "log": {
-      "title": "Tarea puntual",
+      "title": "Realizar tarea",
       "searchLabel": "¿Qué has hecho?",
-      "searchPlaceholder": "Escríbelo o elígelo de la lista",
-      "hint": "Toca la que acabas de hacer: queda a tu nombre en el historial y en el balance.",
+      "searchPlaceholder": "Busca en la lista del hogar",
+      "hint": "Elige una tarea de la lista: se guardará a tu nombre con su esfuerzo. Para realizar otra, añádela primero desde «Gestionar lista de tareas».",
       "markDone": "Apuntar como hecha: {{title}}",
-      "addNew": "Apuntar «{{title}}» como hecha",
-      "addNewHint": "Es nueva: se guarda para la próxima vez.",
-      "empty": "Aún no hay tareas. Escribe arriba lo que has hecho.",
-      "editHint": "Mantén pulsada una tarea para editarla o eliminarla.",
+      "empty": "La lista está vacía. Añadid tareas desde «Gestionar lista de tareas» antes de realizarlas.",
       "addTypical": "Añadir cosas típicas"
     },
     "quick": {
-      "add": "Añadir tarea",
-      "oneOff": "Añadir tarea puntual",
-      "recurring": "Añadir tarea recurrente"
+      "add": "Opciones de tareas"
     },
     "filter": {
       "all": "Todas",
       "mine": "Mías",
-      "label": "Mostrar tareas"
+      "label": "Mostrar tareas",
+      "clear": "{{name}} · Quitar filtro"
     },
     "sections": {
       "today": "Para hoy",
@@ -275,7 +274,7 @@
     },
     "statistics": {
       "title": "Estadísticas",
-      "intro": "Un resumen de lo que habéis hecho.",
+      "intro": "Lo que habéis hecho y cómo se ha repartido el esfuerzo.",
       "period": "Periodo",
       "periods": {
         "week": "Esta semana",
@@ -312,7 +311,7 @@
       "emptyDescription": "Prueba otro periodo o tarea.",
       "byPerson": "Quién las ha hecho",
       "times": "Veces",
-      "effortHint": "El porcentaje pondera cada tarea según su esfuerzo al completarla: poco (1), normal (2) o mucho (3).",
+      "effortHint": "El esfuerzo suma el valor de cada realización: poco (1), medio (2) o mucho (3).",
       "countHint": "Cada vez que se completa una tarea cuenta una vez.",
       "filterPerson": "Ver lo que ha hecho {{name}}",
       "filterZone": "Ver actividad de {{name}}",
@@ -336,7 +335,23 @@
       "fullHistory": "Ver todo el historial de esta tarea",
       "taskHistory": "Ver estadísticas",
       "totalCompletions": "tareas completadas",
-      "lastInPeriod": "Última vez en este periodo"
+      "lastInPeriod": "Última vez en este periodo",
+      "totalEffort": "esfuerzo total",
+      "effortCount_one": "{{count}} unidad de esfuerzo",
+      "effortCount_other": "{{count}} unidades de esfuerzo",
+      "effortShare": "{{value}} % del esfuerzo",
+      "effortHistoryHint": "Se suma el esfuerzo guardado al realizar cada tarea. Editar la lista no cambia el historial."
+    },
+    "catalog": {
+      "title": "Lista de tareas",
+      "manage": "Gestionar lista de tareas",
+      "intro": "Estas son las tareas que podéis realizar. Toca una para editarla o quitarla de la lista.",
+      "add": "Añadir a la lista",
+      "search": "Buscar tarea",
+      "edit": "Editar {{title}}",
+      "noMatches": "No hay tareas con ese nombre en la lista.",
+      "unavailable": "Esta tarea ya no está disponible en la lista.",
+      "removeHint": "Al quitarla de la lista, se conservan sus realizaciones y su esfuerzo en el historial."
     }
   },
   "shopping": {
@@ -388,7 +403,21 @@
       "pets": "Mascotas",
       "other": "Otros"
     },
-    "recent": "Comprado hace poco"
+    "recent": "Comprado hace poco",
+    "stores": {
+      "title": "Establecimientos",
+      "name": "Nombre del establecimiento",
+      "example": "Supermercado, frutería, carnicería…",
+      "duplicate": "Ya hay un establecimiento con ese nombre.",
+      "add": "Añadir establecimiento",
+      "remove": "Quitar",
+      "removeNamed": "Quitar {{name}}",
+      "none": "Sin establecimiento",
+      "addTo": "Añadir en {{name}}",
+      "assign": "Establecimiento del producto",
+      "destination": "Dónde comprar los próximos productos",
+      "manage": "Gestionar establecimientos"
+    }
   },
   "agenda": {
     "title": "Agenda",
@@ -706,7 +735,9 @@
   },
   "calendar": {
     "previousMonth": "Mes anterior",
-    "nextMonth": "Mes siguiente"
+    "nextMonth": "Mes siguiente",
+    "events_one": "{{date}}, {{count}} evento",
+    "events_other": "{{date}}, {{count}} eventos"
   },
   "notes": {
     "title": "Notas",

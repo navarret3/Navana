@@ -106,6 +106,25 @@ describe('a quién le toca', () => {
 });
 
 describe('completar', () => {
+  it('rechaza una tarea retirada de la lista', () => {
+    expect(() => planCompletion({
+      task: task({ archived: true }), completionId: 'c1', completedBy: ANA,
+      today: TODAY, memberIds: MEMBERS,
+    })).toThrow('Cannot complete an archived task');
+  });
+
+  it('cada realización conserva el esfuerzo aunque se edite o retire la tarea', () => {
+    const original = task({ effort: 1 });
+    const context = { completedBy: ANA, today: TODAY, memberIds: MEMBERS };
+    const first = planCompletion({ task: original, completionId: 'c1', ...context });
+    original.effort = 3;
+    const second = planCompletion({ task: original, completionId: 'c2', ...context });
+    original.archived = true;
+    expect(first.completion.effort).toBe(1);
+    expect(second.completion.effort).toBe(3);
+    expect(canUndo(second.completion, { ...original, lastCompletionId: null })).toBe(false);
+  });
+
   it('registra quién la hizo, mueve la fecha y pasa el turno', () => {
     const original = task({ nextDueOn: '2026-11-10' });
     const { completion, progress } = planCompletion({

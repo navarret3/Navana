@@ -1,6 +1,4 @@
 import {
-  cleanLogTitle,
-  draftForLoggedTask,
   findTaskByTitle,
   tasksToLog,
 } from '@/domain/tasks/log';
@@ -64,20 +62,10 @@ describe('realizar tarea', () => {
     expect(findTaskByTitle(all, '')).toBeUndefined();
   });
 
-  it('una tarea nueva solo necesita el título', () => {
-    expect(cleanLogTitle('  sacar   la basura ')).toBe('Sacar la basura');
-    expect(draftForLoggedTask(' sacar la basura', TODAY)).toEqual({
-      title: 'Sacar la basura',
-      icon: '🗑️',
-      zoneId: null,
-      effort: 1,
-      mode: 'free',
-      assigneeId: null,
-      intervalDays: null,
-      onDemand: true,
-      nextDueOn: TODAY,
-    });
-    // Sin nada reconocible en el título, un icono neutro.
-    expect(draftForLoggedTask('Llamar a mamá', TODAY).icon).toBe('✨');
+  it('solo permite seleccionar tareas de la lista, sin crear tareas por texto libre', () => {
+    expect(findTaskByTitle(all, 'Planchar')).toBeUndefined();
+    expect(tasksToLog([], 'Planchar')).toEqual([]);
+    expect(tasksToLog([gone])).toEqual([]);
+    expect(findTaskByTitle(all, dishes.title)?.effort).toBe(dishes.effort);
   });
 });

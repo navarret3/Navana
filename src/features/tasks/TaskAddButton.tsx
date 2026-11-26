@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -15,7 +15,7 @@ import {
   spacing,
 } from '@/ui';
 
-export function TaskAddButton() {
+export function TaskAddButton({ children }: { children?: ReactNode }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const hasUndo = useTasks((state) => !!state.justCompleted);
@@ -33,11 +33,11 @@ export function TaskAddButton() {
           </Pressable>
         </View>
       </View>
-      <BottomSheet visible={open} title={t('tasks.quick.add')} onClose={() => setOpen(false)}>
+      <BottomSheet floating visible={open} title={t('tasks.quick.add')} onClose={() => setOpen(false)}>
         {(
           [
-            { label: t('tasks.quick.oneOff'), icon: '✓', path: '/task/log' },
-            { label: t('tasks.quick.recurring'), icon: '↻', path: '/task/new' },
+            { label: t('tasks.log.title'), icon: '✓', path: '/task/log' },
+            { label: t('tasks.catalog.manage'), icon: '☷', path: '/task/catalog' },
           ] as const
         ).map((option) => (
           <Pressable
@@ -60,6 +60,7 @@ export function TaskAddButton() {
             <Text color="inkSoft">›</Text>
           </Pressable>
         ))}
+        {children}
       </BottomSheet>
     </>
   );
@@ -90,7 +91,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.md,
-    minHeight: minTouchSize + 24,
+    minHeight: minTouchSize + 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+    marginBottom: spacing.sm,
     borderRadius: radii.sm,
   },
   optionIcon: {

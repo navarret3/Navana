@@ -97,10 +97,13 @@
       "free": "It's nobody's: whoever gets to it does it."
     },
     "effort": {
-      "1": "Light",
-      "2": "Normal",
-      "3": "Heavy",
-      "label": "Effort"
+      "1": "1 · Low",
+      "2": "2 · Medium",
+      "3": "3 · High",
+      "short": "{{value}}/3",
+      "label": "Effort",
+      "value": "Effort {{value}}/3",
+      "hint": "Each completion adds this effort. Changes only affect future completions."
     },
     "assignee": {
       "free": "Anyone",
@@ -108,7 +111,7 @@
       "turnOf": "{{name}}'s turn"
     },
     "form": {
-      "newTitle": "New recurring chore",
+      "newTitle": "Add to the list",
       "editTitle": "Edit chore",
       "titleLabel": "What needs doing",
       "titlePlaceholder": "Water the plants",
@@ -130,14 +133,14 @@
       },
       "ideas": "Ideas: tap one and it fills itself in.",
       "moreOptions": "Optional details",
-      "moreOptionsHint": "Icon, area and effort.",
+      "moreOptionsHint": "Icon and zone.",
       "everyHint": "Counted from the last time it was done.",
       "modeLabel": "Who does it",
       "assigneeLabel": "Responsible",
       "firstTurnLabel": "Starts with",
       "titleRequired": "Write what needs doing.",
       "intervalInvalid": "Enter a number of days between 1 and 365.",
-      "create": "Create chore",
+      "create": "Save to the list",
       "onDemand": "As it comes up",
       "onDemandHint": "No date and no turns: it's logged each time someone does it.",
       "dueLabel": "Due on",
@@ -151,7 +154,7 @@
       "iDidIt": "I did it",
       "markDone": "Mark as done",
       "postpone": "Postpone",
-      "archive": "Delete chore",
+      "archive": "Remove from the list",
       "undo": "Undo",
       "done": "Done: {{title}}",
       "history": "History",
@@ -243,26 +246,22 @@
       "uneven": "This time {{name}} has carried more."
     },
     "log": {
-      "title": "One-off chore",
+      "title": "Complete a task",
       "searchLabel": "What did you do?",
-      "searchPlaceholder": "Type it or pick it from the list",
-      "hint": "Tap what you just did: it goes under your name in the history and the balance.",
+      "searchPlaceholder": "Search the household list",
+      "hint": "Choose a task from the list to record it with your name and its effort. To complete another task, first add it from “Manage task list”.",
       "markDone": "Log as done: {{title}}",
-      "addNew": "Log “{{title}}” as done",
-      "addNewHint": "It's new: it will be saved for next time.",
-      "empty": "No chores yet. Type above what you did.",
-      "editHint": "Press and hold a chore to edit or delete it.",
+      "empty": "The list is empty. Add tasks from “Manage task list” before completing them.",
       "addTypical": "Add typical chores"
     },
     "quick": {
-      "add": "Add task",
-      "oneOff": "Add one-off task",
-      "recurring": "Add recurring task"
+      "add": "Task options"
     },
     "filter": {
       "all": "All",
       "mine": "Mine",
-      "label": "Show tasks"
+      "label": "Show tasks",
+      "clear": "{{name}} · Clear filter"
     },
     "sections": {
       "today": "For today",
@@ -275,7 +274,7 @@
     },
     "statistics": {
       "title": "Statistics",
-      "intro": "A summary of what you have done.",
+      "intro": "What you have done and how the effort is shared.",
       "period": "Period",
       "periods": {
         "week": "This week",
@@ -312,7 +311,7 @@
       "emptyDescription": "Try another period or task.",
       "byPerson": "Who did them",
       "times": "Times",
-      "effortHint": "The percentage weights each task by its effort when completed: low (1), medium (2) or high (3).",
+      "effortHint": "Effort adds the value of each completion: low (1), medium (2) or high (3).",
       "countHint": "Each time a task is completed counts once.",
       "filterPerson": "See what {{name}} has done",
       "filterZone": "See activity in {{name}}",
@@ -336,7 +335,23 @@
       "fullHistory": "View all history for this task",
       "taskHistory": "View statistics",
       "totalCompletions": "tasks completed",
-      "lastInPeriod": "Last time in this period"
+      "lastInPeriod": "Last time in this period",
+      "totalEffort": "total effort",
+      "effortCount_one": "{{count}} effort unit",
+      "effortCount_other": "{{count}} effort units",
+      "effortShare": "{{value}}% of effort",
+      "effortHistoryHint": "Uses the effort saved with each completion. Editing the list does not change history."
+    },
+    "catalog": {
+      "title": "Task list",
+      "manage": "Manage task list",
+      "intro": "These are the tasks you can complete. Tap one to edit it or remove it from the list.",
+      "add": "Add to the list",
+      "search": "Search tasks",
+      "edit": "Edit {{title}}",
+      "noMatches": "No tasks with that name in the list.",
+      "unavailable": "This task is no longer available in the list.",
+      "removeHint": "Removing a task keeps its completions and effort in the history."
     }
   },
   "shopping": {
@@ -388,7 +403,21 @@
       "pets": "Pets",
       "other": "Other"
     },
-    "recent": "Bought recently"
+    "recent": "Bought recently",
+    "stores": {
+      "title": "Stores",
+      "name": "Store name",
+      "example": "Supermarket, greengrocer, butcher…",
+      "duplicate": "A store with this name already exists.",
+      "add": "Add store",
+      "remove": "Remove",
+      "removeNamed": "Remove {{name}}",
+      "none": "No store",
+      "addTo": "Add to {{name}}",
+      "assign": "Store for this item",
+      "destination": "Where to buy the next items",
+      "manage": "Manage stores"
+    }
   },
   "agenda": {
     "title": "Calendar",
@@ -706,7 +735,9 @@
   },
   "calendar": {
     "previousMonth": "Previous month",
-    "nextMonth": "Next month"
+    "nextMonth": "Next month",
+    "events_one": "{{date}}, {{count}} event",
+    "events_other": "{{date}}, {{count}} events"
   },
   "notes": {
     "title": "Notes",

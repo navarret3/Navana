@@ -5,12 +5,11 @@ import { Platform } from 'react-native';
 import {
   archiveTask,
   completeTask,
-  logNewTask,
   postponeTask,
   undoCompletion,
 } from '@/data/tasks';
 import { toDateKey } from '@/domain/dates';
-import { draftForLoggedTask } from '@/domain/tasks/log';
+import { canUndo } from '@/domain/tasks/completion';
 import type { Completion, Task } from '@/domain/tasks/types';
 import { notifyOthers } from '@/notifications/notify';
 import { saveFailed } from '@/state/notices';
@@ -54,29 +53,17 @@ export function useTaskActions() {
   };
 
   const complete = (task: Task) => {
-    if (!household || !uid) return;
+    const current = useTasks.getState().tasks.find((candidate) => candidate.id === task.id);
+    if (!household || !uid || !current || current.archived) return false;
     afterCompletion(
-      completeTask(household.id, task, {
+      completeTask(household.id, current, {
         completedBy: uid,
         today: toDateKey(new Date()),
         memberIds: household.memberIds,
       }),
       uid,
     );
-  };
-
-  /** Apunta como hecha una tarea que no existía: se crea "cuando surja" con solo su título. */
-  const logNew = (title: string) => {
-    if (!household || !uid) return;
-    const today = toDateKey(new Date());
-    afterCompletion(
-      logNewTask(household.id, draftForLoggedTask(title, today), {
-        completedBy: uid,
-        today,
-        memberIds: household.memberIds,
-      }),
-      uid,
-    );
+    return true;
   };
 
   /** Recuerda una tarea a quien le toca, con un aviso en su móvil. */
@@ -96,7 +83,8 @@ export function useTaskActions() {
   };
 
   const undo = (completion: Completion) => {
-    if (!household) return;
+    const task = useTasks.getState().tasks.find((candidate) => candidate.id === completion.taskId);
+    if (!household || !canUndo(completion, task)) return;
     setJustCompleted(null);
     undoCompletion(household.id, completion).catch(saveFailed('No se ha podido deshacer'));
   };
@@ -110,8 +98,9 @@ export function useTaskActions() {
 
   const archive = (task: Task) => {
     if (!household) return;
+    if (useTasks.getState().justCompleted?.taskId === task.id) setJustCompleted(null);
     archiveTask(household.id, task.id).catch(saveFailed('No se ha podido eliminar la tarea'));
   };
 
-  return { complete, logNew, undo, postpone, archive, nudge };
+  return { complete, undo, postpone, archive, nudge };
 }

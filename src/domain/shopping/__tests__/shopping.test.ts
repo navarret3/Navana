@@ -9,6 +9,7 @@ import {
   recentProducts,
   suggest,
 } from '@/domain/shopping/suggest';
+import { groupByStore } from '@/domain/shopping/stores';
 import type { CatalogEntry, ShoppingItem } from '@/domain/shopping/types';
 
 const item = (name: string, overrides: Partial<ShoppingItem> = {}): ShoppingItem => ({
@@ -250,4 +251,15 @@ describe('lista de la compra en una sola lista', () => {
     ];
     expect(newestFirst(list).map((entry) => entry.name)).toEqual(['Huevos', 'Pan', 'Arroz', 'Leche']);
   });
+});
+
+it('agrupa por establecimiento y conserva los productos antiguos o de tiendas eliminadas', () => {
+  const store = { id: 's1', name: 'Frutería' };
+  const old = item('Pan');
+  const orphan = item('Pollo', { storeId: 'eliminada' });
+  const fruit = item('Pera', { storeId: 's1' });
+  expect(groupByStore([fruit, old, orphan], [store, { id: 's2', name: 'Otra' }])).toEqual([
+    { store: null, items: [old, orphan] },
+    { store, items: [fruit] },
+  ]);
 });

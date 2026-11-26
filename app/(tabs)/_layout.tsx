@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import {
   TabList,
   Tabs,
@@ -8,7 +9,7 @@ import {
 } from 'expo-router/ui';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -47,12 +48,28 @@ export default function TabsLayout() {
 }
 
 function TabBar({ children, style: _style, ...props }: TabListProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   return (
     <View
       {...props}
       style={[styles.bar, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>
-      <View style={styles.barInner}>{children}</View>
+      <View style={styles.barInner}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.modules}>
+          {children}
+        </ScrollView>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('today.openSettings')}
+          onPress={() => router.push('/settings')}
+          style={({ pressed }) => [styles.settings, pressed && styles.pressed]}>
+          <Text style={styles.tabIcon}>⚙️</Text>
+          <Text variant="label" color="inkSoft">{t('settings.title')}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -124,7 +141,17 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: maxContentWidth,
   },
+  modules: { flexGrow: 1 },
+  settings: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.sm,
+    borderLeftWidth: 1,
+    borderColor: colors.border,
+  },
+  pressed: { opacity: 0.7 },
   tabButton: {
+    minWidth: 60,
     flex: 1,
     minHeight: minTouchSize,
     alignItems: 'center',
@@ -132,7 +159,7 @@ const styles = StyleSheet.create({
     gap: spacing.xxs,
   },
   iconPill: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xxs,
     borderRadius: radii.pill,
   },

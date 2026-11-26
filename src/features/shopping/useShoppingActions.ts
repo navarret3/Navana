@@ -31,7 +31,7 @@ export function useShoppingActions() {
   const catalog = useShopping((state) => state.catalog);
 
   /** Añade un producto. Si ya estaba tachado lo recupera; si ya estaba pendiente, no hace nada. */
-  const add = (rawName: string, knownCategory?: CategoryId): AddResult => {
+  const add = (rawName: string, knownCategory?: CategoryId, storeId?: string): AddResult => {
     const name = canonicalName(rawName);
     const key = productKey(name);
     if (!householdId || !uid || !key) return { outcome: 'empty', name };
@@ -39,12 +39,12 @@ export function useShoppingActions() {
     const existing = items.find((item) => item.key === key);
     if (existing && !existing.checked) return { outcome: 'alreadyThere', name: existing.name };
     if (existing) {
-      setItemChecked(householdId, existing.id, false, uid).catch(saveFailed('No se ha podido recuperar'));
+      setItemChecked(householdId, existing.id, false, uid, storeId ?? null).catch(saveFailed('No se ha podido recuperar'));
       return { outcome: 'restored', name: existing.name };
     }
 
     const categoryId = knownCategory ?? categorize(name, learnedCategories(catalog));
-    addShoppingItem(householdId, { name, key, categoryId, addedBy: uid }).catch(
+    addShoppingItem(householdId, { name, key, categoryId, addedBy: uid, ...(storeId && { storeId }) }).catch(
       saveFailed('No se ha podido añadir a la lista'),
     );
     return { outcome: 'added', name };

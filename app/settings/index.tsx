@@ -10,6 +10,7 @@ import { setHouseholdModuleEnabled } from '@/data/households';
 import { AccountActions } from '@/features/household/AccountActions';
 import { LanguagePicker } from '@/features/household/LanguagePicker';
 import { isModuleEnabled, modules } from '@/modules/registry';
+import { hasMovieSearch } from '@/movies/tmdb';
 import { saveFailed } from '@/state/notices';
 import { useCurrentMember, useSession } from '@/state/session';
 import { runningUpdateDate } from '@/updates/appUpdate';
@@ -140,6 +141,10 @@ export default function SettingsScreen() {
       {__DEV__ ? <EnvironmentCard /> : null}
 
       <AccountActions />
+
+      {hasMovieSearch() ? (
+        <Text variant="caption" color="inkSoft" center>{t('movies.search.attribution')}</Text>
+      ) : null}
 
       <Text variant="caption" color="inkMuted" center>
         {updated

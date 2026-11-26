@@ -204,6 +204,20 @@ service cloud.firestore {
 
       // ---------- Historial ----------
       match /completions/{completionId} {
+        // La tarea ya debe existir en la lista: no se admite crear y completar a la vez.
+        // La copia histórica conserva el esfuerzo y los datos al realizarla.
+        function fromTaskList() {
+          let data = request.resource.data;
+          let path = /databases/$(database)/documents/households/$(hid)/tasks/$(data.taskId);
+          let task = get(path).data;
+          return exists(path)
+            && task.archived == false
+            && data.title == task.title
+            && data.icon == task.icon
+            && data.zoneId == task.zoneId
+            && data.effort == task.effort;
+        }
+
         function validCompletion() {
           let data = request.resource.data;
           return data.keys().hasOnly([
@@ -220,7 +234,8 @@ service cloud.firestore {
         // Cada uno apunta solo lo que ha hecho él.
         allow create: if isMember(hid)
           && request.resource.data.completedBy == uid()
-          && validCompletion();
+          && validCompletion()
+          && fromTaskList();
         allow update: if false;
         // Borrar un registro es "deshacer".
         allow delete: if isMember(hid);
@@ -323,11 +338,25 @@ service cloud.firestore {
       }
 
       // ---------- Lista de la compra ----------
+      match /shoppingStores/{storeId} {
+        allow read, delete: if isMember(hid);
+        allow create: if isMember(hid)
+          && request.resource.data.keys().hasOnly(['name'])
+          && validText(request.resource.data.name, 40);
+      }
+
       match /shoppingItems/{itemId} {
+        function validStore() {
+          let store = request.resource.data.get('storeId', null);
+          // Una compra apuntada sin red puede llegar después de que otro miembro
+          // quite la tienda. La app agrupa ese producto con los que no tienen tienda.
+          return store == null || (validText(store, 80) && store.matches('[a-zA-Z0-9_-]+'));
+        }
+
         function validItem() {
           let data = request.resource.data;
           return data.keys().hasOnly(
-                   ['name', 'key', 'categoryId', 'checked', 'addedBy', 'checkedBy', 'addedAt'])
+                   ['name', 'key', 'categoryId', 'checked', 'addedBy', 'checkedBy', 'addedAt', 'storeId'])
             && validText(data.name, 60)
             && validText(data.key, 80)
             && validText(data.categoryId, 20)
@@ -335,7 +364,7 @@ service cloud.firestore {
         }
 
         allow read, delete: if isMember(hid);
-        allow create, update: if isMember(hid) && validItem();
+        allow create, update: if isMember(hid) && validItem() && validStore();
       }
 
       // ---------- Catálogo del hogar: qué se compra y en qué categoría va ----------

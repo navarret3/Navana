@@ -467,6 +467,69 @@ describe('zonas, tareas e historial', () => {
     );
   });
 
+  it.each([0, 4, 1.5, '2'])('rechaza un esfuerzo fuera de 1, 2 o 3: %s', async (effort) => {
+    const db = as(ANA);
+    await assertFails(updateDoc(doc(db, 'households', HOME, 'tasks', 't1'), { effort }));
+    await assertFails(setDoc(doc(db, 'households', HOME, 'completions', 'invalid'), {
+      ...completion(ANA), effort,
+    }));
+  });
+
+  it.each([1, 2, 3])('permite editar el esfuerzo a %s y lo conserva al completar', async (effort) => {
+    const db = as(ANA);
+    const ref = doc(db, 'households', HOME, 'tasks', 't1');
+    await assertSucceeds(updateDoc(ref, { effort }));
+    await assertSucceeds(setDoc(doc(db, 'households', HOME, 'completions', 'next'), {
+      ...completion(ANA), effort,
+    }));
+    // El historial previo no cambia al editar el esfuerzo del catálogo.
+    expect((await getDoc(doc(db, 'households', HOME, 'completions', 'c1'))).data()?.effort).toBe(2);
+  });
+
+  it('rechaza completar tareas inexistentes o retiradas, conservando su historial', async () => {
+    const db = as(ANA);
+    const entryRef = doc(db, 'households', HOME, 'completions', 'next');
+    await assertFails(setDoc(entryRef, { ...completion(ANA), taskId: 'missing' }));
+    await assertSucceeds(updateDoc(doc(db, 'households', HOME, 'tasks', 't1'), {
+      archived: true, lastCompletionId: null,
+    }));
+    await assertFails(setDoc(entryRef, completion(ANA)));
+    await assertSucceeds(getDoc(doc(db, 'households', HOME, 'completions', 'c1')));
+  });
+
+  it('rechaza crear una tarea y realizarla en el mismo lote', async () => {
+    const db = as(ANA);
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'households', HOME, 'tasks', 'new'), task());
+    batch.set(doc(db, 'households', HOME, 'completions', 'new'), {
+      ...completion(ANA), taskId: 'new',
+    });
+    await assertFails(batch.commit());
+  });
+
+  it.each([
+    { effort: 3 }, { title: 'Otra tarea' }, { icon: '✨' }, { zoneId: null },
+  ])('rechaza alterar los datos de la tarea al realizarla: %s', async (changes) => {
+    await assertFails(setDoc(doc(as(ANA), 'households', HOME, 'completions', 'spoof'), {
+      ...completion(ANA), ...changes,
+    }));
+  });
+
+  it('permite completar y deshacer una tarea puntual aunque se archive al hacerla', async () => {
+    const db = as(ANA);
+    const taskRef = doc(db, 'households', HOME, 'tasks', 't1');
+    const entryRef = doc(db, 'households', HOME, 'completions', 'once');
+    await updateDoc(taskRef, { intervalDays: null });
+    const batch = writeBatch(db);
+    batch.set(entryRef, completion(ANA));
+    batch.update(taskRef, { archived: true, lastCompletionId: 'once' });
+    await assertSucceeds(batch.commit());
+    const undo = writeBatch(db);
+    undo.delete(entryRef);
+    undo.update(taskRef, { archived: false, lastCompletionId: null });
+    await assertSucceeds(undo.commit());
+  });
+
   it('rechaza tareas mal formadas', async () => {
     const ref = doc(as(ANA), 'households', HOME, 'tasks', 't2');
     await assertFails(setDoc(ref, task({ effort: 5 })));
@@ -538,6 +601,29 @@ describe('lista de la compra y catálogo', () => {
     await assertSucceeds(updateDoc(ref, { checked: true, checkedBy: ANA }));
     await assertSucceeds(updateDoc(ref, { categoryId: 'pantry' }));
     await assertSucceeds(deleteDoc(ref));
+  });
+
+  it('un miembro gestiona tiendas y puede seguir usando un producto al quitar su tienda', async () => {
+    const db = as(ANA);
+    const store = doc(db, 'households', HOME, 'shoppingStores', 's1');
+    const product = doc(db, 'households', HOME, 'shoppingItems', 'i1');
+    await assertFails(setDoc(store, { name: '' }));
+    await assertSucceeds(setDoc(store, { name: 'Frutería' }));
+    await assertSucceeds(getDoc(store));
+    await assertFails(updateDoc(product, { storeId: 'ruta/no-válida' }));
+    await assertSucceeds(updateDoc(product, { storeId: 's1' }));
+    await assertSucceeds(deleteDoc(store));
+    // Llega una escritura que estaba pendiente en el móvil sin conexión.
+    await assertSucceeds(setDoc(doc(db, 'households', HOME, 'shoppingItems', 'offline'), item({ storeId: 's1' })));
+    await assertSucceeds(updateDoc(product, { checked: true }));
+    await assertSucceeds(updateDoc(product, { storeId: null }));
+  });
+
+  it('los establecimientos solo son accesibles desde su hogar', async () => {
+    const ref = doc(as(CARLA), 'households', HOME, 'shoppingStores', 's1');
+    await assertFails(getDoc(ref));
+    await assertFails(setDoc(ref, { name: 'Tienda' }));
+    await assertFails(deleteDoc(ref));
   });
 
   it('terminar la compra borra lo tachado y suma al catálogo, en un lote', async () => {

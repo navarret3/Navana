@@ -19,9 +19,11 @@ import {
   Chip,
   EmptyState,
   Screen,
-  SelectField,
+  ChipGroup,
   Text,
+  colors,
   minTouchSize,
+  radii,
   spacing,
 } from '@/ui';
 
@@ -53,7 +55,9 @@ export default function TasksScreen() {
     tasksFor(recurring, activeWho === EVERYONE ? null : activeWho, memberIds),
     today,
   );
-  const doneToday = completions.filter((completion) => completion.completedOn === today);
+  const doneToday = completions.filter((completion) =>
+    completion.completedOn === today && (activeWho === EVERYONE || completion.completedBy === activeWho),
+  );
 
   const row = (task: Task) => (
     <TaskRow
@@ -71,7 +75,25 @@ export default function TasksScreen() {
   );
 
   return (
-    <Screen floating={<TaskAddButton />}>
+    <Screen floating={
+      <TaskAddButton>
+        {members.length > 1 && recurring.length > 0 ? (
+          <ChipGroup<string>
+            label={t('tasks.filter.label')}
+            options={[
+              { value: EVERYONE, label: t('tasks.filter.all') },
+              ...members.map((member) => ({
+                value: member.uid,
+                label: member.uid === uid ? t('tasks.filter.mine') : member.name,
+                icon: member.avatar,
+              })),
+            ]}
+            value={activeWho}
+            onChange={setWho}
+          />
+        ) : null}
+      </TaskAddButton>
+    }>
       <View style={styles.header}>
         <Text variant="title" accessibilityRole="header" style={styles.title}>
           {t('tasks.title')}
@@ -80,15 +102,23 @@ export default function TasksScreen() {
           accessibilityRole="button"
           onPress={() => router.push('/task/statistics')}
           style={({ pressed }) => [styles.navLink, pressed && styles.pressed]}>
-          <Text variant="caption">{t('tasks.statistics.title')}</Text>
+          <Text variant="label">{t('tasks.statistics.title')}</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push('/task/history')}
           style={({ pressed }) => [styles.navLink, pressed && styles.pressed]}>
-          <Text variant="caption">{t('tasks.actions.history')}</Text>
+          <Text variant="label">{t('tasks.actions.history')}</Text>
         </Pressable>
       </View>
+
+      {activeWho !== EVERYONE ? (
+        <Chip
+          role="button"
+          label={t('tasks.filter.clear', { name: members.find((member) => member.uid === activeWho)?.name })}
+          onPress={() => setWho(EVERYONE)}
+        />
+      ) : null}
 
       {recurring.length === 0 ? (
         <EmptyState
@@ -105,22 +135,6 @@ export default function TasksScreen() {
         />
       ) : (
         <>
-          {members.length > 1 ? (
-            <SelectField<string>
-              label={t('tasks.filter.label')}
-              options={[
-                { value: EVERYONE, label: t('tasks.filter.all') },
-                ...members.map((member) => ({
-                  value: member.uid,
-                  label: member.uid === uid ? t('tasks.filter.mine') : member.name,
-                  icon: member.avatar,
-                })),
-              ]}
-              value={activeWho}
-              onChange={setWho}
-            />
-          ) : null}
-
           <Card tone="peach">
             <Text variant="heading">{t('tasks.sections.today')}</Text>
             {groups.today.length === 0 ? (
@@ -203,7 +217,15 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
   },
-  navLink: { minHeight: minTouchSize, justifyContent: 'center', paddingHorizontal: spacing.xs },
+  navLink: {
+    minHeight: minTouchSize,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.pill,
+    backgroundColor: colors.surface,
+  },
   pressed: { opacity: 0.7 },
   fabSpace: { height: 76 },
   toggle: {

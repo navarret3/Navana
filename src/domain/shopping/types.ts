@@ -1,6 +1,9 @@
 import type { CategoryId } from './categories';
 
+export type ShoppingStore = { id: string; name: string };
+
 export type ShoppingItem = {
+  storeId?: string | null;
   id: string;
   name: string;
   /** Clave del producto (ver `productKey`), para no duplicar y enlazar con el catálogo. */

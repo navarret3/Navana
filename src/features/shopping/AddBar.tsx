@@ -17,7 +17,7 @@ const MESSAGE_MS = 3000;
  * (primero lo que ya se compra en casa) y al enviar deja el teclado abierto para
  * seguir apuntando.
  */
-export function AddBar() {
+export function AddBar({ storeId }: { storeId?: string }) {
   const { t } = useTranslation();
   const items = useShopping((state) => state.items);
   const catalog = useShopping((state) => state.catalog);
@@ -45,8 +45,8 @@ export function AddBar() {
     );
   };
 
-  const submit = () => report(add(text));
-  const pick = (suggestion: Suggestion) => report(add(suggestion.name, suggestion.categoryId));
+  const submit = () => report(add(text, undefined, storeId));
+  const pick = (suggestion: Suggestion) => report(add(suggestion.name, suggestion.categoryId, storeId));
 
   return (
     <View style={styles.root}>

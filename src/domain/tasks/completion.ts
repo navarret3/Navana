@@ -27,6 +27,7 @@ export function planCompletion(params: {
   memberIds: readonly string[];
 }): { completion: Completion; progress: TaskProgress } {
   const { task, completionId, completedBy, today, memberIds } = params;
+  if (task.archived) throw new Error('Cannot complete an archived task');
   const completion: Completion = {
     id: completionId,
     taskId: task.id,

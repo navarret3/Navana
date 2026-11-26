@@ -4,16 +4,18 @@ import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from './Text';
-import { colors, maxContentWidth, minTouchSize, radii, spacing } from './theme';
+import { colors, maxContentWidth, minTouchSize, radii, shadows, spacing } from './theme';
 
 /** Panel que sube desde abajo, con cierre explícito, al tocar fuera o con Atrás. */
 export function BottomSheet({
   visible,
+  floating = false,
   title,
   onClose,
   children,
 }: {
   visible: boolean;
+  floating?: boolean;
   title: string;
   onClose: () => void;
   children: ReactNode;
@@ -21,8 +23,16 @@ export function BottomSheet({
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={[styles.backdrop, { paddingTop: insets.top + spacing.lg }]}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType={floating ? 'fade' : 'slide'}
+      onRequestClose={onClose}>
+      <View style={[
+        styles.backdrop,
+        floating && styles.clearBackdrop,
+        { paddingTop: insets.top + spacing.lg },
+      ]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.close')}
@@ -31,7 +41,11 @@ export function BottomSheet({
         />
         <View
           accessibilityViewIsModal
-          style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
+          style={[
+            styles.sheet,
+            floating && styles.floatingSheet,
+            { paddingBottom: Math.max(insets.bottom, spacing.lg) },
+          ]}>
           <View style={styles.header}>
             <Text variant="heading" accessibilityRole="header" style={styles.title}>
               {title}
@@ -64,6 +78,17 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: colors.scrim,
+  },
+  clearBackdrop: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.md,
+  },
+  floatingSheet: {
+    borderRadius: radii.lg,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    ...shadows.raised,
   },
   sheet: {
     width: '100%',

@@ -1,20 +1,24 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { productIcon } from '@/domain/shopping/icons';
-import { frequentProducts, newestFirst, recentProducts } from '@/domain/shopping/suggest';
-import type { ShoppingItem } from '@/domain/shopping/types';
+import { setItemStore } from '@/data/shopping';
+import { groupByStore } from '@/domain/shopping/stores';
+import { newestFirst } from '@/domain/shopping/suggest';
 import { AddBar } from '@/features/shopping/AddBar';
 import { ShoppingItemRow } from '@/features/shopping/ShoppingItemRow';
 import { useShoppingActions } from '@/features/shopping/useShoppingActions';
+import { saveFailed } from '@/state/notices';
+import { useSession } from '@/state/session';
 import { useShopping } from '@/state/shopping';
 import {
-  ActionSheet,
+  BottomSheet,
   Button,
   Card,
   Chip,
+  ChipGroup,
   EmptyState,
   Text,
   colors,
@@ -25,18 +29,25 @@ import {
 export default function ShoppingScreen() {
   const { t } = useTranslation();
   const items = useShopping((state) => state.items);
-  const catalog = useShopping((state) => state.catalog);
-  const { add, toggle, remove, finish } = useShoppingActions();
+  const stores = useShopping((state) => state.stores);
+  const hid = useSession((state) => state.household?.id);
+  const { toggle, remove, finish } = useShoppingActions();
 
-  /** Producto cuyo menú de opciones está abierto. */
-  const [selected, setSelected] = useState<ShoppingItem | null>(null);
-
+  const [choosingStore, setChoosingStore] = useState(false);
+  const [itemId, setItemId] = useState<string | null>(null);
+  const [destination, setDestination] = useState<string | null>(null);
+  const activeStore = stores.find((store) => store.id === destination);
+  const item = items.find((entry) => entry.id === itemId);
+  const closePicker = () => {
+    setChoosingStore(false);
+    setItemId(null);
+  };
+  const itemStore = stores.find((store) => store.id === item?.storeId);
   const pending = newestFirst(items.filter((item) => !item.checked));
   const checked = items
     .filter((item) => item.checked)
     .sort((a, b) => a.name.localeCompare(b.name));
-  const frequent = frequentProducts(catalog, items);
-  const recent = recentProducts(catalog, items, frequent);
+  const groups = groupByStore(pending, stores);
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
@@ -52,7 +63,17 @@ export default function ShoppingScreen() {
             </Text>
           ) : null}
         </View>
-        <AddBar />
+        <View style={styles.destination}>
+          <Chip
+            role="button"
+            icon="🏪"
+            label={activeStore
+              ? t('shopping.stores.addTo', { name: activeStore.name })
+              : t('shopping.stores.title')}
+            onPress={() => setChoosingStore(true)}
+          />
+        </View>
+        <AddBar storeId={activeStore?.id} />
       </View>
 
       <ScrollView
@@ -60,30 +81,6 @@ export default function ShoppingScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          {[
-            { key: 'frequent', label: t('shopping.frequent'), entries: frequent },
-            { key: 'recent', label: t('shopping.recent'), entries: recent },
-          ]
-            .filter((group) => group.entries.length > 0)
-            .map((group) => (
-              <View key={group.key} style={styles.frequent}>
-                <Text variant="label" color="inkSoft">
-                  {group.label}
-                </Text>
-                <View style={styles.chips}>
-                  {group.entries.map((entry) => (
-                    <Chip
-                      key={entry.key}
-                      role="button"
-                      icon={productIcon(entry.name, entry.categoryId)}
-                      label={entry.name}
-                      onPress={() => add(entry.name, entry.categoryId)}
-                    />
-                  ))}
-                </View>
-              </View>
-            ))}
-
           {items.length === 0 ? (
             <EmptyState
               icon="🛒"
@@ -92,19 +89,21 @@ export default function ShoppingScreen() {
             />
           ) : null}
 
-          {/* Todo en una sola lista, sin secciones: así se lee de un vistazo. */}
-          {pending.length > 0 ? (
-            <Card>
-              {pending.map((item) => (
+          {groups.map((group) => (
+            <Card key={group.store?.id ?? ''}>
+              {stores.length > 0 ? (
+                <Text variant="heading">{group.store?.name ?? t('shopping.stores.none')}</Text>
+              ) : null}
+              {group.items.map((item) => (
                 <ShoppingItemRow
                   key={item.id}
                   item={item}
                   onToggle={toggle}
-                  onOptions={setSelected}
+                  onOptions={(product) => setItemId(product.id)}
                 />
               ))}
             </Card>
-          ) : null}
+          ))}
 
           {checked.length > 0 ? (
             <Card tone="sage">
@@ -118,7 +117,7 @@ export default function ShoppingScreen() {
                   key={item.id}
                   item={item}
                   onToggle={toggle}
-                  onOptions={setSelected}
+                  onOptions={(product) => setItemId(product.id)}
                 />
               ))}
               <Button label={t('shopping.finish')} onPress={finish} />
@@ -130,18 +129,48 @@ export default function ShoppingScreen() {
         </View>
       </ScrollView>
 
-      <ActionSheet
-        visible={selected !== null}
-        title={selected?.name ?? ''}
-        onClose={() => setSelected(null)}
-        options={[
-          {
-            label: t('shopping.remove'),
-            destructive: true,
-            onPress: () => selected && remove(selected),
-          },
-        ]}
-      />
+      <BottomSheet
+        visible={choosingStore || !!item}
+        title={item?.name ?? t('shopping.stores.title')}
+        onClose={closePicker}>
+        <View style={styles.actions}>
+          <ChipGroup
+            label={item ? t('shopping.stores.assign') : t('shopping.stores.destination')}
+            options={[
+              { value: '', label: t('shopping.stores.none') },
+              ...stores.map((store) => ({ value: store.id, label: store.name })),
+            ]}
+            value={(item ? itemStore : activeStore)?.id ?? ''}
+            onChange={(id) => {
+              if (item && hid) {
+                setItemStore(hid, item.id, id || null).catch(saveFailed('Asignar establecimiento'));
+              } else {
+                setDestination(id || null);
+              }
+              closePicker();
+            }}
+          />
+          {item ? (
+            <Button
+              variant="secondary"
+              label={t('shopping.remove')}
+              onPress={() => {
+                remove(item);
+                closePicker();
+              }}
+            />
+          ) : (
+            <Button
+              variant="secondary"
+              label={t('shopping.stores.manage')}
+              onPress={() => {
+                closePicker();
+                router.push('/shopping-stores');
+              }}
+            />
+          )}
+        </View>
+      </BottomSheet>
     </SafeAreaView>
   );
 }
@@ -180,12 +209,6 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
     gap: spacing.lg,
   },
-  frequent: {
-    gap: spacing.xs,
-  },
-  chips: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
+  destination: { alignItems: 'flex-start' },
+  actions: { gap: spacing.lg },
 });

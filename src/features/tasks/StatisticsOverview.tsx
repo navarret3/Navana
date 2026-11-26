@@ -5,7 +5,7 @@ import type { Member } from '@/domain/household';
 import type { taskStatistics } from '@/domain/tasks/statistics';
 import { Avatar, Card, Text, colors, radii, spacing } from '@/ui';
 
-/** Un único criterio: cada vez que alguien completa una tarea cuenta una vez. */
+/** Cantidad de realizaciones y reparto del esfuerzo histórico, con escalas independientes. */
 export function StatisticsOverview({
   stats,
   members,
@@ -47,17 +47,33 @@ export function StatisticsOverview({
                   }}
                 />
               </View>
+              <View style={styles.row}>
+                <Text variant="caption" color="inkSoft" style={styles.grow}>
+                  {t('tasks.statistics.effortCount', { count: entry.effort })}
+                </Text>
+                <Text variant="caption" color="inkSoft">
+                  {t('tasks.statistics.effortShare', { value: Math.round(entry.share * 100) })}
+                </Text>
+              </View>
+              <View style={styles.track} accessible={false}>
+                <View
+                  style={{ width: `${entry.share * 100}%`, backgroundColor: colors.sageDeep }}
+                />
+              </View>
             </View>
           </View>
         );
       })}
+      <Text variant="caption" color="inkSoft">
+        {t('tasks.statistics.effortHint')}
+      </Text>
     </Card>
   );
 }
 
 const styles = StyleSheet.create({
   grow: { flex: 1 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.sm },
   member: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -71,5 +87,6 @@ const styles = StyleSheet.create({
     borderRadius: radii.pill,
     overflow: 'hidden',
     marginTop: spacing.xs,
+    marginBottom: spacing.xs,
   },
 });
